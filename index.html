@@ -3,149 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBSI Pocket - DPC Bitung</title>
+    <title>SBSI Pocket - Final</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         :root { --sbsi-red: #ed1c24; --sbsi-blue: #0056b3; }
-        body { background-color: #f8f9fa; font-family: sans-serif; }
-        .card-sbsi { border: none; border-top: 6px solid var(--sbsi-red); border-radius: 12px; max-width: 450px; margin: 40px auto; }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        .card-sbsi { border: none; border-top: 6px solid var(--sbsi-red); border-radius: 12px; max-width: 500px; margin: 20px auto; }
         .hidden { display: none !important; }
         .header-print { display: flex; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
-        .header-text h4 { color: var(--sbsi-blue); margin: 0; font-weight: bold; font-size: 1.1rem; }
-        .header-text .red { color: var(--sbsi-red); font-weight: bold; }
         @media print { .no-print { display: none !important; } .card-sbsi { max-width: 100%; border: none; box-shadow: none; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="pageLogin" class="card card-sbsi shadow p-4">
+<div class="container px-2">
+    <div id="pageLogin" class="card card-sbsi shadow p-4 mt-5">
         <div class="text-center mb-4">
-            <img src="Logo_SBSI.png" width="80">
-            <h4 class="fw-bold mt-2">SBSI POCKET</h4>
-            <p class="text-muted small">DPC KOTA BITUNG</p>
+            <img src="Logo_SBSI.png" width="70">
+            <h5 class="fw-bold mt-2">SBSI POCKET LOGIN</h5>
         </div>
-        <input type="text" id="inpNik" class="form-control mb-2" placeholder="NIK (Username)">
-        <input type="password" id="inpPin" class="form-control mb-3" placeholder="PIN (Password)">
+        <input type="text" id="inpNik" class="form-control mb-2" placeholder="NIK">
+        <input type="password" id="inpPin" class="form-control mb-3" placeholder="PIN">
         <button id="btnLogin" class="btn btn-danger w-100 fw-bold" onclick="handleLogin()">MASUK</button>
     </div>
 
-    <div id="pageDashboard" class="card card-sbsi shadow hidden p-4">
-        <div class="text-center border-bottom pb-3 mb-3">
-            <img id="userFoto" src="" class="rounded-circle border mb-2" width="100" height="100">
-            <h5 id="userNama" class="fw-bold mb-0"></h5>
-            <span id="userBadge" class="badge bg-danger"></span>
+    <div id="pageDashboard" class="card card-sbsi shadow p-4 hidden">
+        <div class="text-center mb-3">
+            <img id="userFoto" src="" class="rounded-circle border" width="90" height="90" style="object-fit: cover;">
+            <h5 id="userNama" class="fw-bold mt-2 mb-0"></h5>
+            <small id="dispNik" class="text-muted"></small>
         </div>
-        <div class="small mb-4">
-            <p class="mb-1 text-muted">NIK: <b id="dispNik" class="text-dark"></b></p>
-            <p class="mb-1 text-muted">Alamat: <b id="dispAlamat" class="text-dark"></b></p>
-        </div>
-        <button class="btn btn-primary w-100 mb-2 fw-bold" onclick="showPage('pageAudit')">MULAI AUDIT HAK</button>
-        <button id="btnAdmin" class="btn btn-dark w-100 mb-2 fw-bold hidden" onclick="loadAdminPanel()">PANEL MONITORING</button>
-        <button class="btn btn-outline-secondary w-100 btn-sm mt-2" onclick="location.reload()">LOGOUT</button>
+        <button class="btn btn-primary w-100 mb-2 fw-bold" onclick="showPage('pageAudit')">AUDIT KEKURANGAN HAK</button>
+        <button class="btn btn-outline-secondary w-100 btn-sm" onclick="location.reload()">LOGOUT</button>
     </div>
 
-    <div id="pageAudit" class="card card-sbsi shadow hidden p-4" style="max-width: 700px;">
+    <div id="pageAudit" class="card card-sbsi shadow p-4 hidden" style="max-width: 800px;">
         <div class="header-print">
             <img src="Logo_SBSI.png" width="60" class="me-3">
-            <div class="header-text">
-                <h4>FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</h4>
-                <div class="red">(FSBSI)</div>
-                <div class="fw-bold">DPC KOTA BITUNG</div>
+            <div>
+                <h6 class="m-0 fw-bold text-primary">FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</h6>
+                <div class="text-danger fw-bold small">DPC KOTA BITUNG</div>
             </div>
         </div>
-        <div class="no-print">
-            <label class="small fw-bold">TGL MULAI KERJA</label>
-            <input type="date" id="tglMulai" class="form-control mb-2">
-            <label class="small fw-bold">TGL PHK / SELESAI</label>
-            <input type="date" id="tglSelesai" class="form-control mb-3">
-            <button id="btnHitung" class="btn btn-danger w-100 fw-bold p-3" onclick="eksekusiAudit()">HITUNG KEKURANGAN HAK</button>
-            <button class="btn btn-link w-100 text-muted mt-1" onclick="showPage('pageDashboard')">Batal</button>
-        </div>
-        <div id="hasilPrint" class="mt-4"></div>
-    </div>
 
-    <div id="pageAdmin" class="card card-sbsi shadow hidden p-4" style="max-width: 600px;">
-        <h5 class="fw-bold mb-3 border-bottom pb-2">DATA ANGGOTA</h5>
-        <div class="table-responsive">
-            <table class="table table-sm table-striped small">
-                <thead><tr><th>Nama</th><th>NIK</th><th>Role</th></tr></thead>
-                <tbody id="tableBodyAdmin"></tbody>
-            </table>
+        <div class="no-print">
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label class="small fw-bold">TGL MULAI</label>
+                    <input type="date" id="tglMulai" class="form-control">
+                </div>
+                <div class="col-6">
+                    <label class="small fw-bold">TGL SELESAI</label>
+                    <input type="date" id="tglSelesai" class="form-control">
+                </div>
+            </div>
+            <button id="btnHitung" class="btn btn-danger w-100 fw-bold" onclick="eksekusiAudit()">HITUNG & CETAK</button>
+            <button class="btn btn-link w-100 text-muted btn-sm" onclick="showPage('pageDashboard')">Kembali</button>
         </div>
-        <button class="btn btn-secondary w-100 mt-3" onclick="showPage('pageDashboard')">Kembali</button>
+
+        <div id="hasilPrint" class="mt-4"></div>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbw654JpHrnUh0vLp0tGQIP1njrhAGEoO_SS270HuWYOXtesl6b_X4UkfzmxAvkq0ShG/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbwBR80xVSwmksBoQxdN-nlE93eQ-ccLTT-DOopKY8hznkesEzWECBq5n5nX5pu2n3xD/exec"; 
     let currentUser = null;
+    let currentUMP = 0;
 
     function showPage(id) {
-        ['pageLogin', 'pageDashboard', 'pageAdmin', 'pageAudit'].forEach(p => document.getElementById(p).classList.add('hidden'));
+        ['pageLogin', 'pageDashboard', 'pageAudit'].forEach(p => document.getElementById(p).classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 
     async function handleLogin() {
         const nik = document.getElementById('inpNik').value;
         const pin = document.getElementById('inpPin').value;
-        const btn = document.getElementById('btnLogin');
-        if(!nik || !pin) return alert("Isi NIK dan PIN!");
+        if(!nik || !pin) return alert("Lengkapi data!");
         
-        btn.innerText = "VERIFIKASI..."; btn.disabled = true;
+        document.getElementById('btnLogin').innerText = "PROSES...";
         try {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "login", nik: nik, pin: pin }) });
             const data = await res.json();
             if(data.status === "success") {
-                currentUser = data;
+                currentUser = data.user;
+                currentUMP = data.ump; // Menyimpan UMP dari database
                 document.getElementById('userNama').innerText = data.user.nama;
-                document.getElementById('userBadge').innerText = data.role;
-                document.getElementById('userFoto').src = data.user.foto || 'https://via.placeholder.com/100';
-                document.getElementById('dispNik').innerText = data.user.nik;
-                document.getElementById('dispAlamat').innerText = data.user.alamat;
-                if(data.role === "OD") document.getElementById('btnAdmin').classList.remove('hidden');
+                document.getElementById('dispNik').innerText = "NIK: " + data.user.nik;
+                document.getElementById('userFoto').src = data.user.foto || 'https://via.placeholder.com/90';
                 showPage('pageDashboard');
             } else { alert(data.message); }
-        } catch(e) { alert("Gagal koneksi server!"); }
-        finally { btn.innerText = "MASUK"; btn.disabled = false; }
+        } catch(e) { alert("Error Server"); }
+        finally { document.getElementById('btnLogin').innerText = "MASUK"; }
+    }
+
+    function hitungDetail(d1, d2) {
+        let diff = Math.floor((d2 - d1) / (1000 * 60 * 60 * 24 * 30.44)); // Total bulan
+        let thn = Math.floor(diff / 12);
+        let bln = diff % 12;
+
+        // Logika Pesangon Sederhana (Contoh: 1x UMP per tahun masa kerja)
+        let koefisien = thn < 1 ? 1 : (thn >= 8 ? 9 : thn + 1);
+        let pesangon = koefisien * currentUMP;
+
+        return { thn, bln, pesangon };
     }
 
     async function eksekusiAudit() {
-        const tgl1 = document.getElementById('tglMulai').value;
-        const tgl2 = document.getElementById('tglSelesai').value;
-        if(!tgl1 || !tgl2) return alert("Pilih tanggal!");
+        const t1 = new Date(document.getElementById('tglMulai').value);
+        const t2 = new Date(document.getElementById('tglSelesai').value);
+        if(isNaN(t1) || isNaN(t2)) return alert("Set tanggal!");
 
-        const btn = document.getElementById('btnHitung');
-        btn.innerText = "MENCATAT DATA..."; btn.disabled = true;
+        const hasil = hitungDetail(t1, t2);
+        const formatIDR = (n) => "Rp " + n.toLocaleString('id-ID');
 
-        try {
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: "audit", nama: currentUser.user.nama, nik: currentUser.user.nik, tglMulai: tgl1, tglSelesai: tgl2 })
-            });
-            const data = await res.json();
-            if(data.status === "success") {
-                document.getElementById('hasilPrint').innerHTML = `
-                    <h5 class="text-center fw-bold mb-4">HASIL AUDIT AWAL</h5>
-                    <table class="table table-bordered small">
-                        <tr><td>Nama Anggota</td><td>${currentUser.user.nama}</td></tr>
-                        <tr><td>NIK</td><td>${currentUser.user.nik}</td></tr>
-                        <tr><td>Periode Kerja</td><td>${tgl1} s/d ${tgl2}</td></tr>
-                        <tr><td>Keterangan</td><td><b class="text-success">Data Berhasil Diverifikasi</b></td></tr>
-                    </table>
-                    <div class="mt-5 text-end small">Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><br>( Petugas Lapangan )</div>
-                `;
-                window.print();
-            }
-        } catch(e) { alert("Koneksi Error!"); }
-        finally { btn.innerText = "HITUNG KEKURANGAN HAK"; btn.disabled = false; }
-    }
+        document.getElementById('hasilPrint').innerHTML = `
+            <h6 class="text-center fw-bold text-decoration-underline mb-3">PERHITUNGAN HAK KARYAWAN</h6>
+            <table class="table table-sm table-bordered small">
+                <tr><td width="40%">Nama</td><td><b>${currentUser.nama}</b></td></tr>
+                <tr><td>Masa Kerja</td><td>${hasil.thn} Tahun ${hasil.bln} Bulan</td></tr>
+                <tr><td>Dasar UMP</td><td>${formatIDR(currentUMP)}</td></tr>
+                <tr class="table-warning"><td><b>Total Pesangon</b></td><td><b>${formatIDR(hasil.pesangon)}</b></td></tr>
+            </table>
+            <div class="mt-4 text-end small">Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><br><b>( ${currentUser.nama} )</b></div>
+        `;
 
-    async function loadAdminPanel() {
-        showPage('pageAdmin');
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "getAllData" }) });
-        const data = await res.json();
-        document.getElementById('tableBodyAdmin').innerHTML = data.data.map(u => `<tr><td>${u.nama}</td><td>${u.nik}</td><td>${u.role}</td></tr>`).join('');
+        // Kirim hasil ke Sheet1
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: "audit", nama: currentUser.nama, nik: currentUser.nik,
+                tglMulai: document.getElementById('tglMulai').value,
+                tglSelesai: document.getElementById('tglSelesai').value,
+                masaKerja: hasil.thn + " Thn",
+                totalHak: hasil.pesangon
+            })
+        });
+
+        setTimeout(() => window.print(), 500);
     }
 </script>
 </body>
