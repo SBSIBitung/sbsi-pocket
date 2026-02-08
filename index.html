@@ -16,12 +16,13 @@
         .data-val { font-size: 0.9rem; font-weight: 600; color: #333; }
         .nav-link { color: #666; font-weight: 600; }
         .nav-link.active { color: var(--sbsi-red) !important; border-bottom: 3px solid var(--sbsi-red); }
+        .currency-input { text-align: right; font-weight: bold; color: #0d6efd; }
         
         @media print {
             #mainNav, .btn, #st1, #st2, .no-print, #loading, #secLogin { display: none !important; }
             body { background: white !important; padding: 0; }
             .container { max-width: 100% !important; width: 100% !important; margin: 0 !important; }
-            .card-profile { box-shadow: none !important; margin: 0 !important; }
+            .card-profile { box-shadow: none !important; border: none !important; margin: 0 !important; }
             #pdf-area { display: block !important; border: none !important; width: 100% !important; }
         }
     </style>
@@ -77,14 +78,15 @@
                     <div class="col-6"><label class="small fw-bold text-muted">TGL MULAI</label><input type="date" id="t1" class="form-control"></div>
                     <div class="col-6"><label class="small fw-bold text-muted">TGL PHK</label><input type="date" id="t2" class="form-control"></div>
                 </div>
-                <button class="btn btn-primary w-100 py-3 fw-bold shadow-sm" onclick="genGaji()">INPUT RINCIAN UPAH</button>
+                <button class="btn btn-primary w-100 py-3 fw-bold shadow-sm" onclick="genGaji()">INPUT RINCIAN UPAH PER BULAN</button>
             </div>
 
             <div id="st2" class="d-none">
-                <div id="listG" class="border rounded-3 mb-3 bg-light"></div>
+                <h6 class="fw-bold mb-3">Rincian Upah Yang Diterima:</h6>
+                <div id="listG" class="border rounded-3 mb-3 bg-light overflow-auto" style="max-height: 300px;"></div>
                 <div class="p-3 bg-white border rounded-3 mt-3 shadow-sm">
                     <label class="small fw-bold">Pesangon Sudah Diterima (Rp)</label>
-                    <input type="text" id="pDiterima" class="form-control fw-bold text-primary mb-3" onkeyup="formatRp(this)" value="Rp 0">
+                    <input type="text" id="pDiterima" class="form-control currency-input mb-3" onkeyup="formatRp(this)" value="Rp 0">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="cDie">
                         <label class="form-check-label small fw-bold text-danger" for="cDie">PHK Meninggal Dunia (2x Pesangon)</label>
@@ -108,14 +110,16 @@
                         <div class="d-flex justify-content-between border-bottom py-1"><span>Masa Kerja:</span><span id="rPrd"></span></div>
                     </div>
                     <table class="table table-sm small">
-                        <tr><td>Selisih Gaji</td><td class="text-end fw-bold">Rp 0</td></tr>
-                        <tr><td>Selisih THR</td><td class="text-end fw-bold">Rp 0</td></tr>
-                        <tr class="table-primary fw-bold"><td>Pesangon (<span id="oD"></span>)</td><td class="text-end" id="oP"></td></tr>
-                        <tr class="table-danger fw-bold h5 text-danger"><td class="py-3">TOTAL HAK</td><td class="text-end py-3" id="oTot"></td></tr>
+                        <tr><td>Selisih Upah UMP (Prorata)</td><td class="text-end fw-bold" id="oG"></td></tr>
+                        <tr><td>Selisih THR (Prorata)</td><td class="text-end fw-bold" id="oT"></td></tr>
+                        <tr><td>Selisih Kompensasi</td><td class="text-end fw-bold" id="oK"></td></tr>
+                        <tr class="table-primary fw-bold"><td>Hak Pesangon (<span id="oD"></span>)</td><td class="text-end" id="oP"></td></tr>
+                        <tr class="table-danger fw-bold h5 text-danger"><td class="py-3">TOTAL TUNTUTAN</td><td class="text-end py-3" id="oTot"></td></tr>
                     </table>
                     <div class="mt-5 text-end small">
                         <p>Bitung, <span id="curTgl"></span><br>Pekerja,</p>
                         <br><br><b id="signNama"></b>
+                        <p class="mt-2 text-muted" style="font-size: 8px;">Dokumen laporan audit mandiri digital.</p>
                     </div>
                 </div>
                 <div class="row g-2 mt-4 no-print">
@@ -128,18 +132,12 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbwt18yM1DDjFAEWoI6l0DkSGoyqRUZ_6xLw3ndLGnFKQlC20Hwjnm2wSUZQD6E7-EsP/exec"; // GANTI DENGAN URL DEPLOYMENT ANDA
+    const API = "https://script.google.com/macros/s/AKfycbx36VYazybEArTHu0md5g34OJkwc3GxvVx-kStxvMQbfSAJY3V2YWYL4xz4WHb1B3Ee/exec"; // GANTI DENGAN URL DEPLOY ANDA
     let USER = null;
 
-    window.onload = function() {
-        const saved = localStorage.getItem('sbsi_user');
-        if (saved) { 
-            USER = JSON.parse(saved); 
-            showMain(); 
-        }
-    };
-
     function showLoading(v) { document.getElementById('loading').className = v ? 'position-fixed w-100 h-100 d-flex justify-content-center align-items-center bg-white' : 'd-none'; }
+    function formatRp(el) { let v = el.value.replace(/[^,\d]/g, ""); el.value = "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+    function clean(v) { return Number(v.replace(/[^0-9]/g, '')) || 0; }
 
     async function doLogin() {
         const nik = document.getElementById('logNik').value, pin = document.getElementById('logPin').value;
@@ -148,11 +146,8 @@
         try {
             const r = await fetch(API, { method:'POST', body: JSON.stringify({ action:"login", nik, pin })});
             const d = await r.json();
-            if(d.status === "success") { 
-                USER = d.user; 
-                localStorage.setItem('sbsi_user', JSON.stringify(USER)); 
-                showMain(); 
-            } else alert(d.message);
+            if(d.status === "success") { USER = d.user; localStorage.setItem('sbsi_user', JSON.stringify(USER)); showMain(); } 
+            else alert(d.message);
         } catch(e) { alert("Error Koneksi!"); }
         showLoading(false);
     }
@@ -175,46 +170,54 @@
         document.getElementById(l).classList.add('active');
     }
 
-    function formatRp(el) { let v = el.value.replace(/[^,\d]/g, ""); el.value = "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-
     function genGaji() {
-        const d1 = document.getElementById('t1').value, d2 = document.getElementById('t2').value;
-        if(!d1 || !d2) return alert("Pilih tanggal!");
-        document.getElementById('listG').innerHTML = `
-            <div class="p-3 d-flex justify-content-between align-items-center">
-                <span class="small fw-bold">Upah Terakhir (Gaji Pokok + Tetap)</span>
-                <input type="text" id="upahInput" class="form-control form-control-sm w-50 text-end fw-bold border-primary" onkeyup="formatRp(this)" value="Rp 3.500.000">
-            </div>`;
+        const d1 = new Date(document.getElementById('t1').value), d2 = new Date(document.getElementById('t2').value);
+        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal dengan benar!");
+        let h = "";
+        let curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
+        const bln = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"];
+        while(curr <= d2) {
+            let label = bln[curr.getMonth()] + " " + curr.getFullYear();
+            h += `<div class="p-2 border-bottom d-flex justify-content-between align-items-center bg-white small">
+                    <span>${label}</span>
+                    <input type="text" class="form-control form-control-sm w-50 val-g text-end fw-bold" data-bln="${label}" onkeyup="formatRp(this)" value="Rp 0">
+                  </div>`;
+            curr.setMonth(curr.getMonth() + 1);
+        }
+        document.getElementById('listG').innerHTML = h;
         document.getElementById('st1').classList.add('d-none');
         document.getElementById('st2').classList.remove('d-none');
     }
 
     async function proses() {
         showLoading(true);
+        const rincian = Array.from(document.querySelectorAll('.val-g')).map(i => ({ bulan: i.dataset.bln, gaji: clean(i.value) }));
         const data = {
             action: "audit", 
-            nama: USER.nama,
             tglMulai: document.getElementById('t1').value, 
             tglSelesai: document.getElementById('t2').value,
-            upahInput: Number(document.getElementById('upahInput').value.replace(/[^0-9]/g, '')),
-            pesangonDiterima: Number(document.getElementById('pDiterima').value.replace(/[^0-9]/g, '')),
+            rincianGaji: rincian,
+            pesangonDiterima: clean(document.getElementById('pDiterima').value),
             isMeninggal: document.getElementById('cDie').checked,
             masaKerja: Math.floor((new Date(document.getElementById('t2').value) - new Date(document.getElementById('t1').value)) / (365.25 * 24 * 60 * 60 * 1000))
         };
         try {
-            const res = await (await fetch(API, { method:'POST', body: JSON.stringify(data)})).json();
-            if(res.status === "success") {
+            const r = await (await fetch(API, { method:'POST', body: JSON.stringify(data)})).json();
+            if(r.status === "success") {
+                document.getElementById('oG').innerText = "Rp " + r.sGaji.toLocaleString('id-ID');
+                document.getElementById('oT').innerText = "Rp " + r.sThr.toLocaleString('id-ID');
+                document.getElementById('oK').innerText = "Rp " + r.sKomp.toLocaleString('id-ID');
+                document.getElementById('oP').innerText = "Rp " + r.pesangon.toLocaleString('id-ID');
+                document.getElementById('oD').innerText = r.detail;
+                document.getElementById('oTot').innerText = "Rp " + r.total.toLocaleString('id-ID');
                 document.getElementById('rNm').innerText = USER.nama;
                 document.getElementById('rPrd').innerText = data.tglMulai + " s/d " + data.tglSelesai;
-                document.getElementById('oP').innerText = "Rp " + res.pesangon;
-                document.getElementById('oD').innerText = res.detail;
-                document.getElementById('oTot').innerText = "Rp " + res.total;
                 document.getElementById('signNama').innerText = "(" + USER.nama + ")";
                 document.getElementById('curTgl').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
                 document.getElementById('st2').classList.add('d-none');
                 document.getElementById('stRes').classList.remove('d-none');
             }
-        } catch(e) { alert("Gagal menghitung!"); }
+        } catch(e) { alert("Gagal Audit!"); }
         showLoading(false);
     }
 
