@@ -3,179 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBSI Pocket - DPC Bitung</title>
+    <title>SBSI Pocket Pro - DPC Bitung</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { --sbsi-blue: #0d6efd; --sbsi-bg: #f8f9fa; }
-        body { background: var(--sbsi-bg); font-family: 'Inter', sans-serif; }
-        .card-main { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .nav-sbsi { background: white; border-bottom: 2px solid #eee; }
-        .nav-link { font-weight: 600; color: #666; padding: 15px 20px !important; }
-        .nav-link.active { color: var(--sbsi-blue) !important; border-bottom: 3px solid var(--sbsi-blue); }
-        .profile-img { width: 120px; height: 120px; object-fit: cover; border: 4px solid white; border-radius: 50%; shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .currency-input { text-align: right; font-weight: bold; color: var(--sbsi-blue); }
+        :root { --main-blue: #0d6efd; --soft-bg: #f0f2f5; }
+        body { background-color: var(--soft-bg); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card-custom { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .nav-sbsi { background: white; border-bottom: 2px solid #dee2e6; }
+        .nav-link { color: #6c757d; font-weight: 600; padding: 15px 20px !important; }
+        .nav-link.active { color: var(--main-blue) !important; border-bottom: 3px solid var(--main-blue); }
+        .profile-pic { width: 130px; height: 130px; object-fit: cover; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 50%; transition: 0.3s; }
+        .currency-input { text-align: right; font-weight: bold; color: var(--main-blue); }
+        .xs { font-size: 0.75rem; font-weight: bold; text-uppercase; color: #6c757d; }
+        #pageLogin { max-width: 420px; margin: 80px auto; }
+        .btn-blue { background: var(--main-blue); color: white; border-radius: 12px; font-weight: 600; border: none; padding: 12px; }
+        .btn-blue:hover { background: #0b5ed7; color: white; }
     </style>
 </head>
 <body>
 
-<div id="secLogin" class="container mt-5 pt-5">
-    <div class="card card-main mx-auto p-5 text-center" style="max-width: 400px;">
-        <img src="Logo_SBSI.png" width="80" class="mx-auto mb-3">
-        <h4 class="fw-bold text-primary">SBSI POCKET</h4>
-        <div class="text-start mt-4">
-            <label class="small fw-bold">NIK (Username)</label>
-            <input type="text" id="nik" class="form-control mb-3" placeholder="7172...">
-            <label class="small fw-bold">PIN (Password)</label>
-            <input type="password" id="pin" class="form-control mb-4" placeholder="***">
+<div id="sectionLogin" class="container">
+    <div id="pageLogin" class="card card-custom p-5 bg-white text-center">
+        <img src="Logo_SBSI.png" width="100" class="mb-4 mx-auto" onerror="this.src='https://via.placeholder.com/100?text=SBSI'">
+        <h4 class="fw-bold mb-1">SBSI POCKET</h4>
+        <p class="text-muted small mb-4">DPC Federasi SBSI Kota Bitung</p>
+        <div class="text-start">
+            <label class="xs">NIK (USERNAME)</label>
+            <input type="text" id="logNik" class="form-control form-control-lg mb-3" placeholder="7172...">
+            <label class="xs">PIN KEAMANAN</label>
+            <input type="password" id="logPin" class="form-control form-control-lg mb-4" placeholder="***">
         </div>
-        <button id="btnLogin" class="btn btn-primary w-100 py-2 fw-bold" onclick="login()">MASUK</button>
+        <button id="btnLogin" class="btn btn-blue w-100" onclick="doLogin()">MASUK APLIKASI</button>
     </div>
 </div>
 
-<nav id="navMain" class="navbar navbar-expand nav-sbsi d-none sticky-top">
+<nav id="mainNav" class="navbar navbar-expand nav-sbsi d-none sticky-top">
     <div class="container justify-content-center">
         <div class="navbar-nav">
-            <a class="nav-link active" id="m1" href="#" onclick="show('tab1','m1')">PROFIL</a>
-            <a class="nav-link" id="m2" href="#" onclick="show('tab2','m2')">AUDIT</a>
-            <a class="nav-link" id="m3" href="#" onclick="show('tab3','m3')">Q&A</a>
+            <a class="nav-link active" id="lDash" href="#" onclick="showTab('tabDash', 'lDash')">PROFIL</a>
+            <a class="nav-link" id="lAudit" href="#" onclick="showTab('tabAudit', 'lAudit')">AUDIT HAK</a>
+            <a class="nav-link" id="lQA" href="#" onclick="showTab('tabQA', 'lQA')">TANYA JAWAB</a>
         </div>
     </div>
 </nav>
 
-<div id="secMain" class="container py-4 d-none">
+<div id="sectionMain" class="container py-5 d-none">
     
-    <div id="tab1" class="tab-content">
-        <div class="card card-main bg-white p-4 text-center mx-auto" style="max-width: 450px;">
-            <div class="position-relative d-inline-block mx-auto" onclick="document.getElementById('fUp').click()" style="cursor:pointer">
-                <img id="uFoto" src="" class="profile-img bg-light">
-                <div class="position-absolute bottom-0 end-0 bg-primary p-2 rounded-circle text-white shadow-sm"><i class="bi bi-camera"></i></div>
-                <input type="file" id="fUp" class="d-none" accept="image/*" onchange="upFoto(this)">
+    <div id="tabDash" class="tab-content">
+        <div class="card card-custom bg-white p-4 text-center mx-auto" style="max-width: 480px;">
+            <div class="position-relative d-inline-block mx-auto" onclick="document.getElementById('fileInput').click()" style="cursor:pointer">
+                <img id="uFoto" src="" class="profile-pic bg-light">
+                <div class="position-absolute bottom-0 end-0 bg-primary p-2 rounded-circle text-white shadow"><i class="bi bi-camera-fill"></i></div>
+                <input type="file" id="fileInput" class="d-none" accept="image/*" onchange="handleFileUpload(this)">
             </div>
             <h4 id="uNama" class="fw-bold mt-4 mb-0"></h4>
-            <span id="uRole" class="badge bg-primary mx-auto mt-2 mb-4"></span>
-            <div class="row text-start g-2 border-top pt-3">
-                <div class="col-5 text-muted small">NIK</div><div class="col-7 small fw-bold" id="uNik"></div>
-                <div class="col-5 text-muted small">TEMPAT LAHIR</div><div class="col-7 small fw-bold" id="uTempat"></div>
-                <div class="col-5 text-muted small">ALAMAT</div><div class="col-7 small fw-bold" id="uAlamat"></div>
+            <p id="uNik" class="text-muted small mb-3"></p>
+            <div class="row text-start g-3 border-top pt-4">
+                <div class="col-5 xs">TEMPAT LAHIR</div><div class="col-7 small fw-bold" id="uTempat"></div>
+                <div class="col-5 xs">ALAMAT</div><div class="col-7 small fw-bold" id="uAlamat"></div>
+                <div class="col-5 xs">JABATAN</div><div class="col-7"><span id="uRole" class="badge bg-primary"></span></div>
             </div>
-            <button class="btn btn-outline-danger btn-sm mt-5" onclick="location.reload()">KELUAR</button>
+            <button class="btn btn-link text-danger mt-5 text-decoration-none fw-bold" onclick="location.reload()">KELUAR</button>
         </div>
     </div>
 
-    <div id="tab2" class="tab-content d-none">
-        <div class="card card-main p-4 bg-white mx-auto" style="max-width: 600px;">
+    <div id="tabAudit" class="tab-content d-none">
+        <div class="card card-custom p-4 bg-white mx-auto" style="max-width: 650px;">
+            
             <div id="stepAudit1">
-                <h5 class="fw-bold text-primary mb-4">Mulai Audit Prorata</h5>
+                <h5 class="fw-bold text-primary mb-4"><i class="bi bi-calendar-check"></i> Periode Kerja</h5>
                 <div class="row g-3 mb-4">
-                    <div class="col-6"><label class="small fw-bold">TGL MULAI</label><input type="date" id="t1" class="form-control"></div>
-                    <div class="col-6"><label class="small fw-bold">TGL SELESAI</label><input type="date" id="t2" class="form-control"></div>
+                    <div class="col-6"><label class="xs">TANGGAL MULAI</label><input type="date" id="t1" class="form-control"></div>
+                    <div class="col-6"><label class="xs">TANGGAL SELESAI</label><input type="date" id="t2" class="form-control"></div>
                 </div>
-                <button class="btn btn-primary w-100 py-3 fw-bold" onclick="genGaji()">LANJUT INPUT GAJI</button>
+                <button class="btn btn-blue w-100 py-3" onclick="genGaji()">MULAI ANALISIS DATA</button>
             </div>
+
             <div id="stepAudit2" class="d-none">
-                <h6 class="fw-bold mb-3">Input Gaji Diterima (Bulanan)</h6>
-                <div id="listGaji" class="border rounded mb-4 shadow-sm overflow-auto" style="max-height:300px"></div>
-                <button class="btn btn-primary w-100 py-3 fw-bold" onclick="prosesAudit()">HITUNG KEKURANGAN HAK</button>
+                <h6 class="fw-bold mb-3 text-primary">Rincian Upah & Hak Tahunan</h6>
+                <div id="listGaji" class="border rounded mb-3 bg-white overflow-auto" style="max-height: 250px;"></div>
+                <div id="listTahunan" class="mb-4"></div>
+                
+                <div class="p-3 bg-light rounded-4 border-start border-primary border-4 mb-4">
+                    <label class="xs mb-2 d-block">PESANGON / TALI ASIH YANG SUDAH DITERIMA (Rp)</label>
+                    <input type="text" id="pesDiterima" class="form-control currency-input mb-3" onkeyup="formatRp(this)" value="Rp 0">
+                    <div class="form-check p-2 bg-white rounded border border-danger">
+                        <input class="form-check-input ms-1" type="checkbox" id="chkMeninggal">
+                        <label class="form-check-label small fw-bold text-danger ms-2" for="chkMeninggal">PHK KARENA MENINGGAL DUNIA (PP 35 PASAL 57)</label>
+                    </div>
+                </div>
+                <button id="btnProses" class="btn btn-blue w-100 py-3" onclick="prosesAudit()">HITUNG KESELURUHAN HAK</button>
             </div>
-            <div id="resAudit" class="d-none mt-4 p-4 bg-light rounded-4 border-start border-primary border-4">
-                <h4 class="fw-bold text-primary mb-3">HASIL ANALISA</h4>
-                <div class="d-flex justify-content-between"><span>Selisih Gaji:</span> <b id="rGaji"></b></div>
-                <hr>
-                <div class="d-flex justify-content-between h4 text-danger fw-bold"><span>Total Tuntutan:</span> <span id="rTotal"></span></div>
+
+            <div id="resAudit" class="d-none mt-4 p-4 rounded-4 border border-primary bg-white shadow-sm">
+                <h5 class="fw-bold text-center border-bottom pb-3 mb-4 text-primary">HASIL AUDIT HAK PEKERJA</h5>
+                <div class="d-flex justify-content-between mb-2"><span>Selisih Upah Prorata:</span> <b id="rGaji"></b></div>
+                <div class="d-flex justify-content-between mb-2"><span>Selisih THR:</span> <b id="rThr"></b></div>
+                <div class="d-flex justify-content-between mb-2"><span>Selisih Kompensasi:</span> <b id="rKomp"></b></div>
+                <div class="d-flex justify-content-between mb-2 text-primary"><span>Hak Pesangon (<span id="rDet" class="small"></span>):</span> <b id="rPes"></b></div>
+                <hr class="my-4" style="border-top: 2px dashed #0d6efd;">
+                <div class="d-flex justify-content-between h3 fw-bold text-danger"><span>TOTAL TUNTUTAN:</span> <span id="rTotal"></span></div>
+                <button class="btn btn-outline-secondary w-100 mt-4 btn-sm" onclick="location.reload()">Audit Ulang</button>
             </div>
         </div>
     </div>
 
-    <div id="tab3" class="tab-content d-none">
-        <div class="card card-main p-4 bg-white mx-auto" style="max-width: 700px;">
-            <h5 class="fw-bold text-primary mb-4">Pertanyaan & Jawaban (DPC Bitung)</h5>
-            <div class="accordion accordion-flush" id="qaAcc"></div>
+    <div id="tabQA" class="tab-content d-none">
+        <div class="card card-custom p-4 bg-white mx-auto" style="max-width: 700px;">
+            <h5 class="fw-bold text-primary mb-4"><i class="bi bi-chat-dots"></i> Tanya Jawab Ketenagakerjaan</h5>
+            <div class="accordion accordion-flush" id="qaAccordion"></div>
         </div>
     </div>
 
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyprRcz3uwhrzVGLFgFSeNk3fXMH5YNP9gtnqkEC6PrEc5ti7GjfOigLMOGDm7NLdpN/exec"; // Ganti dengan URL hasil Deploy
+    const API = "https://script.google.com/macros/s/AKfycbzgAMVfM8A4GTOACxeW5PhZLNRlhf61LEuwBA3XdzSgzhUNPtMkXXmTnLd0ASOY_avp/exec"; // GANTI INI!
     let USER = null;
 
     function formatRp(el) {
-        let v = el.value.replace(/[^,\d]/g, ""); el.value = "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        let v = el.value.replace(/[^,\d]/g, ""); 
+        el.value = "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     function clean(v) { return Number(v.replace(/[^0-9]/g, '')) || 0; }
 
-    async function login() {
-        const b = document.getElementById('btnLogin');
-        b.disabled = true; b.innerText = "PROSES...";
-        const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action:"login", nik:document.getElementById('nik').value, pin:document.getElementById('pin').value }) });
-        const d = await res.json();
-        if(d.status === "success") {
-            USER = d.user;
-            document.getElementById('secLogin').classList.add('d-none');
-            document.getElementById('navMain').classList.remove('d-none');
-            document.getElementById('secMain').classList.remove('d-none');
-            renderUser(); loadQA();
-        } else { alert(d.message); b.disabled = false; b.innerText = "MASUK"; }
+    async function doLogin() {
+        const btn = document.getElementById('btnLogin');
+        const nik = document.getElementById('logNik').value;
+        const pin = document.getElementById('logPin').value;
+        if(!nik || !pin) return alert("NIK dan PIN wajib diisi!");
+        
+        btn.disabled = true; btn.innerText = "MENGECEK DATA...";
+        try {
+            const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action: "login", nik, pin }) });
+            const d = await res.json();
+            if(d.status === "success") {
+                USER = d.user;
+                document.getElementById('sectionLogin').classList.add('d-none');
+                document.getElementById('mainNav').classList.remove('d-none');
+                document.getElementById('sectionMain').classList.remove('d-none');
+                renderUser(); loadQA();
+            } else { alert(d.message); btn.disabled = false; btn.innerText = "MASUK APLIKASI"; }
+        } catch(e) { alert("Gagal terhubung ke server!"); btn.disabled = false; }
     }
 
     function renderUser() {
         document.getElementById('uNama').innerText = USER.nama;
-        document.getElementById('uNik').innerText = USER.nik;
+        document.getElementById('uNik').innerText = "NIK: " + USER.nik;
         document.getElementById('uTempat').innerText = USER.tempat;
         document.getElementById('uAlamat').innerText = USER.alamat;
         document.getElementById('uRole').innerText = USER.role;
-        document.getElementById('uFoto').src = USER.foto || "https://via.placeholder.com/150";
+        document.getElementById('uFoto').src = USER.foto || "https://via.placeholder.com/150?text=USER";
     }
 
-    function show(tId, mId) {
+    function showTab(tabId, linkId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.add('d-none'));
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(tId).classList.remove('d-none');
-        document.getElementById(mId).classList.add('active');
+        document.getElementById(tabId).classList.remove('d-none');
+        document.getElementById(linkId).classList.add('active');
     }
 
     function genGaji() {
         const d1 = new Date(document.getElementById('t1').value);
         const d2 = new Date(document.getElementById('t2').value);
-        if(isNaN(d1)) return alert("Isi tanggal!");
-        let h = "", cur = new Date(d1.getFullYear(), d1.getMonth(), 1);
+        if(isNaN(d1) || isNaN(d2)) return alert("Mohon pilih tanggal periode kerja!");
+
+        let hGaji = "", hThn = "", thns = [];
+        let cur = new Date(d1.getFullYear(), d1.getMonth(), 1);
         while(cur <= d2) {
             let lbl = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"][cur.getMonth()] + " " + cur.getFullYear();
-            h += `<div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
-                <span class="small fw-bold">${lbl}</span>
-                <input type="text" class="form-control form-control-sm val-gaji currency-input w-50" onkeyup="formatRp(this)" value="Rp 0" data-bln="${lbl}">
+            thns.push(cur.getFullYear());
+            // Default Uji Coba: 1.750.000
+            hGaji += `<div class="p-2 border-bottom d-flex justify-content-between align-items-center bg-white">
+                <span class="xs">${lbl}</span>
+                <input type="text" class="form-control form-control-sm val-gaji w-50 currency-input" onkeyup="formatRp(this)" value="Rp 1.750.000" data-bln="${lbl}">
             </div>`;
             cur.setMonth(cur.getMonth() + 1);
         }
-        document.getElementById('listGaji').innerHTML = h;
+
+        [...new Set(thns)].forEach(t => {
+            // Default Uji Coba: THR 1.500.000
+            hThn += `<div class="p-3 border rounded-3 mb-2 bg-white shadow-sm">
+                <div class="fw-bold mb-2 text-primary small">HAK TAHUN ${t}</div>
+                <div class="row g-2">
+                    <div class="col-6"><label class="xs">THR DITERIMA</label><input type="text" class="form-control form-control-sm val-thr currency-input" onkeyup="formatRp(this)" value="Rp 1.500.000" data-thn="${t}"></div>
+                    <div class="col-6"><label class="xs">KOMPENSASI</label><input type="text" class="form-control form-control-sm val-komp currency-input" onkeyup="formatRp(this)" value="Rp 0" data-thn="${t}"></div>
+                </div>
+            </div>`;
+        });
+
+        document.getElementById('listGaji').innerHTML = hGaji;
+        document.getElementById('listTahunan').innerHTML = hThn;
         document.getElementById('stepAudit1').classList.add('d-none');
         document.getElementById('stepAudit2').classList.remove('d-none');
     }
 
     async function prosesAudit() {
-        const b = document.querySelector('#stepAudit2 button');
-        b.disabled = true; b.innerText = "MENGHITUNG...";
+        const btn = document.getElementById('btnProses');
+        btn.disabled = true; btn.innerText = "MENGANALISA...";
+        
         const data = {
-            action: "audit", nama: USER.nama, tglMulai: document.getElementById('t1').value, tglSelesai: document.getElementById('t2').value,
-            rincianGaji: Array.from(document.querySelectorAll('.val-gaji')).map(i => ({ bulan: i.dataset.bln, gaji: clean(i.value) }))
+            action: "audit",
+            nama: USER.nama,
+            tglMulai: document.getElementById('t1').value,
+            tglSelesai: document.getElementById('t2').value,
+            isMeninggal: document.getElementById('chkMeninggal').checked,
+            masaKerja: Math.floor((new Date(document.getElementById('t2').value) - new Date(document.getElementById('t1').value)) / (365.25 * 24 * 60 * 60 * 1000)),
+            pesangonDiterima: clean(document.getElementById('pesDiterima').value),
+            rincianGaji: Array.from(document.querySelectorAll('.val-gaji')).map(i => ({ bulan: i.dataset.bln, gaji: clean(i.value) })),
+            rincianTahunan: Array.from(document.querySelectorAll('.val-thr')).map((i, idx) => ({ 
+                tahun: i.dataset.thn, 
+                thr: clean(i.value), 
+                komp: clean(document.querySelectorAll('.val-komp')[idx].value) 
+            }))
         };
-        const r = await (await fetch(API, { method: 'POST', body: JSON.stringify(data) })).json();
-        document.getElementById('rGaji').innerText = "Rp " + r.gaji;
-        document.getElementById('rTotal').innerText = "Rp " + r.total;
-        document.getElementById('resAudit').classList.remove('d-none');
-        b.disabled = false; b.innerText = "HITUNG ULANG";
+
+        try {
+            const r = await (await fetch(API, { method: 'POST', body: JSON.stringify(data) })).json();
+            if(r.status === "success") {
+                document.getElementById('stepAudit2').classList.add('d-none');
+                document.getElementById('resAudit').classList.remove('d-none');
+                document.getElementById('rGaji').innerText = "Rp " + r.gaji;
+                document.getElementById('rThr').innerText = "Rp " + r.thr;
+                document.getElementById('rKomp').innerText = "Rp " + r.komp;
+                document.getElementById('rPes').innerText = "Rp " + r.pesangon;
+                document.getElementById('rDet').innerText = r.detail;
+                document.getElementById('rTotal').innerText = "Rp " + r.total;
+            }
+        } catch(e) { alert("Terjadi kesalahan sistem!"); }
+        btn.disabled = false; btn.innerText = "HITUNG KESELURUHAN HAK";
     }
 
-    async function upFoto(input) {
-        if(!input.files[0]) return;
+    async function handleFileUpload(input) {
+        if (!input.files || !input.files[0]) return;
         const reader = new FileReader();
         document.getElementById('uFoto').style.opacity = "0.3";
-        reader.onload = async (e) => {
-            const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action: "uploadFoto", nik: USER.nik, rowIndex: USER.rowIndex, base64: e.target.result }) });
+        reader.onload = async function(e) {
+            const res = await fetch(API, {
+                method: 'POST',
+                body: JSON.stringify({ action: "uploadFoto", nik: USER.nik, rowIndex: USER.rowIndex, base64: e.target.result })
+            });
             const d = await res.json();
-            if(d.status === "success") { USER.foto = d.url; renderUser(); }
-            document.getElementById('uFoto').style.opacity = "1";
+            if(d.status === "success") {
+                USER.foto = d.url;
+                renderUser();
+                document.getElementById('uFoto').style.opacity = "1";
+                alert("Foto profil berhasil diperbarui!");
+            }
         };
         reader.readAsDataURL(input.files[0]);
     }
@@ -184,9 +259,12 @@
         const r = await (await fetch(API, { method: 'POST', body: JSON.stringify({ action: "getQA" }) })).json();
         let h = "";
         r.data.forEach((item, i) => {
-            h += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed small fw-bold" data-bs-toggle="collapse" data-bs-target="#q${i}">${item[0]}</button></h2><div id="q${i}" class="accordion-collapse collapse"><div class="accordion-body small text-muted bg-light">${item[1]}</div></div></div>`;
+            h += `<div class="accordion-item border-0 mb-2 shadow-sm rounded-3 overflow-hidden">
+                <h2 class="accordion-header"><button class="accordion-button collapsed fw-bold small" data-bs-toggle="collapse" data-bs-target="#q${i}">${item[0]}</button></h2>
+                <div id="q${i}" class="accordion-collapse collapse"><div class="accordion-body small text-muted bg-light">${item[1]}</div></div>
+            </div>`;
         });
-        document.getElementById('qaAcc').innerHTML = h;
+        document.getElementById('qaAccordion').innerHTML = h;
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
