@@ -1,181 +1,66 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBSI Pocket - DPC Kota Bitung</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        :root { --sbsi-red: #ed1c24; --sbsi-blue: #0056b3; }
-        body { background-color: #f4f7f6; font-family: sans-serif; }
-        .card-sbsi { border: none; border-top: 6px solid var(--sbsi-red); border-radius: 12px; max-width: 500px; margin: 20px auto; }
-        .hidden { display: none !important; }
-        
-        /* Desain Kop Surat */
-        .header-print { display: none; align-items: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; }
-        
-        @media print { 
-            .no-print { display: none !important; } 
-            .card-sbsi { max-width: 100%; border: none; box-shadow: none; margin: 0; padding: 0; }
-            .header-print { display: flex !important; } /* Munculkan kop hanya saat print */
-            body { background: white; }
-        }
-
-        .hasil-box { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #fff; }
-    </style>
-</head>
-<body>
-
-<div class="container px-3">
-    <div id="pageLogin" class="card card-sbsi shadow p-4">
-        <div class="text-center mb-4">
-            <img src="Logo_SBSI.png" width="80">
-            <h4 class="fw-bold mt-2">SBSI POCKET</h4>
-            <p class="text-muted small">DPC KOTA BITUNG</p>
-        </div>
-        <input type="text" id="inpNik" class="form-control mb-2" placeholder="NIK Karyawan">
-        <input type="password" id="inpPin" class="form-control mb-3" placeholder="PIN Keamanan">
-        <button id="btnLogin" class="btn btn-danger w-100 fw-bold" onclick="handleLogin()">MASUK APLIKASI</button>
-    </div>
-
-    <div id="pageDashboard" class="card card-sbsi shadow p-4 hidden">
-        <div class="text-center border-bottom pb-3 mb-3">
-            <img id="userFoto" src="" class="rounded-circle border mb-2" width="100" height="100" style="object-fit: cover;">
-            <h5 id="userNama" class="fw-bold mb-0"></h5>
-            <span id="userBadge" class="badge bg-danger"></span>
-        </div>
-        <div class="small mb-4">
-            <p class="mb-1">NIK: <b id="dispNik"></b></p>
-            <p class="mb-1">Alamat: <b id="dispAlamat"></b></p>
-        </div>
-        <button class="btn btn-primary w-100 mb-2 fw-bold" onclick="showPage('pageAudit')">MULAI AUDIT HAK</button>
-        <button class="btn btn-outline-secondary w-100 btn-sm mt-2" onclick="location.reload()">LOGOUT</button>
-    </div>
-
-    <div id="pageAudit" class="card card-sbsi shadow p-4 hidden" style="max-width: 800px;">
-        <div class="header-print">
-            <img src="Logo_SBSI.png" width="60" class="me-3">
-            <div style="flex-grow: 1;">
-                <h5 class="m-0 fw-bold text-primary" style="font-size: 1.1rem;">FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</h5>
-                <div class="text-danger fw-bold small">(FSBSI) DPC KOTA BITUNG</div>
-            </div>
-        </div>
-        
-        <div class="no-print">
-            <h5 class="fw-bold mb-3">Form Audit Hak</h5>
-            <label class="small fw-bold">TANGGAL MULAI KERJA</label>
-            <input type="date" id="tglMulai" class="form-control mb-2">
-            <label class="small fw-bold">TANGGAL SELESAI KERJA (PHK)</label>
-            <input type="date" id="tglSelesai" class="form-control mb-4">
-            <button id="btnHitung" class="btn btn-danger w-100 p-3 fw-bold" onclick="eksekusiAudit()">HITUNG KEKURANGAN HAK</button>
-            <button class="btn btn-link w-100 text-muted mt-2" onclick="showPage('pageDashboard')">Kembali</button>
-        </div>
-
-        <div id="hasilPrint" class="mt-4"></div>
-    </div>
-</div>
-
 <script>
-    // URL Web App Anda
-    const API_URL = "https://script.google.com/macros/s/AKfycbw6H3hS9uLw-jD96o3mD1o6kI08T5vQG7r3/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbwRHyI4h7Kckbv-T18-AW8FmqG2YcLAbkBIOPekzh90GHcx_ZmzM17DRoB7S0DbXBGn/exec"; 
     let currentUser = null;
-    let currentUMP = 0;
+    let masterUMP = []; // Data historis dari Sheet2
 
-    function showPage(id) {
-        ['pageLogin', 'pageDashboard', 'pageAudit'].forEach(p => document.getElementById(p).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
-
-    async function handleLogin() {
-        const nik = document.getElementById('inpNik').value;
-        const pin = document.getElementById('inpPin').value;
-        if(!nik || !pin) return alert("Isi NIK dan PIN!");
-        
-        const btn = document.getElementById('btnLogin');
-        btn.innerText = "VERIFIKASI..."; btn.disabled = true;
-
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "login", nik: nik, pin: pin }) });
-            const data = await res.json();
-            if(data.status === "success") {
-                currentUser = data.user;
-                currentUMP = data.ump; 
-                document.getElementById('userNama').innerText = data.user.nama;
-                document.getElementById('userBadge').innerText = data.user.role;
-                document.getElementById('userFoto').src = data.user.foto || 'https://via.placeholder.com/100';
-                document.getElementById('dispNik').innerText = data.user.nik;
-                document.getElementById('dispAlamat').innerText = data.user.alamat;
-                showPage('pageDashboard');
-            } else { alert(data.message); }
-        } catch(e) { alert("Error koneksi!"); }
-        finally { btn.innerText = "MASUK APLIKASI"; btn.disabled = false; }
+    // Fungsi mencari UMP di database masterUMP
+    function cariUMP(tahun) {
+        let found = masterUMP.find(u => u.tahun == tahun);
+        return found ? found.nilai : masterUMP[masterUMP.length - 1].nilai;
     }
 
     async function eksekusiAudit() {
         const t1Val = document.getElementById('tglMulai').value;
         const t2Val = document.getElementById('tglSelesai').value;
+        if(!t1Val || !t2Val) return alert("Pilih tanggal!");
 
-        if(!t1Val || !t2Val) return alert("Silakan pilih tanggal terlebih dahulu!");
-
-        const btn = document.getElementById('btnHitung');
-        btn.innerText = "SEDANG MENGHITUNG..."; btn.disabled = true;
-
-        // 1. Logika Perhitungan Matematika
         const t1 = new Date(t1Val);
         const t2 = new Date(t2Val);
-        const selisihBulan = (t2.getFullYear() - t1.getFullYear()) * 12 + (t2.getMonth() - t1.getMonth());
-        const thn = Math.floor(selisihBulan / 12);
-        const bln = selisihBulan % 12;
+        const formatIDR = (n) => "Rp " + Math.round(n).toLocaleString('id-ID');
 
-        // Hitung Pesangon (Contoh: Masa kerja x UMP)
-        const totalPesangon = thn * currentUMP;
-        const formatIDR = (n) => "Rp " + n.toLocaleString('id-ID');
+        let rincianHTML = "";
+        let totalTHR = 0;
+        let thnMulai = t1.getFullYear();
+        let thnSelesai = t2.getFullYear();
+        let totalTahunKerja = thnSelesai - thnMulai;
 
-        // 2. Render Hasil ke HTML (Agar muncul di layar)
+        // Loop untuk menghitung Upah per Tahun & THR
+        for (let y = thnMulai; y <= thnSelesai; y++) {
+            let nilaiUMP = cariUMP(y);
+            totalTHR += nilaiUMP; // Asumsi 1x UMP per tahun
+            rincianHTML += `<tr><td>Upah & THR Thn ${y}</td><td>${formatIDR(nilaiUMP)}</td></tr>`;
+        }
+
+        let uangKompensasi = totalTahunKerja * cariUMP(thnSelesai);
+        let grandTotal = totalTHR + uangKompensasi;
+
+        // Tampilkan Hasil di Layar
         document.getElementById('hasilPrint').innerHTML = `
-            <div class="hasil-box shadow-sm">
-                <h6 class="text-center fw-bold text-decoration-underline mb-4">LAPORAN AUDIT PERHITUNGAN HAK</h6>
-                <table class="table table-sm table-bordered">
-                    <tr><td width="40%">Nama Anggota</td><td><b>${currentUser.nama}</b></td></tr>
-                    <tr><td>NIK</td><td>${currentUser.nik}</td></tr>
-                    <tr><td>Masa Kerja</td><td>${thn} Tahun ${bln} Bulan</td></tr>
-                    <tr><td>Dasar UMP</td><td>${formatIDR(currentUMP)}</td></tr>
-                    <tr class="table-danger">
-                        <td><b>Total Estimasi Hak</b></td>
-                        <td><b class="text-danger">${formatIDR(totalPesangon)}</b></td>
-                    </tr>
+            <div class="border p-3 shadow-sm bg-white">
+                <h6 class="text-center fw-bold text-decoration-underline mb-3">RINCIAN AUDIT HAK ANGGOTA</h6>
+                <table class="table table-sm table-bordered small">
+                    <tr class="table-light"><td><b>Nama / NIK</b></td><td>${currentUser.nama} / ${currentUser.nik}</td></tr>
+                    <tr class="table-light"><td><b>Masa Kerja</b></td><td>${totalTahunKerja} Tahun</td></tr>
+                    <tr><td colspan="2" class="fw-bold bg-light">A. RINCIAN UPAH & THR HISTORIS</td></tr>
+                    ${rincianHTML}
+                    <tr><td colspan="2" class="fw-bold bg-light">B. KOMPENSASI / PESANGON</td></tr>
+                    <tr><td>Uang Kompensasi</td><td>${formatIDR(uangKompensasi)}</td></tr>
+                    <tr class="table-danger fw-bold"><td>TOTAL KEKURANGAN HAK</td><td>${formatIDR(grandTotal)}</td></tr>
                 </table>
-                <p class="small mt-2 text-muted no-print">* Hasil ini adalah audit awal berdasarkan data database.</p>
-                <div class="mt-5 text-end small">
-                    Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><br>
-                    <b>( ${currentUser.nama} )</b>
-                </div>
+                <div class="mt-4 text-end small">Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><br><b>( ${currentUser.nama} )</b></div>
             </div>
         `;
 
-        // 3. Kirim data ke Google Sheet (Background Process)
-        try {
-            await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    action: "audit", 
-                    nama: currentUser.nama, 
-                    nik: currentUser.nik, 
-                    tglMulai: t1Val, 
-                    tglSelesai: t2Val,
-                    masaKerja: thn + " Thn " + bln + " Bln",
-                    totalHak: totalPesangon
-                })
-            });
-        } catch(e) { console.log("Gagal simpan log, tapi print tetap jalan."); }
+        // Kirim data ke Sheet1
+        await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: "audit", nama: currentUser.nama, nik: currentUser.nik,
+                tglMulai: t1Val, tglSelesai: t2Val, masaKerja: totalTahunKerja,
+                totalTHR: totalTHR, totalKompensasi: uangKompensasi, grandTotal: grandTotal
+            })
+        });
 
-        // 4. Kasih jeda 1 detik agar user bisa melihat hitungan di layar, baru print
-        setTimeout(() => {
-            window.print();
-            btn.innerText = "HITUNG KEKURANGAN HAK";
-            btn.disabled = false;
-        }, 1000);
+        setTimeout(() => window.print(), 800);
     }
 </script>
-</body>
-</html>
