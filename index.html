@@ -1,66 +1,62 @@
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwRHyI4h7Kckbv-T18-AW8FmqG2YcLAbkBIOPekzh90GHcx_ZmzM17DRoB7S0DbXBGn/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbzmrIggXeICVp0iHcnOm9Y0TvaoDghyWQ8AN6Ufc0-5PemlUOSQ8Oh4QmJWWk5X5cpu/exec"; 
     let currentUser = null;
-    let masterUMP = []; // Data historis dari Sheet2
-
-    // Fungsi mencari UMP di database masterUMP
-    function cariUMP(tahun) {
-        let found = masterUMP.find(u => u.tahun == tahun);
-        return found ? found.nilai : masterUMP[masterUMP.length - 1].nilai;
-    }
+    let masterUMP = [];
 
     async function eksekusiAudit() {
-        const t1Val = document.getElementById('tglMulai').value;
-        const t2Val = document.getElementById('tglSelesai').value;
-        if(!t1Val || !t2Val) return alert("Pilih tanggal!");
+        const d1 = new Date(document.getElementById('tglMulai').value);
+        const d2 = new Date(document.getElementById('tglSelesai').value);
+        if(isNaN(d1) || isNaN(d2)) return alert("Input Tanggal!");
 
-        const t1 = new Date(t1Val);
-        const t2 = new Date(t2Val);
         const formatIDR = (n) => "Rp " + Math.round(n).toLocaleString('id-ID');
-
-        let rincianHTML = "";
-        let totalTHR = 0;
-        let thnMulai = t1.getFullYear();
-        let thnSelesai = t2.getFullYear();
-        let totalTahunKerja = thnSelesai - thnMulai;
-
-        // Loop untuk menghitung Upah per Tahun & THR
+        let thnMulai = d1.getFullYear(), thnSelesai = d2.getFullYear();
+        
+        let totalSelisihGaji = 0, totalTHR = 0, rincianGajiHTML = "";
+        
+        // 1. HITUNG UPAH PER BULAN & THR BERDASARKAN SHEET2
         for (let y = thnMulai; y <= thnSelesai; y++) {
-            let nilaiUMP = cariUMP(y);
-            totalTHR += nilaiUMP; // Asumsi 1x UMP per tahun
-            rincianHTML += `<tr><td>Upah & THR Thn ${y}</td><td>${formatIDR(nilaiUMP)}</td></tr>`;
+            let dataTahun = masterUMP.find(u => u.tahun == y) || masterUMP[masterUMP.length-1];
+            let umpTahun = dataTahun.nilai;
+            
+            totalSelisihGaji += (umpTahun * 12); // Akumulasi upah setahun
+            totalTHR += umpTahun; // 1x UMP per tahun
+            rincianGajiHTML += `<tr><td>Upah Thn ${y}</td><td>${formatIDR(umpTahun)} /bln</td></tr>`;
         }
 
-        let uangKompensasi = totalTahunKerja * cariUMP(thnSelesai);
-        let grandTotal = totalTHR + uangKompensasi;
+        // 2. HITUNG KOMPENSASI & PESANGON (UPMK)
+        let masaKerjaThn = thnSelesai - thnMulai;
+        let selisihKomp = masaKerjaThn * masterUMP[masterUMP.length-1].nilai; 
+        let pesangonUPMK = (masaKerjaThn >= 3) ? (2 * masterUMP[masterUMP.length-1].nilai) : 0;
+        let totalTuntutan = totalSelisihGaji + totalTHR + selisihKomp + pesangonUPMK;
 
-        // Tampilkan Hasil di Layar
+        // 3. TAMPILKAN HASIL LENGKAP
         document.getElementById('hasilPrint').innerHTML = `
-            <div class="border p-3 shadow-sm bg-white">
-                <h6 class="text-center fw-bold text-decoration-underline mb-3">RINCIAN AUDIT HAK ANGGOTA</h6>
+            <div class="border p-3 bg-white">
+                <h6 class="text-center fw-bold text-decoration-underline mb-3">HASIL AUDIT TUNTUTAN HAK</h6>
                 <table class="table table-sm table-bordered small">
-                    <tr class="table-light"><td><b>Nama / NIK</b></td><td>${currentUser.nama} / ${currentUser.nik}</td></tr>
-                    <tr class="table-light"><td><b>Masa Kerja</b></td><td>${totalTahunKerja} Tahun</td></tr>
-                    <tr><td colspan="2" class="fw-bold bg-light">A. RINCIAN UPAH & THR HISTORIS</td></tr>
-                    ${rincianHTML}
-                    <tr><td colspan="2" class="fw-bold bg-light">B. KOMPENSASI / PESANGON</td></tr>
-                    <tr><td>Uang Kompensasi</td><td>${formatIDR(uangKompensasi)}</td></tr>
-                    <tr class="table-danger fw-bold"><td>TOTAL KEKURANGAN HAK</td><td>${formatIDR(grandTotal)}</td></tr>
+                    <tr><td>Nama Karyawan</td><td><b>${currentUser.nama}</b></td></tr>
+                    <tr class="table-light"><td colspan="2"><b>RINCIAN UPAH (HISTORIS SHEET2)</b></td></tr>
+                    ${rincianGajiHTML}
+                    <tr class="table-light"><td colspan="2"><b>REKAPITULASI TUNTUTAN</b></td></tr>
+                    <tr><td>Total Selisih Gaji</td><td>${formatIDR(totalSelisihGaji)}</td></tr>
+                    <tr><td>Total Selisih THR</td><td>${formatIDR(totalTHR)}</td></tr>
+                    <tr><td>Selisih Kompensasi</td><td>${formatIDR(selisihKomp)}</td></tr>
+                    <tr><td>Pesangon & UPMK</td><td>${formatIDR(pesangonUPMK)}</td></tr>
+                    <tr class="table-danger fw-bold"><td>TOTAL TUNTUTAN</td><td>${formatIDR(totalTuntutan)}</td></tr>
                 </table>
-                <div class="mt-4 text-end small">Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><br><b>( ${currentUser.nama} )</b></div>
-            </div>
-        `;
+                <div class="mt-4 text-end small">Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><b>( ${currentUser.nama} )</b></div>
+            </div>`;
 
-        // Kirim data ke Sheet1
+        // 4. SIMPAN KE SHEET1 (DATA MATANG)
         await fetch(API_URL, {
             method: 'POST',
             body: JSON.stringify({
-                action: "audit", nama: currentUser.nama, nik: currentUser.nik,
-                tglMulai: t1Val, tglSelesai: t2Val, masaKerja: totalTahunKerja,
-                totalTHR: totalTHR, totalKompensasi: uangKompensasi, grandTotal: grandTotal
+                action: "audit", nama: currentUser.nama, tglMulai: d1.toISOString(), tglSelesai: d2.toISOString(),
+                selisihGaji: totalSelisihGaji, selisihTHR: totalTHR, selisihKomp: selisihKomp,
+                pesangonUPMK: pesangonUPMK, totalTuntutan: totalTuntutan
             })
         });
 
-        setTimeout(() => window.print(), 800);
+        setTimeout(() => window.print(), 1000);
     }
 </script>
