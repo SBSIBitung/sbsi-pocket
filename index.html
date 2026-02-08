@@ -24,9 +24,9 @@
             .print-header { 
                 display: flex !important; 
                 align-items: center; 
-                border-bottom: 4px solid var(--sbsi-red); 
-                padding-bottom: 20px; 
-                margin-bottom: 30px; 
+                border-bottom: 2px solid #000; 
+                padding-bottom: 15px; 
+                margin-bottom: 10px; 
             }
             .hasil-box { 
                 background-color: #fff !important; 
@@ -35,9 +35,10 @@
                 padding: 25px;
             }
             .print-footer { display: block !important; margin-top: 60px; }
+            .document-title { display: block !important; text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 30px; margin-top: 10px; font-size: 1.4rem; }
         }
 
-        .print-header, .print-footer { display: none; }
+        .print-header, .print-footer, .document-title { display: none; }
         .logo-main { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         .gaji-item { border-bottom: 1px solid #eee; transition: 0.2s; }
         .gaji-item:hover { background-color: #fdf2f2; }
@@ -52,10 +53,14 @@
             <div class="print-header">
                 <img src="Logo_SBSI.png" width="90" height="90" class="me-4 logo-main" onerror="this.src='https://via.placeholder.com/90?text=SBSI'">
                 <div>
-                    <h3 class="fw-bold mb-0 text-danger">FSBSI DPC KOTA BITUNG</h3>
-                    <p class="mb-0 fw-semibold text-dark">Federasi Serikat Buruh Sejahtera Indonesia</p>
-                    <small class="text-muted">Laporan Audit Hak Ketenagakerjaan (Sistem Prorata Digital)</small>
+                    <h4 class="fw-bold mb-0">Federasi Serikat Buruh Sejahtera Indonesia</h4>
+                    <h5 class="fw-bold mb-0">(FSBSI)</h5>
+                    <h5 class="fw-bold mb-0">DPC Kota Bitung</h5>
                 </div>
+            </div>
+
+            <div class="document-title">
+                Perhitungan Hak Buruh/Pekerja
             </div>
 
             <div class="text-center py-4 no-print bg-light border-bottom mb-4">
@@ -98,7 +103,7 @@
                     </div>
 
                     <div class="hasil-box shadow-sm">
-                        <h5 class="fw-bold text-center text-danger border-bottom pb-3 mb-4 text-uppercase">HASIL PERHITUNGAN AUDIT</h5>
+                        <h5 class="fw-bold text-center text-danger border-bottom pb-3 mb-4 text-uppercase">HASIL ANALISIS AUDIT</h5>
                         <div class="d-flex justify-content-between mb-3 h6"><span>Selisih Upah UMP (Prorata):</span> <b id="rGaji"></b></div>
                         <div class="d-flex justify-content-between mb-3 h6"><span>Selisih THR (Prorata):</span> <b id="rThr"></b></div>
                         <div class="d-flex justify-content-between mb-3 h6"><span>Selisih Kompensasi:</span> <b id="rKomp"></b></div>
@@ -111,9 +116,8 @@
                         <table style="width: 100%;">
                             <tr>
                                 <td style="width: 60%; vertical-align: bottom; padding-bottom: 10px;">
-                                    <h6 class="fw-bold mb-1">FSBSI DPC KOTA BITUNG</h6>
                                     <p class="small text-muted mb-0" style="line-height: 1.4;">
-                                        Dokumen laporan audit mandiri.<br>
+                                        Dokumen ini dicetak melalui Aplikasi SBSI Pocket<br>
                                         Dicetak pada: <span id="tglCetak"></span>
                                     </p>
                                 </td>
@@ -189,7 +193,7 @@
 
     async function hitungAudit() {
         const btn = document.querySelector('#step3 button');
-        btn.innerText = "MENGANALISIS DATA PRORATA..."; btn.disabled = true;
+        btn.innerText = "MENGANALISIS DATA..."; btn.disabled = true;
         const d1 = document.getElementById('tglMulai').value;
         const d2 = document.getElementById('tglSelesai').value;
         const data = {
