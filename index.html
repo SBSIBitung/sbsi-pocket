@@ -1,55 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBSI Pocket - DPC Kota Bitung</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body { background-color: #f8f9fa; }
-        .card-sbsi { border-top: 10px solid #e21b22; border-radius: 15px; }
-        .btn-danger { background-color: #e21b22; border: none; }
-        .header-title { color: #e21b22; font-weight: bold; }
+        .card-sbsi { border-top: 10px solid #ed1c24; border-radius: 20px; }
+        .btn-sbsi { background-color: #ed1c24; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="card card-sbsi shadow p-4 mx-auto" style="max-width: 500px;">
-            <div class="text-center mb-3">
-                <img src="https://i.ibb.co/3ykS73X/Logo-SBSI.png" width="120" alt="Logo SBSI">
-                <h4 class="header-title mt-2">SBSI POCKET</h4>
-                <p class="text-secondary small">FSBSI DPC KOTA BITUNG</p>
+    <div class="container mt-5">
+        <div class="card card-sbsi shadow p-4 mx-auto" style="max-width: 450px;">
+            <div class="text-center mb-4">
+                <img src="Logo_SBSI.png" width="120" alt="Logo SBSI">
+                <h4 class="mt-3 fw-bold">SBSI POCKET</h4>
+                <p class="text-danger fw-bold small">FSBSI DPC KOTA BITUNG</p>
             </div>
             
-            <div id="formApp">
-                <div class="mb-3"><label class="small fw-bold">Nama Karyawan</label><input type="text" id="nama" class="form-control"></div>
-                <div class="mb-3"><label class="small fw-bold">Masa Kerja (Tahun)</label><input type="number" id="masa" class="form-control" value="3"></div>
+            <form id="auditForm">
+                <div class="mb-3"><label class="fw-bold small">Nama Karyawan</label><input type="text" id="nama" class="form-control" required></div>
+                <div class="mb-3"><label class="fw-bold small">Masa Kerja (Tahun)</label><input type="number" id="masa" class="form-control" value="3"></div>
                 <div class="row">
-                    <div class="col-6 mb-3"><label class="small fw-bold">Gaji/Bulan (Rp)</label><input type="number" id="gaji" class="form-control" value="2500000"></div>
-                    <div class="col-6 mb-3"><label class="small fw-bold">Standar UMK (Rp)</label><input type="number" id="umk" class="form-control" value="3500000"></div>
+                    <div class="col-6 mb-3"><label class="fw-bold small">Gaji Pokok (Rp)</label><input type="number" id="gaji" class="form-control" value="2500000"></div>
+                    <div class="col-6 mb-3"><label class="fw-bold small">Standar UMK (Rp)</label><input type="number" id="umk" class="form-control" value="3500000"></div>
                 </div>
-                <div class="mb-3"><label class="small fw-bold">Total THR Diterima (Rp)</label><input type="number" id="thr" class="form-control" value="0"></div>
-                <div class="mb-3"><label class="small fw-bold">Total Kompensasi Diterima (Rp)</label><input type="number" id="komp" class="form-control" value="0"></div>
-                <button class="btn btn-danger w-100 fw-bold" onclick="jalankanAudit()">AUDIT HAK SEKARANG</button>
-            </div>
+                <div class="mb-3"><label class="fw-bold small">Total THR Diterima (Rp)</label><input type="number" id="thr" class="form-control" value="0"></div>
+                <div class="mb-3"><label class="fw-bold small">Total Kompensasi Diterima (Rp)</label><input type="number" id="komp" class="form-control" value="0"></div>
+                <button type="submit" class="btn btn-sbsi w-100 py-2">AUDIT HAK SEKARANG</button>
+            </form>
 
-            <div id="hasil" class="mt-4 d-none">
-                <div class="alert alert-warning border-danger">
-                    <h6 class="fw-bold text-center">Rincian Kekurangan Hak:</h6>
-                    <hr>
-                    <p class="d-flex justify-content-between">Selisih Gaji: <span id="resGaji"></span></p>
-                    <p class="d-flex justify-content-between">Kekurangan THR: <span id="resThr"></span></p>
-                    <p class="d-flex justify-content-between">Kompensasi: <span id="resKomp"></span></p>
-                    <hr>
-                    <h5 class="d-flex justify-content-between fw-bold text-danger">TOTAL: <span id="resTotal"></span></h5>
+            <div id="hasil" class="mt-3 d-none">
+                <div class="alert alert-danger shadow-sm">
+                    <h6 class="text-center fw-bold">RINGKASAN KERUGIAN</h6><hr>
+                    <p class="small d-flex justify-content-between">Selisih Gaji: <span id="resGaji"></span></p>
+                    <p class="small d-flex justify-content-between">Kekurangan THR: <span id="resThr"></span></p>
+                    <p class="small d-flex justify-content-between">Kompensasi: <span id="resKomp"></span></p><hr>
+                    <h5 class="fw-bold d-flex justify-content-between">TOTAL: <span id="resTotal"></span></h5>
                 </div>
                 <button class="btn btn-outline-secondary btn-sm w-100" onclick="location.reload()">Audit Ulang</button>
             </div>
         </div>
-        <p class="text-center mt-3 text-muted small">© 2026 FSBSI DPC Kota Bitung</p>
     </div>
 
     <script>
-        function jalankanAudit() {
-            const btn = document.querySelector('button');
-            btn.innerHTML = 'Sedang Menghitung...';
+        const API_URL = "URL_WEB_APP_GOOGLE_ANDA_DI_SINI"; // GANTI DENGAN URL DEPLOY ANDA
+
+        document.getElementById('auditForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = 'Memproses...';
             btn.disabled = true;
 
             const data = {
@@ -61,15 +63,27 @@
                 kompDiterima: document.getElementById('komp').value
             };
 
-            google.script.run.withSuccessHandler(res => {
-                document.getElementById('formApp').classList.add('d-none');
-                document.getElementById('hasil').classList.remove('d-none');
-                document.getElementById('resGaji').innerText = "Rp " + res.gaji;
-                document.getElementById('resThr').innerText = "Rp " + res.thr;
-                document.getElementById('resKomp').innerText = "Rp " + res.komp;
-                document.getElementById('resTotal').innerText = "Rp " + res.total;
-            }).prosesAudit(data);
-        }
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                const res = await response.json();
+                
+                if(res.status === 'success') {
+                    document.getElementById('auditForm').classList.add('d-none');
+                    document.getElementById('hasil').classList.remove('d-none');
+                    document.getElementById('resGaji').innerText = "Rp " + res.gaji;
+                    document.getElementById('resThr').innerText = "Rp " + res.thr;
+                    document.getElementById('resKomp').innerText = "Rp " + res.komp;
+                    document.getElementById('resTotal').innerText = "Rp " + res.total;
+                }
+            } catch (err) {
+                alert("Gagal terhubung ke server. Pastikan URL API sudah benar.");
+                btn.disabled = false;
+                btn.innerHTML = 'AUDIT HAK SEKARANG';
+            }
+        });
     </script>
 </body>
 </html>
