@@ -9,16 +9,36 @@
         :root { --sbsi-red: #ed1c24; }
         body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
         .card-sbsi { border-top: 10px solid var(--sbsi-red); border-radius: 15px; max-width: 650px; margin: auto; }
-        .gaji-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; background: white; }
         .currency-input { font-weight: bold; text-align: right; }
         
+        /* CSS KHUSUS CETAK PDF */
         @media print {
+            /* Menghilangkan URL, Tanggal, dan Judul di Header/Footer Browser */
+            @page { 
+                margin: 1cm; 
+            }
+            body { background: white !important; }
             .no-print { display: none !important; }
-            .card-sbsi { border: 2px solid var(--sbsi-red) !important; box-shadow: none !important; max-width: 100% !important; border-radius: 0; }
-            .print-header { display: flex !important; align-items: center; border-bottom: 4px double var(--sbsi-red); padding-bottom: 10px; margin-bottom: 20px; }
-            .print-footer { display: block !important; margin-top: 50px; }
+            .card-sbsi { border: none !important; box-shadow: none !important; max-width: 100% !important; }
+            
+            /* Header Laporan Resmi */
+            .print-header { 
+                display: flex !important; 
+                align-items: center; 
+                border-bottom: 3px solid var(--sbsi-red); 
+                padding-bottom: 10px; 
+                margin-bottom: 20px; 
+            }
+            .alert-danger { 
+                background-color: white !important; 
+                color: black !important; 
+                border: 2px solid var(--sbsi-red) !important; 
+            }
+            .print-footer { display: block !important; margin-top: 40px; }
         }
+
         .print-header, .print-footer { display: none; }
+        .logo-small { width: 40px; height: auto; vertical-align: middle; margin-right: 10px; }
     </style>
 </head>
 <body>
@@ -26,73 +46,78 @@
 <div class="container mt-4 mb-5">
     <div class="card card-sbsi shadow p-4 bg-white">
         
-        <div class="text-center mb-4">
-            <div class="print-header text-start">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_SBSI.png/200px-Logo_SBSI.png" width="70" class="me-3">
-                <div>
-                    <h4 class="fw-bold mb-0 text-danger">FSBSI DPC KOTA BITUNG</h4>
-                    <p class="small mb-0 text-dark">Federasi Serikat Buruh Sejahtera Indonesia - Kota Bitung</p>
-                </div>
+        <div class="print-header">
+            <img src="logo_SBSI.png" width="80" class="me-3">
+            <div>
+                <h4 class="fw-bold mb-0 text-danger">FSBSI DPC KOTA BITUNG</h4>
+                <p class="small mb-0 text-dark">Federasi Serikat Buruh Sejahtera Indonesia - Kota Bitung</p>
+                <small class="text-muted">Alamat: Jl. Sudirman No. 123, Bitung, Sulawesi Utara</small>
             </div>
-            <div class="no-print">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_SBSI.png/200px-Logo_SBSI.png" width="80">
-                <h5 class="fw-bold mt-2 text-danger">SBSI POCKET BITUNG</h5>
-                <p class="text-muted small">Input dengan Pemisah Ribuan Otomatis</p>
-            </div>
+        </div>
+
+        <div class="text-center mb-4 no-print">
+            <img src="logo_SBSI.png" width="100">
+            <h5 class="fw-bold mt-2 text-danger">SBSI POCKET BITUNG</h5>
+            <p class="text-muted small">Audit Hak Buruh Berdasarkan PP 35/2021</p>
         </div>
 
         <div id="step1">
-            <div class="mb-3"><label class="fw-bold small text-muted">NAMA KARYAWAN</label><input type="text" id="nama" class="form-control shadow-sm" placeholder="Nama Lengkap"></div>
+            <div class="mb-3"><label class="fw-bold small text-muted">NAMA KARYAWAN</label><input type="text" id="nama" class="form-control" placeholder="Nama Lengkap"></div>
             <div class="row g-2">
-                <div class="col-6"><label class="fw-bold small text-muted">MULAI KERJA</label><input type="date" id="tglMulai" class="form-control shadow-sm"></div>
-                <div class="col-6"><label class="fw-bold small text-muted">SELESAI KERJA</label><input type="date" id="tglSelesai" class="form-control shadow-sm"></div>
+                <div class="col-6"><label class="fw-bold small text-muted">MULAI KERJA</label><input type="date" id="tglMulai" class="form-control"></div>
+                <div class="col-6"><label class="fw-bold small text-muted">SELESAI KERJA</label><input type="date" id="tglSelesai" class="form-control"></div>
             </div>
-            <button class="btn btn-danger w-100 mt-4 fw-bold shadow" onclick="nextToGaji()">LANJUT KE INPUT GAJI</button>
+            <button class="btn btn-danger w-100 mt-4 fw-bold" onclick="nextToGaji()">MULAI ANALISIS</button>
         </div>
 
         <div id="step2" class="d-none">
-            <h6 class="fw-bold text-danger mb-3 border-start border-danger border-4 ps-2">1. Gaji per Bulan (Rp)</h6>
+            <h6 class="fw-bold text-danger mb-3 border-start border-danger border-4 ps-2">1. Gaji Bulanan Diterima (Rp)</h6>
             <div id="containerGaji" class="border rounded mb-3 shadow-sm" style="max-height: 300px; overflow-y: auto;"></div>
-            <button class="btn btn-danger w-100 fw-bold" onclick="nextToTahunan()">PROSES DATA BULANAN</button>
+            <button class="btn btn-danger w-100 fw-bold" onclick="nextToTahunan()">PROSES DATA GAJI</button>
         </div>
 
         <div id="step3" class="d-none">
-            <h6 class="fw-bold text-danger mb-3 border-start border-danger border-4 ps-2">2. THR, Kompensasi & Pesangon</h6>
+            <h6 class="fw-bold text-danger mb-3 border-start border-danger border-4 ps-2">2. THR & Pesangon Terbayar</h6>
             <div id="containerTahunan" class="mb-3"></div>
             <div class="bg-light p-3 border rounded shadow-sm">
-                <label class="fw-bold small text-muted">PESANGON YANG SUDAH DITERIMA</label>
+                <label class="fw-bold small text-muted text-uppercase">Total Pesangon Terbayar Perusahaan</label>
                 <input type="text" id="pesangonDiterima" class="form-control mt-1 currency-input" onkeyup="formatRupiah(this)" value="Rp 0">
             </div>
-            <button class="btn btn-danger w-100 mt-4 fw-bold shadow" onclick="hitungAudit()">HITUNG TOTAL TUNTUTAN</button>
+            <button class="btn btn-danger w-100 mt-4 fw-bold" onclick="hitungAudit()">HITUNG TOTAL HAK</button>
         </div>
 
         <div id="hasil" class="d-none">
             <div class="alert alert-danger p-3 border-danger shadow-sm">
-                <h5 class="fw-bold text-center border-bottom border-danger pb-2 mb-3">HASIL AUDIT HAK PEKERJA</h5>
-                <div class="d-flex justify-content-between mb-2"><span>Selisih Upah UMP:</span> <b id="rGaji"></b></div>
-                <div class="d-flex justify-content-between mb-2"><span>Selisih THR:</span> <b id="rThr"></b></div>
-                <div class="d-flex justify-content-between mb-2"><span>Selisih Kompensasi:</span> <b id="rKomp"></b></div>
+                <h5 class="fw-bold text-center border-bottom border-danger pb-2 mb-3">RINCIAN TUNTUTAN HAK</h5>
+                <div class="d-flex justify-content-between mb-2"><span>Kekurangan Upah UMP:</span> <b id="rGaji"></b></div>
+                <div class="d-flex justify-content-between mb-2"><span>Kekurangan THR:</span> <b id="rThr"></b></div>
+                <div class="d-flex justify-content-between mb-2"><span>Kekurangan Kompensasi:</span> <b id="rKomp"></b></div>
                 <div class="d-flex justify-content-between mb-2"><span>Selisih Pesangon (<span id="rKetPes"></span>):</span> <b id="rPes"></b></div>
                 <hr class="border-danger">
-                <div class="d-flex justify-content-between h3 fw-bold text-danger"><span>TOTAL AKHIR:</span> <span id="rTotal"></span></div>
+                <div class="d-flex justify-content-between h3 fw-bold text-danger mb-0"><span>TOTAL TUNTUTAN:</span> <span id="rTotal"></span></div>
             </div>
 
             <div class="print-footer mt-5">
                 <table style="width: 100%;">
                     <tr>
-                        <td style="width: 50%; vertical-align: top;">
-                            <small>Dicetak oleh FSBSI DPC Kota Bitung.<br>Tgl: <span id="tglCetak"></span></small>
+                        <td style="width: 55%; vertical-align: top;">
+                            <img src="logo_SBSI.png" class="logo-small"> 
+                            <span class="fw-bold" style="font-size: 0.9rem;">FSBSI DPC KOTA BITUNG</span>
+                            <p class="mt-2 small text-muted">Dicetak otomatis melalui aplikasi SBSI Pocket.<br>Waktu Cetak: <span id="tglCetak"></span></p>
                         </td>
-                        <td style="width: 50%; text-align: center;">
-                            Pekerja/Buruh,<br><br><br><br>
+                        <td style="width: 45%; text-align: center;">
+                            Bitung, ........................... 20....<br>Pekerja/Buruh,<br><br><br><br>
                             <b>( <span id="hNamaSign"></span> )</b>
                         </td>
                     </tr>
                 </table>
             </div>
 
-            <button class="btn btn-success w-100 fw-bold mb-2 no-print shadow" onclick="window.print()">SIMPAN / DOWNLOAD PDF</button>
-            <button class="btn btn-outline-secondary btn-sm w-100 no-print" onclick="location.reload()">Audit Ulang</button>
+            <div class="no-print mt-4">
+                <div class="alert alert-info small"><b>Tips:</b> Saat jendela cetak terbuka, pastikan centang <b>"Background Graphics"</b> dan hapus centang <b>"Headers and Footers"</b> agar URL tidak muncul.</div>
+                <button class="btn btn-success w-100 fw-bold mb-2 shadow" onclick="window.print()">SIMPAN / DOWNLOAD PDF</button>
+                <button class="btn btn-outline-secondary btn-sm w-100" onclick="location.reload()">Audit Ulang</button>
+            </div>
         </div>
     </div>
 </div>
@@ -100,30 +125,22 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwAcUJVoNmQ8PGgYezib7YYr2OyEKHsFtk3I3kq6bQR9SMh8nLBoaUEnFX3F4oL0Zz6/exec"; 
 
-    // Fungsi Format Rupiah Otomatis
     function formatRupiah(el) {
         let val = el.value.replace(/[^,\d]/g, "").toString();
         let split = val.split(",");
         let sisa = split[0].length % 3;
         let rupiah = split[0].substr(0, sisa);
         let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-        if (ribuan) {
-            let separator = sisa ? "." : "";
-            rupiah += separator + ribuan.join(".");
-        }
+        if (ribuan) { let sep = sisa ? "." : ""; rupiah += sep + ribuan.join("."); }
         el.value = "Rp " + rupiah;
     }
 
-    // Fungsi untuk mengubah kembali "Rp 3.000.000" menjadi angka 3000000 agar bisa dihitung
-    function cleanNumber(val) {
-        return Number(val.replace(/[^0-9]/g, '')) || 0;
-    }
+    function cleanNumber(val) { return Number(val.replace(/[^0-9]/g, '')) || 0; }
 
     function nextToGaji() {
         const d1 = new Date(document.getElementById('tglMulai').value);
         const d2 = new Date(document.getElementById('tglSelesai').value);
-        if (isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
+        if (isNaN(d1) || isNaN(d2)) return alert("Mohon pilih tanggal!");
         const cont = document.getElementById('containerGaji');
         cont.innerHTML = '';
         let cur = new Date(d1.getFullYear(), d1.getMonth(), 1);
@@ -141,7 +158,7 @@
         const cont = document.getElementById('containerTahunan');
         cont.innerHTML = '';
         thns.forEach(t => {
-            cont.innerHTML += `<div class="p-3 border rounded mb-2 bg-white shadow-sm"><label class="fw-bold small text-danger">TAHUN ${t}</label><div class="row g-2 mt-1"><div class="col-6"><label class="small text-muted">THR Diterima</label><input type="text" class="form-control form-control-sm val-thr currency-input" onkeyup="formatRupiah(this)" value="Rp 0" data-tahun="${t}"></div><div class="col-6"><label class="small text-muted">Kompensasi Diterima</label><input type="text" class="form-control form-control-sm val-komp currency-input" onkeyup="formatRupiah(this)" value="Rp 0" data-tahun="${t}"></div></div></div>`;
+            cont.innerHTML += `<div class="p-3 border rounded mb-2 bg-white shadow-sm"><label class="fw-bold small text-danger">TAHUN ${t}</label><div class="row g-2 mt-1"><div class="col-6"><label class="small text-muted">THR Diterima</label><input type="text" class="form-control form-control-sm val-thr currency-input" onkeyup="formatRupiah(this)" value="Rp 0" data-tahun="${t}"></div><div class="col-6"><label class="small text-muted">Kompensasi</label><input type="text" class="form-control form-control-sm val-komp currency-input" onkeyup="formatRupiah(this)" value="Rp 0" data-tahun="${t}"></div></div></div>`;
         });
         document.getElementById('step2').classList.add('d-none');
         document.getElementById('step3').classList.remove('d-none');
@@ -150,19 +167,15 @@
     async function hitungAudit() {
         const btn = document.querySelector('#step3 button');
         btn.innerText = "SEDANG MENGANALISIS..."; btn.disabled = true;
-
+        const d1 = document.getElementById('tglMulai').value;
+        const d2 = document.getElementById('tglSelesai').value;
         const data = {
             nama: document.getElementById('nama').value,
-            tglMulai: document.getElementById('tglMulai').value,
-            tglSelesai: document.getElementById('tglSelesai').value,
-            masaKerjaTahun: Math.floor((new Date(document.getElementById('tglSelesai').value) - new Date(document.getElementById('tglMulai').value)) / (365.25 * 24 * 60 * 60 * 1000)),
+            tglMulai: d1, tglSelesai: d2,
+            masaKerjaTahun: Math.floor((new Date(d2) - new Date(d1)) / (365.25 * 24 * 60 * 60 * 1000)),
             pesangonDiterima: cleanNumber(document.getElementById('pesangonDiterima').value),
             rincianGaji: Array.from(document.querySelectorAll('.val-gaji')).map(i => ({ bulan: i.dataset.bulan, gaji: cleanNumber(i.value) })),
-            rincianTahunan: Array.from(document.querySelectorAll('.val-thr')).map((i, idx) => ({ 
-                tahun: i.dataset.tahun, 
-                thr: cleanNumber(i.value), 
-                komp: cleanNumber(document.querySelectorAll('.val-komp')[idx].value) 
-            }))
+            rincianTahunan: Array.from(document.querySelectorAll('.val-thr')).map((i, idx) => ({ tahun: i.dataset.tahun, thr: cleanNumber(i.value), komp: cleanNumber(document.querySelectorAll('.val-komp')[idx].value) }))
         };
 
         try {
@@ -179,8 +192,8 @@
                 document.getElementById('rPes').innerText = "Rp " + res.pesangon;
                 document.getElementById('rKetPes').innerText = res.detailPesangon;
                 document.getElementById('rTotal').innerText = "Rp " + res.total;
-            } else { alert("Error: " + res.message); btn.disabled = false; }
-        } catch (e) { alert("Periksa Koneksi atau URL API."); btn.disabled = false; }
+            } else { alert("Server Error: " + res.message); btn.disabled = false; }
+        } catch (e) { alert("Cek Koneksi atau URL API."); btn.disabled = false; }
     }
 </script>
 </body>
