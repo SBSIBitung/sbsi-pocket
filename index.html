@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card-sbsi { border-top: 10px solid #e21b22; border-radius: 15px; }
+        .btn-danger { background-color: #e21b22; border: none; }
+        .header-title { color: #e21b22; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="card card-sbsi shadow p-4 mx-auto" style="max-width: 500px;">
+            <div class="text-center mb-3">
+                <img src="https://i.ibb.co/3ykS73X/Logo-SBSI.png" width="120" alt="Logo SBSI">
+                <h4 class="header-title mt-2">SBSI POCKET</h4>
+                <p class="text-secondary small">FSBSI DPC KOTA BITUNG</p>
+            </div>
+            
+            <div id="formApp">
+                <div class="mb-3"><label class="small fw-bold">Nama Karyawan</label><input type="text" id="nama" class="form-control"></div>
+                <div class="mb-3"><label class="small fw-bold">Masa Kerja (Tahun)</label><input type="number" id="masa" class="form-control" value="3"></div>
+                <div class="row">
+                    <div class="col-6 mb-3"><label class="small fw-bold">Gaji/Bulan (Rp)</label><input type="number" id="gaji" class="form-control" value="2500000"></div>
+                    <div class="col-6 mb-3"><label class="small fw-bold">Standar UMK (Rp)</label><input type="number" id="umk" class="form-control" value="3500000"></div>
+                </div>
+                <div class="mb-3"><label class="small fw-bold">Total THR Diterima (Rp)</label><input type="number" id="thr" class="form-control" value="0"></div>
+                <div class="mb-3"><label class="small fw-bold">Total Kompensasi Diterima (Rp)</label><input type="number" id="komp" class="form-control" value="0"></div>
+                <button class="btn btn-danger w-100 fw-bold" onclick="jalankanAudit()">AUDIT HAK SEKARANG</button>
+            </div>
+
+            <div id="hasil" class="mt-4 d-none">
+                <div class="alert alert-warning border-danger">
+                    <h6 class="fw-bold text-center">Rincian Kekurangan Hak:</h6>
+                    <hr>
+                    <p class="d-flex justify-content-between">Selisih Gaji: <span id="resGaji"></span></p>
+                    <p class="d-flex justify-content-between">Kekurangan THR: <span id="resThr"></span></p>
+                    <p class="d-flex justify-content-between">Kompensasi: <span id="resKomp"></span></p>
+                    <hr>
+                    <h5 class="d-flex justify-content-between fw-bold text-danger">TOTAL: <span id="resTotal"></span></h5>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm w-100" onclick="location.reload()">Audit Ulang</button>
+            </div>
+        </div>
+        <p class="text-center mt-3 text-muted small">© 2026 FSBSI DPC Kota Bitung</p>
+    </div>
+
+    <script>
+        function jalankanAudit() {
+            const btn = document.querySelector('button');
+            btn.innerHTML = 'Sedang Menghitung...';
+            btn.disabled = true;
+
+            const data = {
+                nama: document.getElementById('nama').value,
+                masaKerja: document.getElementById('masa').value,
+                gaji: document.getElementById('gaji').value,
+                umk: document.getElementById('umk').value,
+                thrDiterima: document.getElementById('thr').value,
+                kompDiterima: document.getElementById('komp').value
+            };
+
+            google.script.run.withSuccessHandler(res => {
+                document.getElementById('formApp').classList.add('d-none');
+                document.getElementById('hasil').classList.remove('d-none');
+                document.getElementById('resGaji').innerText = "Rp " + res.gaji;
+                document.getElementById('resThr').innerText = "Rp " + res.thr;
+                document.getElementById('resKomp').innerText = "Rp " + res.komp;
+                document.getElementById('resTotal').innerText = "Rp " + res.total;
+            }).prosesAudit(data);
+        }
+    </script>
+</body>
+</html>
