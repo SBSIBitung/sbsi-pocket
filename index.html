@@ -3,87 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBSI Pocket - DPC Kota Bitung</title>
+    <title>FSBSI DPC KOTA BITUNG - Audit Forensik Upah</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body { background-color: #f8f9fa; }
-        .card-sbsi { border-top: 10px solid #ed1c24; border-radius: 20px; }
-        .btn-sbsi { background-color: #ed1c24; color: white; font-weight: bold; }
+        body { background-color: #f4f4f4; font-family: 'Segoe UI', sans-serif; }
+        .card-sbsi { border-top: 10px solid #ed1c24; border-radius: 20px; max-width: 600px; margin: auto; }
+        .gaji-item { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            background: white; 
+            padding: 12px; 
+            border-bottom: 1px solid #eee; 
+            transition: 0.3s;
+        }
+        .gaji-item:hover { background: #fff9f9; }
+        .label-bulan { font-weight: 600; color: #333; min-width: 100px; }
+        .header-logo { text-align: center; margin-bottom: 25px; }
+        .header-logo img { width: 100px; margin-bottom: 10px; }
+        .btn-sbsi { background-color: #ed1c24; color: white; font-weight: bold; border-radius: 10px; padding: 12px; border: none; }
+        .btn-sbsi:hover { background-color: #c41217; color: white; }
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="card card-sbsi shadow p-4 mx-auto" style="max-width: 450px;">
-            <div class="text-center mb-4">
-                <img src="Logo_SBSI.png" width="120" alt="Logo SBSI">
-                <h4 class="mt-3 fw-bold">SBSI POCKET</h4>
-                <p class="text-danger fw-bold small">FSBSI DPC KOTA BITUNG</p>
-            </div>
-            
-            <form id="auditForm">
-                <div class="mb-3"><label class="fw-bold small">Nama Karyawan</label><input type="text" id="nama" class="form-control" required></div>
-                <div class="mb-3"><label class="fw-bold small">Masa Kerja (Tahun)</label><input type="number" id="masa" class="form-control" value="3"></div>
-                <div class="row">
-                    <div class="col-6 mb-3"><label class="fw-bold small">Gaji Pokok (Rp)</label><input type="number" id="gaji" class="form-control" value="2500000"></div>
-                    <div class="col-6 mb-3"><label class="fw-bold small">Standar UMK (Rp)</label><input type="number" id="umk" class="form-control" value="3500000"></div>
-                </div>
-                <div class="mb-3"><label class="fw-bold small">Total THR Diterima (Rp)</label><input type="number" id="thr" class="form-control" value="0"></div>
-                <div class="mb-3"><label class="fw-bold small">Total Kompensasi Diterima (Rp)</label><input type="number" id="komp" class="form-control" value="0"></div>
-                <button type="submit" class="btn btn-sbsi w-100 py-2">AUDIT HAK SEKARANG</button>
-            </form>
 
-            <div id="hasil" class="mt-3 d-none">
-                <div class="alert alert-danger shadow-sm">
-                    <h6 class="text-center fw-bold">RINGKASAN KERUGIAN</h6><hr>
-                    <p class="small d-flex justify-content-between">Selisih Gaji: <span id="resGaji"></span></p>
-                    <p class="small d-flex justify-content-between">Kekurangan THR: <span id="resThr"></span></p>
-                    <p class="small d-flex justify-content-between">Kompensasi: <span id="resKomp"></span></p><hr>
-                    <h5 class="fw-bold d-flex justify-content-between">TOTAL: <span id="resTotal"></span></h5>
-                </div>
-                <button class="btn btn-outline-secondary btn-sm w-100" onclick="location.reload()">Audit Ulang</button>
+<div class="container mt-5 mb-5">
+    <div class="card card-sbsi shadow p-4">
+        <div class="header-logo">
+            <img src="Logo_SBSI.png" alt="Logo FSBSI">
+            <h5 class="fw-bold mb-0">FSBSI DPC KOTA BITUNG</h5>
+            <p class="text-muted small">Aplikasi Audit Selisih Upah Eks-Karyawan</p>
+        </div>
+
+        <div id="step1">
+            <div class="mb-3">
+                <label class="form-label fw-bold small">Nama Lengkap Karyawan</label>
+                <input type="text" id="nama" class="form-control" placeholder="Input sesuai KTP">
             </div>
+            <div class="row">
+                <div class="col-6 mb-3">
+                    <label class="form-label fw-bold small">Mulai Bekerja</label>
+                    <input type="date" id="tglMulai" class="form-control">
+                </div>
+                <div class="col-6 mb-3">
+                    <label class="form-label fw-bold small">Selesai Bekerja</label>
+                    <input type="date" id="tglSelesai" class="form-control">
+                </div>
+            </div>
+            <button class="btn btn-sbsi w-100 mt-2" onclick="buatFormGaji()">LANJUT: ISI GAJI PER BULAN</button>
+        </div>
+
+        <div id="step2" class="d-none">
+            <div class="alert alert-warning py-2 small text-center fw-bold">
+                Masukkan nominal gaji yang Anda terima di setiap bulan berikut:
+            </div>
+            <div id="containerBulan" class="mb-4 shadow-sm border rounded overflow-hidden"></div>
+            <button class="btn btn-sbsi w-100" onclick="kirimDataAudit()">HITUNG TOTAL KERUGIAN</button>
+            <button class="btn btn-link btn-sm w-100 mt-2 text-decoration-none text-muted" onclick="location.reload()">Batal & Reset</button>
+        </div>
+
+        <div id="hasil" class="d-none mt-2">
+            <div class="alert alert-danger text-center shadow">
+                <h6 class="fw-bold mb-3">HASIL AUDIT SELISIH UPAH</h6>
+                <h2 id="resTotal" class="fw-bold text-danger mb-3"></h2>
+                <p class="small text-dark italic">
+                    Angka di atas adalah akumulasi selisih antara UMP yang berlaku di Kota Bitung dengan upah yang Anda terima.
+                </p>
+            </div>
+            <button class="btn btn-secondary w-100 fw-bold" onclick="location.reload()">AUDIT DATA LAIN</button>
         </div>
     </div>
+    <p class="text-center mt-4 text-muted small">© 2026 Federasi Serikat Buruh Sejahtera Indonesia - DPC Kota Bitung</p>
+</div>
 
-    <script>
-        const API_URL = "URL_WEB_APP_GOOGLE_ANDA_DI_SINI"; // GANTI DENGAN URL DEPLOY ANDA
+<script>
+    // MASUKKAN URL WEB APP GOOGLE ANDA DI BAWAH INI
+    const API_URL = "https://script.google.com/macros/s/AKfycbwPrAfyFdwjadREV8sl_AU9MLUChKmQFuVlLRMB3PDouopMmmsPtDcfh7VLfWc6ZrSC/exec";
 
-        document.getElementById('auditForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.innerHTML = 'Memproses...';
-            btn.disabled = true;
+    function buatFormGaji() {
+        const nama = document.getElementById('nama').value;
+        const tglMulai = new Date(document.getElementById('tglMulai').value);
+        const tglSelesai = new Date(document.getElementById('tglSelesai').value);
 
-            const data = {
-                nama: document.getElementById('nama').value,
-                masaKerja: document.getElementById('masa').value,
-                gaji: document.getElementById('gaji').value,
-                umk: document.getElementById('umk').value,
-                thrDiterima: document.getElementById('thr').value,
-                kompDiterima: document.getElementById('komp').value
-            };
+        if (!nama || isNaN(tglMulai) || isNaN(tglSelesai)) {
+            alert("Harap lengkapi Nama dan Tanggal!");
+            return;
+        }
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-                });
-                const res = await response.json();
-                
-                if(res.status === 'success') {
-                    document.getElementById('auditForm').classList.add('d-none');
-                    document.getElementById('hasil').classList.remove('d-none');
-                    document.getElementById('resGaji').innerText = "Rp " + res.gaji;
-                    document.getElementById('resThr').innerText = "Rp " + res.thr;
-                    document.getElementById('resKomp').innerText = "Rp " + res.komp;
-                    document.getElementById('resTotal').innerText = "Rp " + res.total;
-                }
-            } catch (err) {
-                alert("Gagal terhubung ke server. Pastikan URL API sudah benar.");
-                btn.disabled = false;
-                btn.innerHTML = 'AUDIT HAK SEKARANG';
+        const container = document.getElementById('containerBulan');
+        container.innerHTML = '';
+
+        let current = new Date(tglMulai.getFullYear(), tglMulai.getMonth(), 1);
+        const opsiBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
+
+        while (current <= tglSelesai) {
+            const stringBulan = opsiBulan[current.getMonth()] + " " + current.getFullYear();
+            
+            const row = document.createElement('div');
+            row.className = 'gaji-item';
+            row.innerHTML = `
+                <span class="label-bulan">${stringBulan}</span>
+                <div class="input-group input-group-sm" style="width: 180px;">
+                    <span class="input-group-text">Rp</span>
+                    <input type="number" class="form-control input-nominal" data-bulan="${stringBulan}" value="2500000">
+                </div>
+            `;
+            container.appendChild(row);
+            
+            // Tambah 1 bulan
+            current.setMonth(current.getMonth() + 1);
+        }
+
+        document.getElementById('step1').classList.add('d-none');
+        document.getElementById('step2').classList.remove('d-none');
+    }
+
+    async function kirimDataAudit() {
+        const inputs = document.querySelectorAll('.input-nominal');
+        const rincianGaji = Array.from(inputs).map(inp => ({
+            bulan: inp.dataset.bulan,
+            gaji: inp.value
+        }));
+
+        const payload = {
+            nama: document.getElementById('nama').value,
+            tglMulai: document.getElementById('tglMulai').value,
+            tglSelesai: document.getElementById('tglSelesai').value,
+            rincianGaji: rincianGaji
+        };
+
+        const tombol = document.querySelector('#step2 button');
+        tombol.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menghitung...';
+        tombol.disabled = true;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            const hasilJson = await response.json();
+
+            if (hasilJson.status === 'success') {
+                document.getElementById('step2').classList.add('d-none');
+                document.getElementById('hasil').classList.remove('d-none');
+                document.getElementById('resTotal').innerText = "Rp " + hasilJson.totalSelisihGaji;
+            } else {
+                alert("Gagal memproses data: " + hasilJson.message);
+                tombol.disabled = false;
+                tombol.innerText = "HITUNG TOTAL KERUGIAN";
             }
-        });
-    </script>
+        } catch (error) {
+            alert("Koneksi Error. Pastikan URL API sudah benar dan izin akses Anyone.");
+            tombol.disabled = false;
+            tombol.innerText = "HITUNG TOTAL KERUGIAN";
+        }
+    }
+</script>
+
 </body>
 </html>
