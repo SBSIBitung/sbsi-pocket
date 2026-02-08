@@ -6,7 +6,7 @@
     <title>SBSI Pocket - Audit Hak Buruh Bitung</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        :root { --sbsi-red: #ed1c24; --sbsi-dark: #2d3436; }
+        :root { --sbsi-red: #ed1c24; --sbsi-blue: #0056b3; --sbsi-dark: #2d3436; }
         body { background-color: #f1f3f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--sbsi-dark); }
         .card-sbsi { border: none; border-top: 12px solid var(--sbsi-red); border-radius: 20px; max-width: 680px; margin: auto; }
         .currency-input { font-weight: 700; text-align: right; color: var(--sbsi-red); }
@@ -20,14 +20,21 @@
             .no-print { display: none !important; }
             .card-sbsi { border: none !important; box-shadow: none !important; max-width: 100% !important; margin: 0 !important; border-radius: 0; }
             
-            .pdf-container { padding: 50px 70px; }
+            .pdf-container { padding: 50px 60px; }
             .print-header { 
                 display: flex !important; 
                 align-items: center; 
-                border-bottom: 2px solid #000; 
+                border-bottom: 2.5px solid #000; 
                 padding-bottom: 15px; 
-                margin-bottom: 10px; 
+                margin-bottom: 10px;
+                width: 100%;
             }
+            /* Menyesuaikan teks agar tidak pecah baris */
+            .header-text { flex-grow: 1; white-space: nowrap; } 
+            .header-text h4 { color: var(--sbsi-blue) !important; font-size: 1.35rem; margin-bottom: 2px; font-weight: 800; }
+            .header-text h5.red-text { color: var(--sbsi-red) !important; margin-bottom: 2px; font-weight: 700; }
+            .header-text h5.black-text { color: #000 !important; margin-bottom: 0; font-weight: 700; }
+
             .hasil-box { 
                 background-color: #fff !important; 
                 border: 2px solid var(--sbsi-red) !important; 
@@ -35,7 +42,7 @@
                 padding: 25px;
             }
             .print-footer { display: block !important; margin-top: 60px; }
-            .document-title { display: block !important; text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 30px; margin-top: 10px; font-size: 1.4rem; }
+            .document-title { display: block !important; text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 30px; margin-top: 10px; font-size: 1.4rem; text-transform: uppercase; }
         }
 
         .print-header, .print-footer, .document-title { display: none; }
@@ -51,11 +58,11 @@
         <div class="pdf-container">
             
             <div class="print-header">
-                <img src="Logo_SBSI.png" width="90" height="90" class="me-4 logo-main" onerror="this.src='https://via.placeholder.com/90?text=SBSI'">
-                <div>
-                    <h4 class="fw-bold mb-0">Federasi Serikat Buruh Sejahtera Indonesia</h4>
-                    <h5 class="fw-bold mb-0">(FSBSI)</h5>
-                    <h5 class="fw-bold mb-0">DPC Kota Bitung</h5>
+                <img src="Logo_SBSI.png" width="95" height="95" class="me-4 logo-main" onerror="this.src='https://via.placeholder.com/95?text=SBSI'">
+                <div class="header-text">
+                    <h4 class="mb-0 text-uppercase">Federasi Serikat Buruh Sejahtera Indonesia</h4>
+                    <h5 class="red-text mb-0">(FSBSI)</h5>
+                    <h5 class="black-text mb-0">DPC Kota Bitung</h5>
                 </div>
             </div>
 
@@ -66,7 +73,7 @@
             <div class="text-center py-4 no-print bg-light border-bottom mb-4">
                 <img src="Logo_SBSI.png" width="100" class="mb-3 logo-main" onerror="this.src='https://via.placeholder.com/100?text=SBSI'">
                 <h4 class="fw-bold text-danger mb-0">SBSI POCKET BITUNG</h4>
-                <p class="text-muted small">Alat bantu penghitungan Hak Tenaga Kerja</p>
+                <p class="text-muted small">Alat Bantu Advokasi DPC Kota Bitung</p>
             </div>
 
             <div class="p-4">
