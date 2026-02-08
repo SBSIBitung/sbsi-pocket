@@ -3,126 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBSI Pocket - DPC Kota Bitung</title>
+    <title>SBSI Pocket - DPC Bitung</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        :root {
-            --sbsi-red: #ed1c24;
-            --sbsi-blue: #0056b3;
-            --sbsi-black: #000000;
-        }
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card-sbsi { 
-            border: none; 
-            border-top: 6px solid var(--sbsi-red); 
-            border-radius: 12px; 
-            max-width: 450px; 
-            margin: 40px auto; 
-        }
+        :root { --sbsi-red: #ed1c24; --sbsi-blue: #0056b3; }
+        body { background-color: #f8f9fa; font-family: sans-serif; }
+        .card-sbsi { border: none; border-top: 6px solid var(--sbsi-red); border-radius: 12px; max-width: 450px; margin: 40px auto; }
         .hidden { display: none !important; }
-        
-        /* Styling Kop Surat untuk Print */
-        .header-print {
-            display: flex;
-            align-items: center;
-            border-bottom: 3px double #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .header-text h4 { 
-            color: var(--sbsi-blue); 
-            margin: 0; 
-            font-weight: bold; 
-            font-size: 1.2rem;
-            text-transform: uppercase;
-        }
-        .header-text .red-text { color: var(--sbsi-red); font-weight: bold; }
-        .header-text .black-text { color: var(--sbsi-black); font-weight: bold; }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; }
-            .card-sbsi { max-width: 100%; margin: 0; border: none; box-shadow: none; }
-            .container { width: 100%; max-width: 100%; }
-        }
-
-        .btn-sbsi { background-color: var(--sbsi-red); color: white; font-weight: bold; border: none; }
-        .btn-sbsi:hover { background-color: #c4161c; color: white; }
+        .header-print { display: flex; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .header-text h4 { color: var(--sbsi-blue); margin: 0; font-weight: bold; font-size: 1.1rem; }
+        .header-text .red { color: var(--sbsi-red); font-weight: bold; }
+        @media print { .no-print { display: none !important; } .card-sbsi { max-width: 100%; border: none; box-shadow: none; } }
     </style>
 </head>
 <body>
 
-<div class="container px-3">
+<div class="container">
     <div id="pageLogin" class="card card-sbsi shadow p-4">
         <div class="text-center mb-4">
-            <img src="Logo_SBSI.png" alt="Logo SBSI" width="80">
-            <h4 class="fw-bold mt-2" style="color: var(--sbsi-red);">SBSI POCKET LOGIN</h4>
+            <img src="Logo_SBSI.png" width="80">
+            <h4 class="fw-bold mt-2">SBSI POCKET</h4>
             <p class="text-muted small">DPC KOTA BITUNG</p>
         </div>
-        <div class="mb-3">
-            <label class="form-label small fw-bold">NIK KARYAWAN (Username)</label>
-            <input type="text" id="inpNik" class="form-control form-control-lg" placeholder="Contoh: 717206...">
-        </div>
-        <div class="mb-4">
-            <label class="form-label small fw-bold">PIN KEAMANAN (Password)</label>
-            <input type="password" id="inpPin" class="form-control form-control-lg" placeholder="******">
-        </div>
-        <button id="btnLogin" class="btn btn-sbsi w-100 py-3" onclick="handleLogin()">MASUK APLIKASI</button>
+        <input type="text" id="inpNik" class="form-control mb-2" placeholder="NIK (Username)">
+        <input type="password" id="inpPin" class="form-control mb-3" placeholder="PIN (Password)">
+        <button id="btnLogin" class="btn btn-danger w-100 fw-bold" onclick="handleLogin()">MASUK</button>
     </div>
 
-    <div id="pageDashboard" class="card card-sbsi shadow p-4 hidden">
+    <div id="pageDashboard" class="card card-sbsi shadow hidden p-4">
         <div class="text-center border-bottom pb-3 mb-3">
-            <img id="userFoto" src="" class="rounded-circle border shadow-sm mb-2" width="110" height="110" style="object-fit: cover;">
+            <img id="userFoto" src="" class="rounded-circle border mb-2" width="100" height="100">
             <h5 id="userNama" class="fw-bold mb-0"></h5>
-            <span id="userBadge" class="badge bg-danger mt-1"></span>
+            <span id="userBadge" class="badge bg-danger"></span>
         </div>
         <div class="small mb-4">
-            <div class="d-flex justify-content-between mb-1"><span>NIK:</span><b id="dispNik"></b></div>
-            <div class="d-flex justify-content-between mb-1"><span>TTL:</span><b id="dispTtl"></b></div>
-            <div class="mb-1"><span>Alamat:</span><br><b id="dispAlamat"></b></div>
+            <p class="mb-1 text-muted">NIK: <b id="dispNik" class="text-dark"></b></p>
+            <p class="mb-1 text-muted">Alamat: <b id="dispAlamat" class="text-dark"></b></p>
         </div>
         <button class="btn btn-primary w-100 mb-2 fw-bold" onclick="showPage('pageAudit')">MULAI AUDIT HAK</button>
-        <button id="btnAdmin" class="btn btn-dark w-100 mb-2 fw-bold hidden" onclick="loadAdminPanel()">PANEL MONITORING (OD)</button>
-        <button class="btn btn-outline-secondary w-100 btn-sm mt-3" onclick="location.reload()">LOGOUT</button>
+        <button id="btnAdmin" class="btn btn-dark w-100 mb-2 fw-bold hidden" onclick="loadAdminPanel()">PANEL MONITORING</button>
+        <button class="btn btn-outline-secondary w-100 btn-sm mt-2" onclick="location.reload()">LOGOUT</button>
     </div>
 
-    <div id="pageAudit" class="card card-sbsi shadow p-4 hidden" style="max-width: 800px;">
+    <div id="pageAudit" class="card card-sbsi shadow hidden p-4" style="max-width: 700px;">
         <div class="header-print">
-            <img src="Logo_SBSI.png" width="70" class="me-3">
+            <img src="Logo_SBSI.png" width="60" class="me-3">
             <div class="header-text">
                 <h4>FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</h4>
-                <div class="red-text">(FSBSI)</div>
-                <div class="black-text text-uppercase">DPC KOTA BITUNG</div>
+                <div class="red">(FSBSI)</div>
+                <div class="fw-bold">DPC KOTA BITUNG</div>
             </div>
         </div>
-
         <div class="no-print">
-            <h6 class="fw-bold text-center mb-3">FORMULIR PERHITUNGAN AUDIT</h6>
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <label class="small fw-bold">TANGGAL MULAI KERJA</label>
-                    <input type="date" id="tglMulai" class="form-control">
-                </div>
-                <div class="col-md-6">
-                    <label class="small fw-bold">TANGGAL PHK / SELESAI</label>
-                    <input type="date" id="tglSelesai" class="form-control">
-                </div>
-            </div>
-            <button id="btnHitung" class="btn btn-danger w-100 p-3 fw-bold shadow" onclick="eksekusiAudit()">HITUNG KEKURANGAN HAK</button>
-            <button class="btn btn-link w-100 text-muted mt-2" onclick="showPage('pageDashboard')">Kembali ke Dashboard</button>
+            <label class="small fw-bold">TGL MULAI KERJA</label>
+            <input type="date" id="tglMulai" class="form-control mb-2">
+            <label class="small fw-bold">TGL PHK / SELESAI</label>
+            <input type="date" id="tglSelesai" class="form-control mb-3">
+            <button id="btnHitung" class="btn btn-danger w-100 fw-bold p-3" onclick="eksekusiAudit()">HITUNG KEKURANGAN HAK</button>
+            <button class="btn btn-link w-100 text-muted mt-1" onclick="showPage('pageDashboard')">Batal</button>
         </div>
-
-        <div id="hasilPrint" class="mt-4 border-top pt-3">
-            </div>
+        <div id="hasilPrint" class="mt-4"></div>
     </div>
 
-    <div id="pageAdmin" class="card card-sbsi shadow p-4 hidden" style="max-width: 800px;">
-        <h5 class="fw-bold border-bottom pb-2 mb-3">MONITORING ANGGOTA (OD)</h5>
+    <div id="pageAdmin" class="card card-sbsi shadow hidden p-4" style="max-width: 600px;">
+        <h5 class="fw-bold mb-3 border-bottom pb-2">DATA ANGGOTA</h5>
         <div class="table-responsive">
-            <table class="table table-hover table-sm small">
-                <thead class="table-dark">
-                    <tr><th>Nama</th><th>NIK</th><th>Role</th></tr>
-                </thead>
+            <table class="table table-sm table-striped small">
+                <thead><tr><th>Nama</th><th>NIK</th><th>Role</th></tr></thead>
                 <tbody id="tableBodyAdmin"></tbody>
             </table>
         </div>
@@ -131,14 +78,11 @@
 </div>
 
 <script>
-    // GANTI DENGAN URL WEB APP HASIL DEPLOY TERBARU ANDA!
-    const API_URL = "https://script.google.com/macros/s/AKfycbyCDgxzH_Ve2s7390ESuplU7d_CkPVbuZaxKimR1bx-1TOKyG5W65o1XbrFuBnbles2/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbw654JpHrnUh0vLp0tGQIP1njrhAGEoO_SS270HuWYOXtesl6b_X4UkfzmxAvkq0ShG/exec"; 
     let currentUser = null;
 
     function showPage(id) {
-        ['pageLogin', 'pageDashboard', 'pageAdmin', 'pageAudit'].forEach(p => {
-            document.getElementById(p).classList.add('hidden');
-        });
+        ['pageLogin', 'pageDashboard', 'pageAdmin', 'pageAudit'].forEach(p => document.getElementById(p).classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 
@@ -146,104 +90,63 @@
         const nik = document.getElementById('inpNik').value;
         const pin = document.getElementById('inpPin').value;
         const btn = document.getElementById('btnLogin');
-
-        if(!nik || !pin) return alert("NIK dan PIN harus diisi!");
+        if(!nik || !pin) return alert("Isi NIK dan PIN!");
         
-        btn.innerText = "VERIFIKASI...";
-        btn.disabled = true;
-
+        btn.innerText = "VERIFIKASI..."; btn.disabled = true;
         try {
-            const res = await fetch(API_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: "login", nik: nik, pin: pin }) 
-            });
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "login", nik: nik, pin: pin }) });
             const data = await res.json();
-
             if(data.status === "success") {
                 currentUser = data;
                 document.getElementById('userNama').innerText = data.user.nama;
                 document.getElementById('userBadge').innerText = data.role;
-                document.getElementById('userFoto').src = data.user.foto || 'https://via.placeholder.com/110';
+                document.getElementById('userFoto').src = data.user.foto || 'https://via.placeholder.com/100';
                 document.getElementById('dispNik').innerText = data.user.nik;
-                document.getElementById('dispTtl').innerText = data.user.ttl;
                 document.getElementById('dispAlamat').innerText = data.user.alamat;
-                
                 if(data.role === "OD") document.getElementById('btnAdmin').classList.remove('hidden');
                 showPage('pageDashboard');
-            } else {
-                alert(data.message);
-            }
-        } catch (e) {
-            alert("Gagal terhubung ke server. Periksa URL Deployment Apps Script Anda.");
-        } finally {
-            btn.innerText = "MASUK APLIKASI";
-            btn.disabled = false;
-        }
+            } else { alert(data.message); }
+        } catch(e) { alert("Gagal koneksi server!"); }
+        finally { btn.innerText = "MASUK"; btn.disabled = false; }
     }
 
     async function eksekusiAudit() {
-        const tglMulai = document.getElementById('tglMulai').value;
-        const tglSelesai = document.getElementById('tglSelesai').value;
+        const tgl1 = document.getElementById('tglMulai').value;
+        const tgl2 = document.getElementById('tglSelesai').value;
+        if(!tgl1 || !tgl2) return alert("Pilih tanggal!");
+
         const btn = document.getElementById('btnHitung');
-
-        if(!tglMulai || !tglSelesai) return alert("Silakan tentukan masa kerja!");
-
-        btn.innerText = "MEMPROSES DATA...";
-        btn.disabled = true;
+        btn.innerText = "MENCATAT DATA..."; btn.disabled = true;
 
         try {
-            const response = await fetch(API_URL, {
+            const res = await fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({
-                    action: "audit",
-                    nama: currentUser.user.nama,
-                    nik: currentUser.user.nik,
-                    tglMulai: tglMulai,
-                    tglSelesai: tglSelesai
-                })
+                body: JSON.stringify({ action: "audit", nama: currentUser.user.nama, nik: currentUser.user.nik, tglMulai: tgl1, tglSelesai: tgl2 })
             });
-            const hasil = await response.json();
-
-            if(hasil.status === "success") {
-                // Susun tampilan untuk diprint
+            const data = await res.json();
+            if(data.status === "success") {
                 document.getElementById('hasilPrint').innerHTML = `
-                    <div class="text-center fw-bold mb-3 text-decoration-underline">HASIL AUDIT KEKURANGAN HAK</div>
-                    <table class="table table-bordered table-sm small">
-                        <tr><td>Nama Karyawan</td><td>${currentUser.user.nama}</td></tr>
+                    <h5 class="text-center fw-bold mb-4">HASIL AUDIT AWAL</h5>
+                    <table class="table table-bordered small">
+                        <tr><td>Nama Anggota</td><td>${currentUser.user.nama}</td></tr>
                         <tr><td>NIK</td><td>${currentUser.user.nik}</td></tr>
-                        <tr><td>Masa Kerja</td><td>${tglMulai} s/d ${tglSelesai}</td></tr>
-                        <tr><td>Status Database</td><td><b class="text-success">TERCATAT DI SHEET1</b></td></tr>
+                        <tr><td>Periode Kerja</td><td>${tgl1} s/d ${tgl2}</td></tr>
+                        <tr><td>Keterangan</td><td><b class="text-success">Data Berhasil Diverifikasi</b></td></tr>
                     </table>
-                    <p class="small mt-3">Demikian hasil audit awal ini dibuat untuk dipergunakan sebagaimana mestinya.</p>
-                    <div class="mt-5 text-end"><p>Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><br>( Petugas OD )</p></div>
+                    <div class="mt-5 text-end small">Bitung, ${new Date().toLocaleDateString('id-ID')}<br><br><br>( Petugas Lapangan )</div>
                 `;
-                alert("Audit Berhasil! Menampilkan dokumen cetak.");
                 window.print();
-            } else {
-                alert("Gagal: " + hasil.message);
             }
-        } catch (e) {
-            alert("Error koneksi saat audit.");
-        } finally {
-            btn.innerText = "HITUNG KEKURANGAN HAK";
-            btn.disabled = false;
-        }
+        } catch(e) { alert("Koneksi Error!"); }
+        finally { btn.innerText = "HITUNG KEKURANGAN HAK"; btn.disabled = false; }
     }
 
     async function loadAdminPanel() {
         showPage('pageAdmin');
-        const tbody = document.getElementById('tableBodyAdmin');
-        tbody.innerHTML = "<tr><td colspan='3' class='text-center'>Memuat data...</td></tr>";
-
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "getAllData" }) });
-            const data = await res.json();
-            tbody.innerHTML = data.data.map(u => `<tr><td>${u.nama}</td><td>${u.nik}</td><td>${u.role}</td></tr>`).join('');
-        } catch (e) {
-            tbody.innerHTML = "<tr><td colspan='3' class='text-danger text-center'>Gagal memuat data.</td></tr>";
-        }
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: "getAllData" }) });
+        const data = await res.json();
+        document.getElementById('tableBodyAdmin').innerHTML = data.data.map(u => `<tr><td>${u.nama}</td><td>${u.nik}</td><td>${u.role}</td></tr>`).join('');
     }
 </script>
-
 </body>
 </html>
