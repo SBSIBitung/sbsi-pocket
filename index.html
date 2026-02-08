@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBSI Pocket - Audit Hak Total</title>
+    <title>SBSI Pocket - Audit Otomatis</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body { background-color: #f4f4f4; font-family: sans-serif; }
-        .card-sbsi { border-top: 10px solid #ed1c24; border-radius: 20px; max-width: 650px; margin: auto; }
-        .gaji-item { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; }
-        .box-tahun { background: #fff5f5; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #ffcccc; }
+        body { background-color: #f4f4f4; font-family: sans-serif; font-size: 0.9rem; }
+        .card-sbsi { border-top: 10px solid #ed1c24; border-radius: 20px; max-width: 600px; margin: auto; }
         .btn-sbsi { background-color: #ed1c24; color: white; font-weight: bold; border-radius: 10px; padding: 12px; border: none; }
-        .btn-sbsi:hover { background-color: #c41217; color: white; }
+        .gaji-item { display: flex; align-items: center; justify-content: space-between; padding: 8px; border-bottom: 1px solid #eee; background: #fff; }
     </style>
 </head>
 <body>
@@ -19,138 +17,114 @@
 <div class="container mt-4 mb-5">
     <div class="card card-sbsi shadow p-4">
         <div class="text-center mb-4">
-            <img src="Logo_SBSI.png" width="100">
+            <img src="Logo_SBSI.png" width="90">
             <h5 class="fw-bold mt-2">FSBSI DPC KOTA BITUNG</h5>
-            <p class="text-muted small">Audit Selisih Upah, THR, Kompensasi & Pesangon</p>
+            <p class="text-muted small">Audit Hak Buruh Sesuai PP 35/2021</p>
         </div>
 
         <div id="step1">
-            <div class="mb-3"><label class="fw-bold small">Nama Karyawan</label><input type="text" id="nama" class="form-control"></div>
+            <div class="mb-3"><label class="fw-bold">Nama Karyawan</label><input type="text" id="nama" class="form-control"></div>
             <div class="row">
-                <div class="col-6 mb-3"><label class="fw-bold small">Mulai Kerja</label><input type="date" id="tglMulai" class="form-control"></div>
-                <div class="col-6 mb-3"><label class="fw-bold small">Selesai Kerja</label><input type="date" id="tglSelesai" class="form-control"></div>
+                <div class="col-6 mb-3"><label class="fw-bold">Mulai Kerja</label><input type="date" id="tglMulai" class="form-control"></div>
+                <div class="col-6 mb-3"><label class="fw-bold">Selesai Kerja</label><input type="date" id="tglSelesai" class="form-control"></div>
             </div>
-            <button class="btn btn-sbsi w-100" onclick="lanjutKeGaji()">MULAI AUDIT</button>
+            <button class="btn btn-sbsi w-100" onclick="mulaiAudit()">MULAI AUDIT OTOMATIS</button>
         </div>
 
         <div id="step2" class="d-none">
-            <h6 class="fw-bold text-danger mb-3">1. Input Gaji Diterima Per Bulan</h6>
-            <div id="containerGaji" class="mb-4 shadow-sm border rounded p-2 bg-white" style="max-height: 300px; overflow-y: auto;"></div>
-            <button class="btn btn-sbsi w-100" onclick="lanjutKeHakTahunan()">LANJUT KE THR & KOMPENSASI</button>
+            <h6 class="fw-bold text-danger mb-3">1. Gaji Diterima Per Bulan</h6>
+            <div id="containerGaji" class="mb-3 border rounded" style="max-height: 250px; overflow-y: auto;"></div>
+            <button class="btn btn-sbsi w-100" onclick="lanjutKeTahunan()">BERIKUTNYA</button>
         </div>
 
         <div id="step3" class="d-none">
-            <h6 class="fw-bold text-danger mb-3">2. Input THR & Kompensasi Diterima</h6>
+            <h6 class="fw-bold text-danger mb-3">2. THR, Kompensasi & Pesangon</h6>
             <div id="containerTahunan"></div>
-            <button class="btn btn-sbsi w-100" onclick="lanjutKePesangon()">LANJUT KE PESANGON</button>
+            <div class="p-3 bg-light border rounded mb-3">
+                <label class="fw-bold small">Total Pesangon/UPMK Sudah Diterima (Rp)</label>
+                <input type="number" id="pesangonDiterima" class="form-control mt-1" value="0">
+                <p class="text-muted style" style="font-size: 0.7rem; margin-top: 5px;">*Isi 0 jika belum dibayar sama sekali.</p>
+            </div>
+            <button class="btn btn-sbsi w-100" onclick="kirimData()">HITUNG TOTAL TUNTUTAN</button>
         </div>
 
-        <div id="step4" class="d-none text-center">
-            <h6 class="fw-bold text-danger mb-3 text-start">3. Input Pesangon (PP 35/2021)</h6>
-            <div class="alert alert-info small">Hitung berapa bulan pesangon yang seharusnya Anda dapat (misal: 9 bulan UMP).</div>
-            <div class="mb-3 text-start">
-                <label class="fw-bold small">Pesangon Seharusnya (Rp)</label>
-                <input type="number" id="pesangonSeharusnya" class="form-control" placeholder="Contoh: 31500000">
-            </div>
-            <div class="mb-3 text-start">
-                <label class="fw-bold small">Pesangon Yang Sudah Dibayar (Rp)</label>
-                <input type="number" id="pesangonDiterima" class="form-control" value="0">
-            </div>
-            <button class="btn btn-sbsi w-100" onclick="kirimDataAudit()">HITUNG TOTAL TUNTUTAN</button>
-        </div>
-
-        <div id="hasil" class="d-none mt-4">
-            <div class="alert alert-danger shadow border-danger">
-                <h6 class="fw-bold text-center">RINCIAN TUNTUTAN HAK</h6><hr>
-                <div class="d-flex justify-content-between small"><span>Selisih Upah:</span> <b id="resGaji"></b></div>
-                <div class="d-flex justify-content-between small"><span>Kekurangan THR:</span> <b id="resThr"></b></div>
-                <div class="d-flex justify-content-between small"><span>Kekurangan Kompensasi:</span> <b id="resKomp"></b></div>
-                <div class="d-flex justify-content-between small text-primary"><span>Selisih Pesangon:</span> <b id="resPesangon"></b></div>
+        <div id="hasil" class="d-none mt-3">
+            <div class="alert alert-danger shadow border-danger text-center">
+                <h6 class="fw-bold">REKAP TUNTUTAN HAK</h6><hr>
+                <div class="d-flex justify-content-between mb-1"><span>Selisih Upah:</span> <b id="resGaji"></b></div>
+                <div class="d-flex justify-content-between mb-1"><span>Kekurangan THR:</span> <b id="resThr"></b></div>
+                <div class="d-flex justify-content-between mb-1"><span>Kekurangan Komp:</span> <b id="resKomp"></b></div>
+                <div class="d-flex justify-content-between mb-1 text-primary"><span>Pesangon (<span id="ketPes"></span>):</span> <b id="resPes"></b></div>
                 <hr>
-                <div class="d-flex justify-content-between fw-bold h5"><span>TOTAL AKHIR:</span> <span id="resTotal"></span></div>
+                <div class="d-flex justify-content-between fw-bold h5 mb-0"><span>TOTAL:</span> <span id="resTotal"></span></div>
             </div>
-            <button class="btn btn-secondary w-100" onclick="location.reload()">Reset Audit</button>
+            <button class="btn btn-secondary btn-sm w-100" onclick="location.reload()">Audit Ulang</button>
         </div>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxviOHmkS25zdi4aiGAwfnoW13y-VZ-n6FKXy2MZtQkE9QLMv8sdYRnEPGWSiOIN7M/exec";
-    let daftarTahun = [];
+    const API_URL = "https://script.google.com/macros/s/AKfycbyYPa0tYTM70b1F8iQvZiyeFA34RJXl1JMccpmB29m736w4OFEXzWRwCU3KvnwrShcB/exec";
+    let thnList = [];
 
-    function lanjutKeGaji() {
-        const mulai = new Date(document.getElementById('tglMulai').value);
-        const selesai = new Date(document.getElementById('tglSelesai').value);
-        if (isNaN(mulai) || isNaN(selesai)) return alert("Isi tanggal!");
+    function mulaiAudit() {
+        const d1 = new Date(document.getElementById('tglMulai').value);
+        const d2 = new Date(document.getElementById('tglSelesai').value);
+        if (isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
 
-        const container = document.getElementById('containerGaji');
-        container.innerHTML = '';
-        daftarTahun = [];
-
-        let cur = new Date(mulai.getFullYear(), mulai.getMonth(), 1);
-        while (cur <= selesai) {
-            const blnStr = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"][cur.getMonth()] + " " + cur.getFullYear();
-            if (!daftarTahun.includes(cur.getFullYear())) daftarTahun.push(cur.getFullYear());
-            
-            container.innerHTML += `<div class="gaji-item"><span>${blnStr}</span><input type="number" class="form-control form-control-sm val-gaji" style="width:140px" data-bulan="${blnStr}" value="2500000"></div>`;
+        const cont = document.getElementById('containerGaji');
+        cont.innerHTML = ''; thnList = [];
+        let cur = new Date(d1.getFullYear(), d1.getMonth(), 1);
+        while (cur <= d2) {
+            let label = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"][cur.getMonth()] + " " + cur.getFullYear();
+            if (!thnList.includes(cur.getFullYear())) thnList.push(cur.getFullYear());
+            cont.innerHTML += `<div class="gaji-item"><span>${label}</span><input type="number" class="form-control form-control-sm val-gaji" style="width:130px" data-bulan="${label}" value="2500000"></div>`;
             cur.setMonth(cur.getMonth() + 1);
         }
         document.getElementById('step1').classList.add('d-none');
         document.getElementById('step2').classList.remove('d-none');
     }
 
-    function lanjutKeHakTahunan() {
-        const container = document.getElementById('containerTahunan');
-        container.innerHTML = '';
-        daftarTahun.forEach(thn => {
-            container.innerHTML += `
-                <div class="box-tahun">
-                    <h6 class="fw-bold">Tahun ${thn}</h6>
-                    <div class="row">
-                        <div class="col-6"><label class="small">THR Diterima</label><input type="number" class="form-control form-control-sm val-thr" data-tahun="${thn}" value="0"></div>
-                        <div class="col-6"><label class="small">Komp. Diterima</label><input type="number" class="form-control form-control-sm val-komp" data-tahun="${thn}" value="0"></div>
-                    </div>
-                </div>`;
+    function lanjutKeTahunan() {
+        const cont = document.getElementById('containerTahunan');
+        cont.innerHTML = '';
+        thnList.forEach(t => {
+            cont.innerHTML += `<div class="p-2 border rounded mb-2 bg-white"><label class="fw-bold small">Tahun ${t}</label><div class="row g-2"><div class="col-6"><input type="number" class="form-control form-control-sm val-thr" data-tahun="${t}" placeholder="THR diterima"></div><div class="col-6"><input type="number" class="form-control form-control-sm val-komp" data-tahun="${t}" placeholder="Komp diterima"></div></div></div>`;
         });
         document.getElementById('step2').classList.add('d-none');
         document.getElementById('step3').classList.remove('d-none');
     }
 
-    function lanjutKePesangon() {
-        document.getElementById('step3').classList.add('d-none');
-        document.getElementById('step4').classList.remove('d-none');
-    }
-
-    async function kirimDataAudit() {
-        const rincianGaji = Array.from(document.querySelectorAll('.val-gaji')).map(i => ({ bulan: i.dataset.bulan, gaji: i.value }));
-        const rincianTahunan = Array.from(document.querySelectorAll('.box-tahun')).map(b => ({
-            tahun: b.querySelector('.val-thr').dataset.tahun,
-            thr: b.querySelector('.val-thr').value,
-            komp: b.querySelector('.val-komp').value
-        }));
+    async function kirimData() {
+        const d1 = new Date(document.getElementById('tglMulai').value);
+        const d2 = new Date(document.getElementById('tglSelesai').value);
+        const masaKerjaThn = Math.floor((d2 - d1) / (365.25 * 24 * 60 * 60 * 1000));
 
         const payload = {
             nama: document.getElementById('nama').value,
             tglMulai: document.getElementById('tglMulai').value,
             tglSelesai: document.getElementById('tglSelesai').value,
-            rincianGaji: rincianGaji,
-            rincianTahunan: rincianTahunan,
-            pesangonSeharusnya: document.getElementById('pesangonSeharusnya').value,
+            masaKerjaTahun: masaKerjaThn,
+            rincianGaji: Array.from(document.querySelectorAll('.val-gaji')).map(i => ({ bulan: i.dataset.bulan, gaji: i.value })),
+            rincianTahunan: Array.from(document.querySelectorAll('.val-thr')).map((i, idx) => ({ tahun: i.dataset.tahun, thr: i.value, komp: document.querySelectorAll('.val-komp')[idx].value })),
             pesangonDiterima: document.getElementById('pesangonDiterima').value
         };
 
-        document.querySelector('#step4 button').innerHTML = "Memproses...";
+        const btn = document.querySelector('#step3 button');
+        btn.innerHTML = "Memproses..."; btn.disabled = true;
+
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const o = await res.json();
-            document.getElementById('step4').classList.add('d-none');
+            const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const o = await r.json();
+            document.getElementById('step3').classList.add('d-none');
             document.getElementById('hasil').classList.remove('d-none');
             document.getElementById('resGaji').innerText = "Rp " + o.gaji;
             document.getElementById('resThr').innerText = "Rp " + o.thr;
             document.getElementById('resKomp').innerText = "Rp " + o.komp;
-            document.getElementById('resPesangon').innerText = "Rp " + o.pesangon;
+            document.getElementById('resPes').innerText = "Rp " + o.pesangon;
+            document.getElementById('ketPes').innerText = o.kaliPesangon;
             document.getElementById('resTotal').innerText = "Rp " + o.total;
-        } catch(e) { alert("Error!"); }
+        } catch(e) { alert("Error!"); btn.disabled = false; }
     }
 </script>
 </body>
