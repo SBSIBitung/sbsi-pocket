@@ -9,23 +9,14 @@
     <style>
         :root { --sbsi-blue: #0d6efd; --bg-soft: #f4f7f6; }
         body { background: var(--bg-soft); font-family: 'Segoe UI', sans-serif; }
-        .card-main { border: none; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
-        .nav-sbsi { background: white; border-bottom: 2px solid #eee; }
-        .nav-link.active { color: var(--sbsi-blue) !important; border-bottom: 3px solid var(--sbsi-blue); }
-        .currency-input { text-align: right; font-weight: bold; color: var(--sbsi-blue); }
-        .xs-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #999; display: block; }
-        
-        /* ATURAN CETAK (PRINT SETTINGS) */
         @media print {
+            #mainNav, .btn, #st1, #st2, .no-print, #loading { display: none !important; }
             body { background: white !important; }
-            #mainNav, #loading, .btn, #st1, #st2, .nav-sbsi { display: none !important; }
-            #secMain, .container, .card-main { margin: 0 !important; padding: 0 !important; width: 100% !important; box-shadow: none !important; }
-            #stRes { display: block !important; }
-            #pdf-area { border: none !important; padding: 0 !important; }
+            .card-main { box-shadow: none !important; border: none !important; margin: 0 !important; }
+            #pdf-area { display: block !important; width: 100% !important; padding: 0 !important; }
         }
-
         #pdf-area { background: white; padding: 30px; border-radius: 10px; }
-        .profile-pic { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .currency-input { text-align: right; font-weight: bold; color: var(--sbsi-blue); }
     </style>
 </head>
 <body>
@@ -35,92 +26,72 @@
 </div>
 
 <div id="secLogin" class="container d-none">
-    <div class="card card-main p-5 mx-auto text-center" style="max-width: 400px; margin-top: 80px;">
+    <div class="card p-5 mx-auto text-center" style="max-width: 400px; margin-top: 80px; border-radius: 20px;">
         <img src="Logo_SBSI.png" width="70" class="mb-3 mx-auto">
-        <h4 class="fw-bold text-primary">SBSI POCKET</h4>
-        <div class="text-start mt-4">
-            <label class="xs-label">NIK</label><input type="text" id="logNik" class="form-control mb-3">
-            <label class="xs-label">PIN</label><input type="password" id="logPin" class="form-control mb-4">
-        </div>
+        <h4 class="fw-bold">SBSI POCKET</h4>
+        <input type="text" id="logNik" class="form-control mb-3" placeholder="NIK">
+        <input type="password" id="logPin" class="form-control mb-4" placeholder="PIN">
         <button id="btnLogin" class="btn btn-primary w-100 fw-bold" onclick="doLogin()">MASUK</button>
     </div>
 </div>
 
-<nav id="mainNav" class="navbar navbar-expand nav-sbsi d-none sticky-top">
+<nav id="mainNav" class="navbar navbar-expand sticky-top bg-white border-bottom d-none">
     <div class="container justify-content-center">
         <div class="navbar-nav">
-            <a class="nav-link active" id="l1" href="#" onclick="showTab('tab1','l1')">PROFIL</a>
-            <a class="nav-link" id="l2" href="#" onclick="showTab('tab2','l2')">AUDIT</a>
-            <a class="nav-link" id="l3" href="#" onclick="showTab('tab3','l3')">Q&A</a>
+            <a class="nav-link active" href="#" onclick="location.reload()">AUDIT HAK</a>
         </div>
     </div>
 </nav>
 
 <div id="secMain" class="container py-4 d-none">
-    <div id="tab1" class="tab-content">
-        <div class="card card-main p-4 bg-white mx-auto text-center" style="max-width: 450px;">
-            <img id="uFoto" src="" class="profile-pic bg-light mx-auto mb-3">
-            <h4 id="uNama" class="fw-bold"></h4>
-            <p id="uNik" class="text-muted"></p>
-            <button class="btn btn-outline-danger w-100 mt-4 fw-bold" onclick="doLogout()">LOGOUT</button>
+    <div class="card p-4 bg-white mx-auto shadow-sm" style="max-width: 600px; border-radius: 20px;">
+        <div id="st1">
+            <h5 class="fw-bold mb-4 text-center"><i class="bi bi-calculator"></i> Hitung Hak Pekerja</h5>
+            <div class="row g-2 mb-4">
+                <div class="col-6"><label class="small fw-bold">TGL MULAI</label><input type="date" id="t1" class="form-control"></div>
+                <div class="col-6"><label class="small fw-bold">TGL SELESAI</label><input type="date" id="t2" class="form-control"></div>
+            </div>
+            <button class="btn btn-primary w-100 py-3 fw-bold" onclick="genGaji()">MULAI ANALISIS</button>
         </div>
-    </div>
 
-    <div id="tab2" class="tab-content d-none">
-        <div class="card card-main p-4 bg-white mx-auto" style="max-width: 600px;">
-            <div id="st1">
-                <h5 class="fw-bold text-primary mb-4">Periode PHK</h5>
-                <div class="row g-2 mb-4">
-                    <div class="col-6"><label class="xs-label">Mulai</label><input type="date" id="t1" class="form-control"></div>
-                    <div class="col-6"><label class="xs-label">Selesai</label><input type="date" id="t2" class="form-control"></div>
-                </div>
-                <button class="btn btn-primary w-100 py-3 fw-bold" onclick="genGaji()">LANJUT INPUT DATA</button>
+        <div id="st2" class="d-none">
+            <div id="listG" class="border rounded mb-3 overflow-auto" style="max-height: 250px;"></div>
+            <div class="p-3 bg-light rounded mt-3">
+                <label class="small fw-bold">Pesangon Diterima (Rp)</label>
+                <input type="text" id="pDiterima" class="form-control currency-input mb-3" onkeyup="formatRp(this)" value="Rp 0">
+                <div class="form-check"><input class="form-check-input" type="checkbox" id="cDie"><label class="form-check-label small fw-bold text-danger" for="cDie">PHK Meninggal Dunia</label></div>
             </div>
+            <button id="btnP" class="btn btn-primary w-100 mt-4 py-3 fw-bold" onclick="proses()">HITUNG SEKARANG</button>
+        </div>
 
-            <div id="st2" class="d-none">
-                <div id="listG" class="border rounded mb-3 overflow-auto" style="max-height: 250px;"></div>
-                <div id="listT"></div>
-                <div class="p-3 bg-light rounded mt-3">
-                    <label class="xs-label">Pesangon Sudah Diterima (Rp)</label>
-                    <input type="text" id="pDiterima" class="form-control currency-input mb-3" onkeyup="formatRp(this)" value="Rp 0">
-                    <div class="form-check"><input class="form-check-input" type="checkbox" id="cDie"><label class="form-check-label small fw-bold text-danger" for="cDie">PHK Meninggal Dunia</label></div>
+        <div id="stRes" class="d-none mt-4">
+            <div id="pdf-area" class="border">
+                <div class="text-center mb-4 border-bottom pb-3">
+                    <img src="Logo_SBSI.png" width="60" class="mb-2">
+                    <h5 class="fw-bold mb-0">HASIL PERHITUNGAN MANDIRI</h5>
+                    <p class="fw-bold small text-uppercase" style="letter-spacing: 1px;">FSBSI DPC KOTA BITUNG</p>
                 </div>
-                <button id="btnP" class="btn btn-primary w-100 mt-4 py-3 fw-bold" onclick="proses()">HITUNG SEKARANG</button>
+                <div class="mb-4 small">
+                    <div class="row"><div class="col-4">Pekerja</div><div class="col-8 fw-bold">: <span id="rNm"></span></div></div>
+                    <div class="row"><div class="col-4">Masa Kerja</div><div class="col-8 fw-bold">: <span id="rPrd"></span></div></div>
+                </div>
+                <table class="table table-sm small">
+                    <tr><td>Selisih Gaji</td><td class="text-end fw-bold" id="oG"></td></tr>
+                    <tr><td>Selisih THR</td><td class="text-end fw-bold" id="oT"></td></tr>
+                    <tr><td>Selisih Komp.</td><td class="text-end fw-bold" id="oK"></td></tr>
+                    <tr class="table-primary fw-bold"><td>Pesangon (<span id="oD"></span>)</td><td class="text-end" id="oP"></td></tr>
+                    <tr class="table-danger fw-bold h5 text-danger"><td class="py-3">TOTAL HAK</td><td class="text-end py-3" id="oTot"></td></tr>
+                </table>
+                <div class="mt-5 text-end small">
+                    <p>Bitung, <span id="curTgl"></span><br>Pekerja,</p>
+                    <br><br><b id="signNama"></b>
+                </div>
             </div>
-
-            <div id="stRes" class="d-none mt-4">
-                <div id="pdf-area" class="border">
-                    <div class="text-center mb-4 border-bottom pb-3">
-                        <img src="Logo_SBSI.png" width="60" class="mb-2">
-                        <h5 class="fw-bold mb-0">LAPORAN HASIL AUDIT MANDIRI</h5>
-                        <p class="xs-label">DPC FEDERASI SBSI KOTA BITUNG</p>
-                    </div>
-                    <div class="mb-4 small">
-                        <div class="row"><div class="col-4">Pekerja</div><div class="col-8 fw-bold">: <span id="rNm"></span></div></div>
-                        <div class="row"><div class="col-4">Masa Kerja</div><div class="col-8 fw-bold">: <span id="rPrd"></span></div></div>
-                    </div>
-                    <table class="table table-sm small">
-                        <tr><td>Selisih Upah Prorata</td><td class="text-end" id="oG"></td></tr>
-                        <tr><td>Selisih THR Prorata</td><td class="text-end" id="oT"></td></tr>
-                        <tr><td>Selisih Kompensasi</td><td class="text-end" id="oK"></td></tr>
-                        <tr class="table-primary fw-bold"><td>Pesangon (<span id="oD"></span>)</td><td class="text-end" id="oP"></td></tr>
-                        <tr class="table-danger fw-bold h5 text-danger"><td class="py-3">TOTAL HAK</td><td class="text-end py-3" id="oTot"></td></tr>
-                    </table>
-                    <div class="mt-5 text-end small">
-                        <p>Bitung, <span id="curTgl"></span><br>Pekerja,</p>
-                        <br><br><b id="signNama"></b>
-                    </div>
-                </div>
-                <div class="row g-2 mt-4 no-print">
-                    <div class="col-6"><button class="btn btn-success w-100 py-3 fw-bold" onclick="window.print()"><i class="bi bi-printer"></i> CETAK / PDF</button></div>
-                    <div class="col-6"><button class="btn btn-outline-secondary w-100 py-3" onclick="location.reload()">ULANGI</button></div>
-                </div>
+            <div class="row g-2 mt-4 no-print">
+                <div class="col-6"><button class="btn btn-success w-100 py-3 fw-bold" onclick="window.print()"><i class="bi bi-printer"></i> CETAK / PDF</button></div>
+                <div class="col-6"><button class="btn btn-outline-secondary w-100 py-3" onclick="location.reload()">ULANGI</button></div>
             </div>
         </div>
-    </div>
-
-    <div id="tab3" class="tab-content d-none">
-        <div id="qaAcc" class="accordion accordion-flush mx-auto" style="max-width: 700px;"></div>
     </div>
 </div>
 
@@ -139,87 +110,52 @@
         document.getElementById('secLogin').classList.add('d-none');
         document.getElementById('mainNav').classList.remove('d-none');
         document.getElementById('secMain').classList.remove('d-none');
-        renderU(); loadQA();
     }
 
     async function doLogin() {
-        const b = document.getElementById('btnLogin');
         const nik = document.getElementById('logNik').value, pin = document.getElementById('logPin').value;
-        b.disabled = true; b.innerText = "WAIT...";
-        try {
-            const r = await fetch(API, { method:'POST', body: JSON.stringify({ action:"login", nik, pin })});
-            const d = await r.json();
-            if(d.status === "success") { USER = d.user; localStorage.setItem('sbsi_user', JSON.stringify(USER)); showMain(); } 
-            else { alert(d.message); b.disabled = false; b.innerText = "MASUK"; }
-        } catch(e) { alert("Error!"); b.disabled = false; }
+        const r = await (await fetch(API, { method:'POST', body: JSON.stringify({ action:"login", nik, pin })})).json();
+        if(r.status === "success") { USER = r.user; localStorage.setItem('sbsi_user', JSON.stringify(USER)); showMain(); } else alert("Gagal!");
     }
 
-    function doLogout() { localStorage.removeItem('sbsi_user'); location.reload(); }
     function formatRp(el) { let v = el.value.replace(/[^,\d]/g, ""); el.value = "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
     function clean(v) { return Number(v.replace(/[^0-9]/g, '')) || 0; }
-
-    function renderU() {
-        document.getElementById('uNama').innerText = USER.nama;
-        document.getElementById('uNik').innerText = "NIK: " + USER.nik;
-        document.getElementById('uFoto').src = USER.foto || "https://via.placeholder.com/150";
-    }
-
-    function showTab(t, l) {
-        document.querySelectorAll('.tab-content').forEach(x => x.classList.add('d-none'));
-        document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
-        document.getElementById(t).classList.remove('d-none');
-        document.getElementById(l).classList.add('active');
-    }
 
     function genGaji() {
         const d1 = document.getElementById('t1').value, d2 = document.getElementById('t2').value;
         if(!d1 || !d2) return alert("Isi tanggal!");
-        let hG = "", hT = "", ths = [];
-        let cur = new Date(new Date(d1).getFullYear(), new Date(d1).getMonth(), 1);
-        while(cur <= new Date(d2)) {
-            let lbl = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"][cur.getMonth()] + " " + cur.getFullYear();
-            ths.push(cur.getFullYear());
-            hG += `<div class="p-2 border-bottom d-flex justify-content-between align-items-center bg-white"><span class="small fw-bold">${lbl}</span><input type="text" class="form-control form-control-sm val-g w-50 currency-input" onkeyup="formatRp(this)" value="Rp 1.750.000" data-bln="${lbl}"></div>`;
-            cur.setMonth(cur.getMonth() + 1);
-        }
-        [...new Set(ths)].forEach(t => {
-            hT += `<div class="p-3 border rounded mb-2 bg-light small"><div class="fw-bold mb-2">${t}</div><div class="row g-2"><div class="col-6"><label class="xs-label">THR</label><input type="text" class="form-control form-control-sm val-t currency-input" onkeyup="formatRp(this)" value="Rp 1.500.000" data-thn="${t}"></div><div class="col-6"><label class="xs-label">KOMP</label><input type="text" class="form-control form-control-sm val-k currency-input" onkeyup="formatRp(this)" value="Rp 0" data-thn="${t}"></div></div></div>`;
-        });
-        document.getElementById('listG').innerHTML = hG; document.getElementById('listT').innerHTML = hT;
+        let hG = "";
+        let cur = new Date(new Date(d2).getFullYear(), new Date(d2).getMonth(), 1);
+        let lbl = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"][cur.getMonth()] + " " + cur.getFullYear();
+        hG += `<div class="p-3 bg-white border-bottom d-flex justify-content-between"><span>Upah Terakhir (${lbl})</span><input type="text" class="form-control form-control-sm val-g w-50 currency-input" onkeyup="formatRp(this)" value="Rp 3.500.000" data-bln="${lbl}"></div>`;
+        document.getElementById('listG').innerHTML = hG;
         document.getElementById('st1').classList.add('d-none'); document.getElementById('st2').classList.remove('d-none');
     }
 
     async function proses() {
-        const b = document.getElementById('btnP'); b.disabled = true; b.innerText = "CALCULATING...";
+        const b = document.getElementById('btnP'); b.disabled = true;
         const data = {
             action: "audit", nama: USER.nama, tglMulai: document.getElementById('t1').value, tglSelesai: document.getElementById('t2').value,
             isMeninggal: document.getElementById('cDie').checked,
             masaKerja: Math.floor((new Date(document.getElementById('t2').value) - new Date(document.getElementById('t1').value)) / (365.25 * 24 * 60 * 60 * 1000)),
             pesangonDiterima: clean(document.getElementById('pDiterima').value),
-            rincianGaji: Array.from(document.querySelectorAll('.val-g')).map(i => ({ bulan: i.dataset.bln, gaji: clean(i.value) })),
-            rincianTahunan: Array.from(document.querySelectorAll('.val-t')).map((i, idx) => ({ tahun: i.dataset.thn, thr: clean(i.value), komp: clean(document.querySelectorAll('.val-k')[idx].value) }))
+            rincianGaji: Array.from(document.querySelectorAll('.val-g')).map(i => ({ bulan: i.dataset.bln, gaji: clean(i.value) }))
         };
         const r = await (await fetch(API, { method:'POST', body: JSON.stringify(data)})).json();
         if(r.status === "success") {
             document.getElementById('rNm').innerText = USER.nama;
-            document.getElementById('signNama').innerText = "(" + USER.nama + ")";
             document.getElementById('rPrd').innerText = data.tglMulai + " s/d " + data.tglSelesai;
-            document.getElementById('oG').innerText = "Rp " + r.gaji;
-            document.getElementById('oT').innerText = "Rp " + r.thr;
-            document.getElementById('oK').innerText = "Rp " + r.komp;
+            document.getElementById('oG').innerText = "Rp 0"; // Contoh statis, bisa disesuaikan logika prorata
+            document.getElementById('oT').innerText = "Rp 0";
+            document.getElementById('oK').innerText = "Rp 0";
             document.getElementById('oP').innerText = "Rp " + r.pesangon;
             document.getElementById('oD').innerText = r.detail;
             document.getElementById('oTot').innerText = "Rp " + r.total;
+            document.getElementById('signNama').innerText = "(" + USER.nama + ")";
             document.getElementById('curTgl').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
             document.getElementById('st2').classList.add('d-none'); document.getElementById('stRes').classList.remove('d-none');
         }
-        b.disabled = false; b.innerText = "HITUNG SEKARANG";
-    }
-
-    async function loadQA() {
-        const r = await (await fetch(API, { method: 'POST', body: JSON.stringify({ action: "getQA" }) })).json();
-        let h = ""; r.data.forEach((item, i) => { h += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed small fw-bold" data-bs-toggle="collapse" data-bs-target="#q${i}">${item[0]}</button></h2><div id="q${i}" class="accordion-collapse collapse"><div class="accordion-body small text-muted bg-light">${item[1]}</div></div></div>`; });
-        document.getElementById('qaAcc').innerHTML = h;
+        b.disabled = false;
     }
 </script>
 </body>
