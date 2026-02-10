@@ -6,157 +6,250 @@
     <title>mySBSI | Pocket Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --sbsi-red: #dc3545; --bg-gray: #f6f7f9; --dark-card: #2d3436; }
-        body { background-color: var(--bg-gray); font-family: 'Inter', sans-serif; color: #2d3436; }
-        .top-bar { background: white; padding: 12px 20px; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
-        .user-pill { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .user-pill img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--sbsi-red); background: #eee; }
-        .card-welcome { background: linear-gradient(135deg, var(--dark-card), #4b4b4b); border-radius: 25px; padding: 25px; color: white; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .img-dash-profile { width: 65px; height: 65px; border-radius: 18px; object-fit: cover; border: 3px solid rgba(255,255,255,0.2); }
-        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 25px; }
-        .menu-item { background: white; border-radius: 20px; padding: 15px 5px; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: 0.2s; border: none; }
-        .menu-item:active { transform: scale(0.92); background: #f8f9fa; }
-        .menu-icon { width: 52px; height: 52px; background: #fff5f5; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-size: 1.6rem; color: var(--sbsi-red); }
-        .menu-label { font-size: 0.65rem; font-weight: 700; color: #555; text-transform: uppercase; }
-        .glass-card { background: white; border-radius: 28px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
-        .btn-main { background: var(--sbsi-red); color: white; border-radius: 16px; padding: 14px; font-weight: 700; border: none; width: 100%; transition: 0.3s; }
-        .form-control { border-radius: 14px; padding: 12px; border: 1px solid #e0e0e0; }
-        .logo-login { width: 180px; height: auto; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.08)); margin-bottom: 20px; }
-        #loading { background: rgba(255,255,255,0.9); backdrop-filter: blur(6px); z-index: 9999; }
+        :root { 
+            --sbsi-red: #dc3545; 
+            --sbsi-dark: #1e1e2d; 
+            --sbsi-gray: #f4f6f9;
+            --sbsi-gradient: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+        }
+        
+        body { background-color: var(--sbsi-gray); font-family: 'Inter', sans-serif; color: #2d3436; overflow-x: hidden; }
+
+        /* HEADER & TOP BAR */
+        .top-bar { background: white; padding: 15px 20px; border-bottom: 2px solid var(--sbsi-red); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .user-pill { display: flex; align-items: center; gap: 12px; }
+        .user-pill img { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; border: 2px solid var(--sbsi-red); }
+
+        /* LOGIN PAGE */
+        #secLogin { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: white; }
+        .logo-login { width: 240px; height: auto; transition: transform 0.3s ease; filter: drop-shadow(0 10px 20px rgba(220, 53, 69, 0.2)); }
+        .login-card { border-radius: 30px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 100%; max-width: 400px; padding: 40px 30px; background: white; }
+
+        /* DASHBOARD WELCOME */
+        .card-welcome { 
+            background: var(--sbsi-dark); 
+            background-image: radial-gradient(circle at 20% 150%, #444, transparent), radial-gradient(circle at 80% -50%, #dc3545, transparent);
+            border-radius: 28px; padding: 30px; color: white; margin-top: 20px; position: relative; overflow: hidden;
+        }
+        .img-dash-profile { width: 75px; height: 75px; border-radius: 20px; object-fit: cover; border: 3px solid rgba(255,255,255,0.2); }
+
+        /* MENU GRID */
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 30px; }
+        .menu-item { 
+            background: white; border-radius: 24px; padding: 25px 20px; text-align: left; cursor: pointer; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid transparent;
+        }
+        .menu-item:hover { transform: translateY(-5px); border-color: var(--sbsi-red); }
+        .menu-icon { width: 50px; height: 50px; background: #fff0f1; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--sbsi-red); margin-bottom: 15px; }
+        .menu-label { font-size: 0.9rem; font-weight: 700; color: var(--sbsi-dark); }
+        .menu-desc { font-size: 0.7rem; color: #888; margin-top: 4px; }
+
+        /* BUTTONS */
+        .btn-main { background: var(--sbsi-gradient); color: white; border-radius: 18px; padding: 16px; font-weight: 700; border: none; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3); }
+        .btn-main:active { transform: scale(0.98); }
+
+        /* FORM CONTROLS */
+        .form-control { border-radius: 15px; padding: 14px 20px; border: 2px solid #eee; background: #f9f9f9; font-weight: 600; }
+        .form-control:focus { border-color: var(--sbsi-red); box-shadow: none; background: white; }
+
+        /* PRORATA INPUTS */
+        .gaji-item { background: white; border-radius: 18px; padding: 15px; border: 1px solid #eee; margin-bottom: 10px; }
+
+        /* ANIMATION */
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @media print { .no-print { display: none !important; } body { background: white; padding: 0; } .container { max-width: 100% !important; width: 100% !important; margin: 0; } #printArea { box-shadow: none !important; border: none !important; } }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PRINT AREA */
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white; }
+            .container { max-width: 100% !important; width: 100% !important; }
+            #printArea { border: 2px solid #333 !important; padding: 40px !important; }
+        }
     </style>
 </head>
 <body>
 
-<div id="loading" class="position-fixed w-100 h-100 d-none flex-column justify-content-center align-items-center">
-    <div class="spinner-border text-danger mb-3"></div>
-    <div class="fw-bold text-uppercase small" style="letter-spacing: 1px;">Sinkronisasi Data...</div>
+<div id="loading" class="position-fixed w-100 h-100 d-none flex-column justify-content-center align-items-center" style="background: rgba(255,255,255,0.95); z-index: 9999;">
+    <div class="spinner-grow text-danger" role="status" style="width: 3rem; height: 3rem;"></div>
+    <div class="fw-bold text-uppercase mt-3" style="letter-spacing: 2px; font-size: 12px;">Sinkronisasi Data...</div>
 </div>
 
-<div id="secLogin" class="container pt-5">
-    <div class="text-center">
-        <img src="Logo My SBSI.png" class="logo-login">
-    </div>
-    <div class="card glass-card p-4 mx-auto" style="max-width: 380px;">
+<div id="secLogin" class="container-fluid">
+    <img src="Logo My SBSI.png" class="logo-login mb-4">
+    <div class="login-card">
         <div class="mb-3">
-            <label class="small fw-bold mb-1 ms-1">NIK Anggota</label>
-            <input type="text" id="lNik" class="form-control" placeholder="Masukkan NIK">
+            <label class="small fw-bold text-muted ms-2 mb-2 text-uppercase">Nomor Induk Anggota</label>
+            <input type="text" id="lNik" class="form-control" placeholder="NIK Anda">
         </div>
         <div class="mb-4">
-            <label class="small fw-bold mb-1 ms-1">PIN Keamanan</label>
+            <label class="small fw-bold text-muted ms-2 mb-2 text-uppercase">PIN Keamanan</label>
             <input type="password" id="lPin" class="form-control" placeholder="••••••">
         </div>
-        <button class="btn btn-main py-3" onclick="doLogin()">MASUK APLIKASI</button>
-        <p class="text-center text-muted mt-3 mb-0" style="font-size: 10px;">Pocket Pro - Digital Labor Audit System</p>
+        <button class="btn btn-main w-100" onclick="doLogin()">MASUK KE SISTEM</button>
+        <div class="text-center mt-4">
+            <span class="badge bg-light text-muted p-2 rounded-pill fw-normal" style="font-size: 9px;">POCKET PRO V.2026 • FSBSI BITUNG</span>
+        </div>
     </div>
 </div>
 
 <div id="app" class="d-none">
     <div class="top-bar no-print">
         <div class="container d-flex justify-content-between align-items-center">
-            <div class="user-pill" onclick="showTab('mainMenu')">
+            <div class="user-pill">
                 <img id="uFoto" src="">
                 <div>
-                    <div class="small text-muted" style="font-size: 10px; line-height: 1;">Anggota Aktif</div>
-                    <div class="fw-bold" id="uNama" style="font-size: 13px;">--</div>
+                    <div class="fw-800" id="uNama" style="font-size: 14px; line-height: 1;">--</div>
+                    <div class="text-danger fw-bold" style="font-size: 10px;">Anggota Terverifikasi</div>
                 </div>
             </div>
-            <button class="btn btn-light rounded-circle shadow-sm" onclick="doLogout()">
-                <i class="bi bi-box-arrow-right text-danger"></i>
-            </button>
+            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="doLogout()">LOGOUT</button>
         </div>
     </div>
 
-    <div class="container pb-5">
+    <div class="container">
         <div id="mainMenu" class="tab-content active no-print">
-            <div class="card-welcome d-flex justify-content-between align-items-center shadow">
-                <div>
-                    <h5 class="fw-800 mb-1">Halo, <span id="uNamaSapaan">--</span>!</h5>
-                    <p class="small opacity-75 mb-0" id="uNik">NIK: --</p>
+            <div class="card-welcome shadow-lg">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-800 mb-0">Selamat Datang,</h4>
+                        <h5 class="opacity-75" id="uNamaSapaan">--</h5>
+                        <div class="mt-3 badge bg-danger py-2 px-3 rounded-pill" style="font-size: 11px;">
+                            ID: <span id="uNik">--</span>
+                        </div>
+                    </div>
+                    <img id="uFotoBesar" src="" class="img-dash-profile shadow">
                 </div>
-                <img id="uFotoBesar" src="" class="img-dash-profile shadow-sm">
             </div>
+
             <div class="menu-grid">
-                <div class="menu-item" onclick="showTab('tAudit')"><div class="menu-icon"><i class="bi bi-calculator-fill"></i></div><div class="menu-label">Audit Hak</div></div>
-                <div class="menu-item" onclick="showTab('tProfil')"><div class="menu-icon"><i class="bi bi-person-vcard-fill"></i></div><div class="menu-label">Profil</div></div>
-                <div class="menu-item" onclick="alert('Fitur E-Legal segera hadir.')"><div class="menu-icon"><i class="bi bi-shield-lock-fill"></i></div><div class="menu-label">E-Pasal</div></div>
-                <div class="menu-item" onclick="alert('Pusat Bantuan Teknis')"><div class="menu-icon"><i class="bi bi-headset"></i></div><div class="menu-label">Bantuan</div></div>
+                <div class="menu-item" onclick="showTab('tAudit')">
+                    <div class="menu-icon"><i class="bi bi-calculator"></i></div>
+                    <div class="menu-label">Audit Hak</div>
+                    <div class="menu-desc">Hitung estimasi pesangon & upah.</div>
+                </div>
+                <div class="menu-item" onclick="showTab('tProfil')">
+                    <div class="menu-icon"><i class="bi bi-person-badge"></i></div>
+                    <div class="menu-label">Profil Saya</div>
+                    <div class="menu-desc">Informasi data keanggotaan.</div>
+                </div>
+                <div class="menu-item" onclick="alert('Modul Hukum sedang diperbarui.')">
+                    <div class="menu-icon"><i class="bi bi-journal-bookmark"></i></div>
+                    <div class="menu-label">E-Pasal</div>
+                    <div class="menu-desc">Kamus hukum perburuhan.</div>
+                </div>
+                <div class="menu-item" onclick="alert('Hubungi DPC Bitung')">
+                    <div class="menu-icon"><i class="bi bi-chat-dots"></i></div>
+                    <div class="menu-label">Bantuan</div>
+                    <div class="menu-desc">Konsultasi dengan pengurus.</div>
+                </div>
             </div>
         </div>
 
-        <div id="tProfil" class="tab-content pt-3">
+        <div id="tProfil" class="tab-content pt-4">
             <div class="glass-card p-4">
-                <button class="btn btn-light rounded-circle mb-3" onclick="showTab('mainMenu')"><i class="bi bi-arrow-left"></i></button>
-                <h5 class="fw-800 mb-4">Informasi Profil</h5>
-                <div class="mb-3"><label class="small text-muted fw-bold">TEMPAT, TGL LAHIR</label><p class="fw-bold text-dark" id="uTtl">--</p></div>
-                <div class="mb-3"><label class="small text-muted fw-bold">ALAMAT TERDAFTAR</label><p class="fw-bold text-dark" id="uAlamat">--</p></div>
+                <button class="btn btn-light rounded-pill mb-4" onclick="showTab('mainMenu')"><i class="bi bi-arrow-left me-2"></i>KEMBALI</button>
+                <div class="text-center mb-4">
+                    <img id="uFotoProfil" src="" class="rounded-4 shadow mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid white;">
+                    <h5 class="fw-800" id="rNamaProfil">--</h5>
+                </div>
+                <div class="bg-light p-3 rounded-4 mb-3">
+                    <div class="small text-muted fw-bold mb-1">TEMPAT, TANGGAL LAHIR</div>
+                    <div class="fw-bold" id="uTtl">--</div>
+                </div>
+                <div class="bg-light p-3 rounded-4">
+                    <div class="small text-muted fw-bold mb-1">ALAMAT DOMISILI</div>
+                    <div class="fw-bold" id="uAlamat">--</div>
+                </div>
             </div>
         </div>
 
-        <div id="tAudit" class="tab-content pt-3">
+        <div id="tAudit" class="tab-content pt-4 pb-5">
             <div class="glass-card p-4">
                 <div id="s1">
-                    <button class="btn btn-light rounded-circle mb-3" onclick="showTab('mainMenu')"><i class="bi bi-arrow-left"></i></button>
-                    <h5 class="fw-800 mb-4">Analisis Masa Kerja</h5>
-                    <div class="mb-3"><label class="small fw-bold">Tanggal Mulai Bekerja</label><input type="date" id="d1" class="form-control"></div>
-                    <div class="mb-4"><label class="small fw-bold">Tanggal Berhenti / PHK</label><input type="date" id="d2" class="form-control"></div>
-                    <button class="btn btn-main py-3" onclick="genProrata()">PROSES PERIODE</button>
+                    <button class="btn btn-light rounded-pill mb-4" onclick="showTab('mainMenu')"><i class="bi bi-arrow-left me-2"></i>KEMBALI</button>
+                    <h5 class="fw-800 mb-4 text-uppercase" style="letter-spacing: 1px;">Analisis Hak</h5>
+                    <div class="mb-3">
+                        <label class="small fw-bold text-muted mb-2">TANGGAL MULAI KERJA</label>
+                        <input type="date" id="d1" class="form-control">
+                    </div>
+                    <div class="mb-4">
+                        <label class="small fw-bold text-muted mb-2">TANGGAL PHK / SELESAI</label>
+                        <input type="date" id="d2" class="form-control">
+                    </div>
+                    <button class="btn btn-main w-100 py-3" onclick="genProrata()">LANJUT KE INPUT GAJI</button>
                 </div>
 
                 <div id="s2" class="d-none">
-                    <h6 class="fw-bold mb-3">Input Gaji Bruto Per Bulan</h6>
-                    <div id="listIn" class="row g-2 mb-4 overflow-auto" style="max-height: 350px;"></div>
-                    <div class="p-3 bg-light rounded-4 mb-4">
-                        <label class="small fw-bold mb-1">Pesangon Telah Diterima (Rp)</label>
-                        <input type="text" id="pDone" class="form-control fw-bold text-end" onkeyup="formatRp(this)" value="Rp 0">
-                        <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="isDie"><label class="form-check-label small fw-bold text-danger">Meninggal Dunia</label></div>
+                    <h6 class="fw-800 mb-3 text-danger">GAJI BRUTO PER BULAN</h6>
+                    <div id="listIn" class="mb-4" style="max-height: 400px; overflow-y: auto;"></div>
+                    <div class="p-4 bg-dark text-white rounded-4 mb-4">
+                        <label class="small fw-bold opacity-75 mb-2 text-uppercase">Pesangon Sudah Diterima (Rp)</label>
+                        <input type="text" id="pDone" class="form-control bg-white text-dark fw-bold text-end mb-3" onkeyup="formatRp(this)" value="Rp 0">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isDie">
+                            <label class="form-check-label small fw-bold">Karyawan Meninggal Dunia</label>
+                        </div>
                     </div>
-                    <button class="btn btn-main py-3" onclick="prosesAudit()">HITUNG ESTIMASI HAK</button>
+                    <button class="btn btn-main w-100 py-3" onclick="prosesAudit()">HITUNG ESTIMASI AKHIR</button>
                 </div>
 
                 <div id="sRes" class="d-none">
-                    <div id="printArea" class="border rounded-4 p-4 bg-white">
-                        <div class="text-center mb-4 border-bottom pb-3">
-                            <img src="Logo My SBSI.png" width="60" class="mb-2">
-                            <div class="fw-800" style="font-size: 16px;">HASIL AUDIT HAK MANDIRI</div>
-                            <div class="small text-danger fw-bold">FSBSI KOTA BITUNG</div>
+                    <div id="printArea" class="bg-white border-0">
+                        <div class="text-center mb-4 border-bottom pb-4">
+                            <img src="Logo My SBSI.png" width="120">
+                            <div class="fw-800 mt-3" style="font-size: 20px;">LAPORAN AUDIT HAK</div>
+                            <div class="fw-bold text-danger">DPC SBSI KOTA BITUNG</div>
                         </div>
-                        <div class="mb-4 small border-bottom pb-3">
-                            <div class="row g-1">
-                                <div class="col-4 text-muted">Nama Lengkap</div><div class="col-8 fw-bold">: <span id="rNama">--</span></div>
-                                <div class="col-4 text-muted">NIK</div><div class="col-8 fw-bold">: <span id="rNik">--</span></div>
-                                <div class="col-4 text-muted">TTL</div><div class="col-8 fw-bold">: <span id="rTtl">--</span></div>
-                                <div class="col-4 text-muted">Alamat</div><div class="col-8 fw-bold">: <span id="rAlamat">--</span></div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <small class="text-muted d-block">NAMA LENGKAP</small>
+                                <b id="rNama">--</b>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">NIK ANGGOTA</small>
+                                <b id="rNik">--</b>
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted d-block">TEMPAT, TGL LAHIR</small>
+                                <b id="rTtl">--</b>
                             </div>
                         </div>
-                        <div class="bg-light rounded-3 p-3 mb-4 text-center">
+
+                        <div class="p-3 border rounded-4 mb-4 text-center bg-light">
                             <div class="row">
-                                <div class="col-6 border-end"><div class="text-muted" style="font-size:9px">MULAI</div><div class="fw-bold small" id="resTglMasuk">--</div></div>
-                                <div class="col-6"><div class="text-muted" style="font-size:9px">AKHIR</div><div class="fw-bold small" id="resTglKeluar">--</div></div>
+                                <div class="col-6 border-end"><small class="text-muted">MULAI</small><div class="fw-bold" id="resTglMasuk">--</div></div>
+                                <div class="col-6"><small class="text-muted">PHK</small><div class="fw-bold" id="resTglKeluar">--</div></div>
                             </div>
-                            <div class="border-top mt-2 pt-2">
-                                <div class="text-muted" style="font-size:9px">TOTAL MASA KERJA</div>
-                                <div class="fw-800 text-danger" id="resMasaKerja" style="font-size:16px">--</div>
+                            <div class="mt-3 pt-3 border-top">
+                                <small class="text-muted">TOTAL MASA KERJA</small>
+                                <div class="h4 fw-800 text-danger mb-0" id="resMasaKerja">--</div>
                             </div>
                         </div>
-                        <div class="small">
-                            <div class="d-flex justify-content-between py-2 border-bottom"><span>Selisih Upah</span><b id="oG">--</b></div>
-                            <div class="d-flex justify-content-between py-2 border-bottom"><span>Selisih THR/Komp</span><b id="oT">--</b></div>
-                            <div class="d-flex justify-content-between py-2 border-bottom"><span>Pesangon (<span id="oD"></span>)</span><b id="oP">--</b></div>
+
+                        <div class="list-group list-group-flush mb-4">
+                            <div class="list-group-item d-flex justify-content-between px-0"><span>Selisih Gaji</span><b id="oG">--</b></div>
+                            <div class="list-group-item d-flex justify-content-between px-0"><span>THR & Kompensasi</span><b id="oT">--</b></div>
+                            <div class="list-group-item d-flex justify-content-between px-0 border-0"><span>Pesangon (<span id="oD"></span>)</span><b id="oP">--</b></div>
                         </div>
-                        <div class="bg-danger text-white p-3 rounded-4 mt-4 text-center shadow">
-                            <div class="small opacity-75 fw-bold" style="font-size:10px">ESTIMASI TOTAL HAK</div>
-                            <h2 class="fw-800 mb-0" id="oTot">Rp 0</h2>
+
+                        <div class="bg-danger text-white p-4 rounded-4 text-center shadow-lg">
+                            <small class="fw-bold opacity-75">TOTAL ESTIMASI HAK</small>
+                            <h1 class="fw-800 mb-0" id="oTot">Rp 0</h1>
                         </div>
                     </div>
-                    <div class="d-grid gap-2 mt-4 no-print">
-                        <button class="btn btn-success py-3 rounded-4 fw-bold shadow-sm" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i>CETAK</button>
-                        <button class="btn btn-light py-3 rounded-4 fw-bold" onclick="location.reload()">KEMBALI</button>
+                    
+                    <div class="mt-5 no-print">
+                        <button class="btn btn-success w-100 py-3 rounded-4 fw-bold shadow mb-3" onclick="window.print()">
+                            <i class="bi bi-printer-fill me-2"></i>CETAK LAPORAN RESMI
+                        </button>
+                        <button class="btn btn-light w-100 py-3 rounded-4 fw-bold" onclick="location.reload()">
+                            KEMBALI KE BERANDA
+                        </button>
                     </div>
                 </div>
             </div>
@@ -165,13 +258,14 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyYjgRKIv_mBC3oRIFw0lFMdQhTmxo-lVjNpTlgijQGAgHkLkcr99k66pbdUxo892Jk/exec"; // Ganti dengan URL Deploy Anda
+    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+    const API = "https://script.google.com/macros/s/AKfycbyYjgRKIv_mBC3oRIFw0lFMdQhTmxo-lVjNpTlgijQGAgHkLkcr99k66pbdUxo892Jk/exec"; 
     let USER = null;
 
     window.onload = () => {
-        const saved = localStorage.getItem('sbsi_session');
-        if(saved) {
-            USER = JSON.parse(saved);
+        const session = localStorage.getItem('sbsi_session');
+        if(session) {
+            USER = JSON.parse(session);
             document.getElementById('secLogin').classList.add('d-none');
             document.getElementById('app').classList.remove('d-none');
             renderUser();
@@ -192,7 +286,7 @@
                 document.getElementById('app').classList.remove('d-none');
                 renderUser();
             } else alert(d.message);
-        } catch(e) { alert("Kesalahan koneksi ke server."); }
+        } catch(e) { alert("Kesalahan koneksi."); }
         loader(false);
     }
 
@@ -204,13 +298,15 @@
     function renderUser(){
         const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(USER.nama)}&background=dc3545&color=fff&bold=true`;
         document.getElementById('uNama').innerText = USER.nama;
+        document.getElementById('rNamaProfil').innerText = USER.nama;
         document.getElementById('uNamaSapaan').innerText = USER.nama.split(' ')[0];
-        document.getElementById('uNik').innerText = "NIK: " + USER.nik;
+        document.getElementById('uNik').innerText = USER.nik;
         document.getElementById('uTtl').innerText = USER.tempat + ", " + USER.tglLahir;
         document.getElementById('uAlamat').innerText = USER.alamat;
         const pic = (USER.foto && USER.foto !== "") ? USER.foto : fallback;
         document.getElementById('uFoto').src = pic;
         document.getElementById('uFotoBesar').src = pic;
+        document.getElementById('uFotoProfil').src = pic;
     }
 
     function showTab(id){
@@ -233,13 +329,15 @@
 
     function genProrata(){
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
-        if(isNaN(d1) || isNaN(d2)) return alert("Lengkapi tanggal periode!");
+        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal periode!");
         let h = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
         const bln = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"];
         while(curr <= d2){
             let l = bln[curr.getMonth()] + " " + curr.getFullYear();
-            h += `<div class="col-6"><div class="p-2 border rounded-4 bg-white shadow-sm"><label class="fw-bold text-muted small" style="font-size:10px">${l}</label>
-                  <input type="text" class="form-control border-0 fw-bold in-g text-end p-0" data-b="${l}" onkeyup="formatRp(this)" value="Rp 3.500.000"></div></div>`;
+            h += `<div class="gaji-item">
+                    <label class="small fw-bold text-muted mb-2">${l}</label>
+                    <input type="text" class="form-control fw-bold in-g" data-b="${l}" onkeyup="formatRp(this)" value="Rp 3.500.000">
+                  </div>`;
             curr.setMonth(curr.getMonth()+1);
         }
         document.getElementById('listIn').innerHTML = h;
@@ -264,7 +362,6 @@
                 document.getElementById('rNama').innerText = USER.nama;
                 document.getElementById('rNik').innerText = USER.nik;
                 document.getElementById('rTtl').innerText = USER.tempat + ", " + USER.tglLahir;
-                document.getElementById('rAlamat').innerText = USER.alamat;
                 document.getElementById('resTglMasuk').innerText = r.tglMasuk;
                 document.getElementById('resTglKeluar').innerText = r.tglKeluar;
                 document.getElementById('resMasaKerja').innerText = r.totalMasaKerja;
@@ -276,7 +373,7 @@
                 document.getElementById('s2').classList.add('d-none');
                 document.getElementById('sRes').classList.remove('d-none');
             }
-        } catch(e){ alert("Gagal memproses perhitungan."); }
+        } catch(e){ alert("Gagal memproses."); }
         loader(false);
     }
 </script>
