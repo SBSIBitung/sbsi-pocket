@@ -4,127 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SBSI Pocket Pro</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { --sbsi-red: #dc3545; --bg-soft: #f4f7f6; }
-        body { background: var(--bg-soft); font-family: 'Segoe UI', sans-serif; }
-        .card-profile { border: none; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .profile-img { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: -55px; }
-        .data-box { background: #fff; padding: 10px 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; }
-        .data-label { font-size: 0.65rem; font-weight: 800; color: #999; text-transform: uppercase; }
-        .data-val { font-size: 0.9rem; font-weight: 600; color: #333; }
-        .nav-link { color: #666; font-weight: 600; }
-        .nav-link.active { color: var(--sbsi-red) !important; border-bottom: 3px solid var(--sbsi-red); }
-        .currency-input { text-align: right; font-weight: bold; color: #0d6efd; }
-        
-        @media print {
-            #mainNav, .btn, #st1, #st2, .no-print, #loading, #secLogin { display: none !important; }
-            body { background: white !important; padding: 0; }
-            .container { max-width: 100% !important; width: 100% !important; margin: 0 !important; }
-            .card-profile { box-shadow: none !important; border: none !important; margin: 0 !important; }
-            #pdf-area { display: block !important; border: none !important; width: 100% !important; }
-        }
+        :root { --sbsi: #dc3545; --bg: #f8f9fa; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: #333; }
+        .card-main { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: white; }
+        .nav-link { color: #666; font-weight: 600; border-bottom: 3px solid transparent; }
+        .nav-link.active { color: var(--sbsi) !important; border-bottom: 3px solid var(--sbsi); }
+        .btn-sbsi { background: var(--sbsi); color: white; border-radius: 12px; font-weight: bold; padding: 12px; transition: 0.3s; border: none; }
+        .btn-sbsi:hover { background: #a71d2a; transform: translateY(-2px); color: white; }
+        .input-monthly { border: 1px solid #eee; border-radius: 12px; padding: 12px; margin-bottom: 10px; background: #fff; display: flex; align-items: center; justify-content: space-between; }
+        .badge-hukum { background: #fff2f2; color: var(--sbsi); border: 1px solid #ffcaca; padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
+        @media print { .no-print { display: none !important; } .card-main { box-shadow: none; border: 1px solid #eee; } body { background: white; } }
     </style>
 </head>
 <body>
 
-<div id="loading" class="position-fixed w-100 h-100 d-none justify-content-center align-items-center bg-white" style="z-index:9999; opacity: 0.8;">
-    <div class="spinner-border text-danger"></div>
+<div id="loading" class="position-fixed w-100 h-100 d-none justify-content-center align-items-center bg-white" style="z-index:9999; opacity:0.9;">
+    <div class="text-center"><div class="spinner-border text-danger mb-2"></div><div class="fw-bold">Menghitung Data...</div></div>
 </div>
 
-<div id="secLogin" class="container">
-    <div class="card p-5 mx-auto text-center shadow-sm" style="max-width: 400px; margin-top: 80px; border-radius: 25px; border:none;">
+<div id="secLogin" class="container pt-5">
+    <div class="card card-main p-5 mx-auto text-center" style="max-width: 400px;">
         <img src="Logo_SBSI.png" width="80" class="mb-3 mx-auto">
         <h4 class="fw-bold mb-4">SBSI POCKET</h4>
-        <input type="text" id="logNik" class="form-control mb-3 py-2" placeholder="Masukkan NIK">
-        <input type="password" id="logPin" class="form-control mb-4 py-2" placeholder="Masukkan PIN">
-        <button id="btnLogin" class="btn btn-danger w-100 fw-bold py-2" onclick="doLogin()">MASUK</button>
+        <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
+        <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
+        <button class="btn btn-sbsi w-100" onclick="doLogin()">MASUK</button>
     </div>
 </div>
 
-<nav id="mainNav" class="navbar navbar-expand sticky-top bg-white border-bottom d-none">
-    <div class="container justify-content-center">
-        <div class="navbar-nav">
-            <a class="nav-link px-4 active" id="l1" href="#" onclick="showTab('tab1','l1')">PROFIL</a>
-            <a class="nav-link px-4" id="l2" href="#" onclick="showTab('tab2','l2')">AUDIT HAK</a>
-        </div>
-    </div>
-</nav>
-
-<div id="secMain" class="container py-4 d-none">
-    
-    <div id="tab1" class="tab-content">
-        <div class="card card-profile mx-auto overflow-hidden" style="max-width: 450px;">
-            <div style="height: 90px; background: linear-gradient(45deg, #dc3545, #ff5f6d);"></div>
-            <div class="card-body text-center pt-0">
-                <img id="uFoto" src="Logo_SBSI.png" class="profile-img bg-light mb-3">
-                <h4 id="uNama" class="fw-bold mb-0"></h4>
-                <p id="uNik" class="text-muted small mb-4"></p>
-                <div class="text-start px-2">
-                    <div class="data-box"><div class="data-label">Tempat, Tanggal Lahir</div><div id="uTtl" class="data-val"></div></div>
-                    <div class="data-box"><div class="data-label">Alamat Lengkap</div><div id="uAlamat" class="data-val"></div></div>
-                </div>
-                <button class="btn btn-outline-secondary w-100 mt-4 btn-sm rounded-pill" onclick="doLogout()">KELUAR APLIKASI</button>
+<div id="app" class="d-none">
+    <nav class="navbar navbar-expand bg-white border-bottom sticky-top no-print">
+        <div class="container justify-content-center">
+            <div class="navbar-nav">
+                <a class="nav-link px-3 active" id="n1" href="#" onclick="showTab('t1','n1')">PROFIL</a>
+                <a class="nav-link px-3" id="n2" href="#" onclick="showTab('t2','n2')">AUDIT</a>
+                <a class="nav-link px-3" id="n3" href="#" onclick="showTab('t3','n3')">Q&A</a>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <div id="tab2" class="tab-content d-none">
-        <div class="card card-profile p-4 bg-white mx-auto shadow-sm" style="max-width: 600px;">
-            <div id="st1">
-                <h5 class="fw-bold mb-4"><i class="bi bi-calendar-check me-2"></i>Analisis Masa Kerja</h5>
-                <div class="row g-3 mb-4">
-                    <div class="col-6"><label class="small fw-bold text-muted">TGL MULAI</label><input type="date" id="t1" class="form-control"></div>
-                    <div class="col-6"><label class="small fw-bold text-muted">TGL PHK</label><input type="date" id="t2" class="form-control"></div>
+    <div class="container py-4">
+        <div id="t1" class="tab-content">
+            <div class="card card-main mx-auto text-center p-4" style="max-width: 420px;">
+                <div class="mb-3"><img id="uFoto" src="Logo_SBSI.png" class="rounded-circle border" width="110" height="110" style="object-fit:cover;"></div>
+                <h4 id="uNama" class="fw-bold mb-1">---</h4>
+                <p id="uNik" class="text-muted small">NIK: ---</p>
+                <div class="text-start bg-light p-3 rounded-4 mt-3 small">
+                    <div class="text-muted fw-bold">TEMPAT, TGL LAHIR:</div><div id="uTtl" class="mb-2 fw-bold text-dark">---</div>
+                    <div class="text-muted fw-bold">ALAMAT:</div><div id="uAlamat" class="fw-bold text-dark">---</div>
                 </div>
-                <button class="btn btn-primary w-100 py-3 fw-bold shadow-sm" onclick="genGaji()">INPUT RINCIAN UPAH PER BULAN</button>
+                <button class="btn btn-outline-danger btn-sm mt-4 rounded-pill" onclick="location.reload()">LOGOUT</button>
             </div>
+        </div>
 
-            <div id="st2" class="d-none">
-                <h6 class="fw-bold mb-3">Rincian Upah Yang Diterima:</h6>
-                <div id="listG" class="border rounded-3 mb-3 bg-light overflow-auto" style="max-height: 300px;"></div>
-                <div class="p-3 bg-white border rounded-3 mt-3 shadow-sm">
-                    <label class="small fw-bold">Pesangon Sudah Diterima (Rp)</label>
-                    <input type="text" id="pDiterima" class="form-control currency-input mb-3" onkeyup="formatRp(this)" value="Rp 0">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="cDie">
-                        <label class="form-check-label small fw-bold text-danger" for="cDie">PHK Meninggal Dunia (2x Pesangon)</label>
+        <div id="t2" class="tab-content d-none">
+            <div class="card card-main p-4 mx-auto" style="max-width: 600px;">
+                <div id="s1">
+                    <h5 class="fw-bold mb-4">Audit Hak Mandiri</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6"><label class="small fw-bold">TGL MULAI</label><input type="date" id="d1" class="form-control"></div>
+                        <div class="col-6"><label class="small fw-bold">TGL PHK</label><input type="date" id="d2" class="form-control"></div>
                     </div>
+                    <button class="btn btn-sbsi w-100 py-3" onclick="genProrata()">MULAI ANALISIS UPAH</button>
                 </div>
-                <div class="row g-2 mt-4">
-                    <div class="col-4"><button class="btn btn-light w-100 py-2" onclick="location.reload()">BATAL</button></div>
-                    <div class="col-8"><button id="btnP" class="btn btn-danger w-100 py-2 fw-bold" onclick="proses()">HITUNG HAK SEKARANG</button></div>
+
+                <div id="s2" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0">Rincian Upah Per Bulan:</h6>
+                        <span class="badge-hukum">Sistem Pro-rata Hari</span>
+                    </div>
+                    <div id="listIn" class="mb-3 overflow-auto" style="max-height:350px;"></div>
+                    <div class="p-3 border rounded-4 bg-white shadow-sm mb-4">
+                        <label class="small fw-bold">Pesangon Sudah Diterima (Rp)</label>
+                        <input type="text" id="pDone" class="form-control fw-bold text-end" onkeyup="formatRp(this)" value="Rp 0">
+                        <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="isDie"><label class="form-check-label small fw-bold text-danger">PHK Meninggal Dunia (2x Pesangon)</label></div>
+                    </div>
+                    <button class="btn btn-sbsi w-100" onclick="prosesAudit()">HITUNG TOTAL HAK</button>
+                </div>
+
+                <div id="sRes" class="d-none mt-2">
+                    <div id="printArea" class="p-2">
+                        <div class="text-center border-bottom pb-3 mb-4">
+                            <img src="Logo_SBSI.png" width="60" class="mb-2">
+                            <h5 class="fw-bold mb-0">LAPORAN HASIL PERHITUNGAN MANDIRI</h5>
+                            <p class="small text-danger fw-bold mb-0">FSBSI DPC KOTA BITUNG</p>
+                        </div>
+                        <div class="small mb-3">
+                            <div class="d-flex justify-content-between"><span>Nama Pekerja:</span><b id="rNm"></b></div>
+                            <div class="d-flex justify-content-between"><span>Masa Kerja:</span><span id="rMs"></span></div>
+                        </div>
+                        <table class="table table-sm small">
+                            <tr><td>Selisih Upah (Pro-rata Hari)</td><td class="text-end fw-bold" id="oG"></td></tr>
+                            <tr><td>Selisih THR (Pro-rata)</td><td class="text-end fw-bold" id="oT"></td></tr>
+                            <tr><td>Selisih Kompensasi (Pro-rata)</td><td class="text-end fw-bold" id="oK"></td></tr>
+                            <tr class="table-primary fw-bold"><td>Hak Pesangon (<span id="oD"></span>)</td><td class="text-end" id="oP"></td></tr>
+                            <tr class="table-danger h5 fw-bold text-danger"><td class="py-3">TOTAL TUNTUTAN</td><td class="text-end py-3" id="oTot"></td></tr>
+                        </table>
+                        <div class="mt-5 text-end small">Bitung, <span id="rTgl"></span><br><br><br><b id="rSign"></b></div>
+                    </div>
+                    <button class="btn btn-success w-100 py-3 fw-bold no-print mt-3" onclick="window.print()">CETAK / SIMPAN PDF</button>
+                    <button class="btn btn-link w-100 no-print" onclick="location.reload()">Ulangi</button>
                 </div>
             </div>
+        </div>
 
-            <div id="stRes" class="d-none mt-2">
-                <div id="pdf-area" class="p-3">
-                    <div class="text-center mb-4 border-bottom pb-3">
-                        <img src="Logo_SBSI.png" width="60" class="mb-2">
-                        <h5 class="fw-bold mb-0">HASIL PERHITUNGAN MANDIRI</h5>
-                        <p class="small fw-bold text-uppercase text-danger mb-0">FSBSI DPC KOTA BITUNG</p>
-                    </div>
-                    <div class="mb-3 small">
-                        <div class="d-flex justify-content-between border-bottom py-1"><span>Nama Pekerja:</span><span class="fw-bold" id="rNm"></span></div>
-                        <div class="d-flex justify-content-between border-bottom py-1"><span>Masa Kerja:</span><span id="rPrd"></span></div>
-                    </div>
-                    <table class="table table-sm small">
-                        <tr><td>Selisih Upah UMP (Prorata)</td><td class="text-end fw-bold" id="oG"></td></tr>
-                        <tr><td>Selisih THR (Prorata)</td><td class="text-end fw-bold" id="oT"></td></tr>
-                        <tr><td>Selisih Kompensasi</td><td class="text-end fw-bold" id="oK"></td></tr>
-                        <tr class="table-primary fw-bold"><td>Hak Pesangon (<span id="oD"></span>)</td><td class="text-end" id="oP"></td></tr>
-                        <tr class="table-danger fw-bold h5 text-danger"><td class="py-3">TOTAL TUNTUTAN</td><td class="text-end py-3" id="oTot"></td></tr>
-                    </table>
-                    <div class="mt-5 text-end small">
-                        <p>Bitung, <span id="curTgl"></span><br>Pekerja,</p>
-                        <br><br><b id="signNama"></b>
-                        <p class="mt-2 text-muted" style="font-size: 8px;">Dokumen laporan audit mandiri digital.</p>
-                    </div>
-                </div>
-                <div class="row g-2 mt-4 no-print">
-                    <div class="col-6"><button class="btn btn-success w-100 py-3 fw-bold" onclick="window.print()"><i class="bi bi-printer me-1"></i> CETAK / PDF</button></div>
-                    <div class="col-6"><button class="btn btn-outline-secondary w-100 py-3" onclick="location.reload()">ULANGI</button></div>
+        <div id="t3" class="tab-content d-none">
+            <div class="card card-main p-4 mx-auto" style="max-width: 600px;">
+                <h5 class="fw-bold mb-4">Panduan Hak Buruh (PP 35/2021)</h5>
+                <div class="accordion accordion-flush" id="faq">
+                    <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f1">Bagaimana pesangon dihitung?</button></h2><div id="f1" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body small text-muted">Sesuai Pasal 40 (2), pesangon diberikan 1-9 bulan upah tergantung masa kerja. Jika meninggal dunia, dikalikan 2.</div></div></div>
+                    <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f2">Apa itu Pro-rata Hari?</button></h2><div id="f2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body small text-muted">Sistem ini membagi UMP dengan jumlah hari dalam sebulan untuk mendapatkan nilai upah yang adil jika Anda tidak bekerja sebulan penuh.</div></div></div>
+                    <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f3">Kenapa THR dan Kompensasi berbeda?</button></h2><div id="f3" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body small text-muted">Kedua hak ini diberikan proporsional (jumlah bulan kerja / 12) setiap tahunnya.</div></div></div>
                 </div>
             </div>
         </div>
@@ -132,30 +125,28 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbx36VYazybEArTHu0md5g34OJkwc3GxvVx-kStxvMQbfSAJY3V2YWYL4xz4WHb1B3Ee/exec"; // GANTI DENGAN URL DEPLOY ANDA
+    const API = "https://script.google.com/macros/s/AKfycbxCAeJIg89WXI_lbc4oqF4gkFytz4QL0GXO1ET5_6obf1O93GbHSkXTdttmH-anNYS8/exec"; // <--- GANTI DENGAN URL DEPLOYMENT ANDA
     let USER = null;
 
-    function showLoading(v) { document.getElementById('loading').className = v ? 'position-fixed w-100 h-100 d-flex justify-content-center align-items-center bg-white' : 'd-none'; }
-    function formatRp(el) { let v = el.value.replace(/[^,\d]/g, ""); el.value = "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-    function clean(v) { return Number(v.replace(/[^0-9]/g, '')) || 0; }
+    function showTab(t,n){ document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('d-none')); document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active')); document.getElementById(t).classList.remove('d-none'); document.getElementById(n).classList.add('active'); }
+    function loader(s){ document.getElementById('loading').className = s ? 'position-fixed w-100 h-100 d-flex justify-content-center align-items-center bg-white' : 'd-none'; }
+    function formatRp(e){ let v = e.value.replace(/[^,\d]/g,""); e.value = v ? "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g,".") : ""; }
+    function clean(v){ return Number(v.replace(/[^0-9]/g,'')) || 0; }
 
-    async function doLogin() {
-        const nik = document.getElementById('logNik').value, pin = document.getElementById('logPin').value;
-        if(!nik || !pin) return alert("Lengkapi data!");
-        showLoading(true);
+    async function doLogin(){
+        const nik = document.getElementById('lNik').value, pin = document.getElementById('lPin').value;
+        if(!nik || !pin) return alert("Isi NIK & PIN!");
+        loader(true);
         try {
-            const r = await fetch(API, { method:'POST', body: JSON.stringify({ action:"login", nik, pin })});
+            const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik, pin})});
             const d = await r.json();
-            if(d.status === "success") { USER = d.user; localStorage.setItem('sbsi_user', JSON.stringify(USER)); showMain(); } 
+            if(d.status==='success'){ USER=d.user; document.getElementById('secLogin').classList.add('d-none'); document.getElementById('app').classList.remove('d-none'); renderUser(); }
             else alert(d.message);
-        } catch(e) { alert("Error Koneksi!"); }
-        showLoading(false);
+        } catch(e){ alert("Error Koneksi!"); }
+        loader(false);
     }
 
-    function showMain() {
-        document.getElementById('secLogin').classList.add('d-none');
-        document.getElementById('mainNav').classList.remove('d-none');
-        document.getElementById('secMain').classList.remove('d-none');
+    function renderUser(){
         document.getElementById('uNama').innerText = USER.nama;
         document.getElementById('uNik').innerText = "NIK: " + USER.nik;
         document.getElementById('uTtl').innerText = USER.tempat + ", " + USER.tglLahir;
@@ -163,65 +154,52 @@
         document.getElementById('uFoto').src = USER.foto || "Logo_SBSI.png";
     }
 
-    function showTab(t, l) {
-        document.querySelectorAll('.tab-content').forEach(x => x.classList.add('d-none'));
-        document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
-        document.getElementById(t).classList.remove('d-none');
-        document.getElementById(l).classList.add('active');
-    }
-
-    function genGaji() {
-        const d1 = new Date(document.getElementById('t1').value), d2 = new Date(document.getElementById('t2').value);
-        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal dengan benar!");
-        let h = "";
-        let curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
+    function genProrata(){
+        const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
+        if(isNaN(d1)||isNaN(d2)) return alert("Isi tanggal dengan benar!");
+        let h = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
         const bln = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"];
-        while(curr <= d2) {
-            let label = bln[curr.getMonth()] + " " + curr.getFullYear();
-            h += `<div class="p-2 border-bottom d-flex justify-content-between align-items-center bg-white small">
-                    <span>${label}</span>
-                    <input type="text" class="form-control form-control-sm w-50 val-g text-end fw-bold" data-bln="${label}" onkeyup="formatRp(this)" value="Rp 0">
-                  </div>`;
-            curr.setMonth(curr.getMonth() + 1);
+        while(curr <= d2){
+            let l = bln[curr.getMonth()] + " " + curr.getFullYear();
+            h += `<div class="input-monthly small"><span>${l}</span><input type="text" class="form-control form-control-sm w-50 in-g text-end fw-bold border-0" data-b="${l}" onkeyup="formatRp(this)" value="Rp 3.500.000"></div>`;
+            curr.setMonth(curr.getMonth()+1);
         }
-        document.getElementById('listG').innerHTML = h;
-        document.getElementById('st1').classList.add('d-none');
-        document.getElementById('st2').classList.remove('d-none');
+        document.getElementById('listIn').innerHTML = h;
+        document.getElementById('s1').classList.add('d-none');
+        document.getElementById('s2').classList.remove('d-none');
     }
 
-    async function proses() {
-        showLoading(true);
-        const rincian = Array.from(document.querySelectorAll('.val-g')).map(i => ({ bulan: i.dataset.bln, gaji: clean(i.value) }));
-        const data = {
-            action: "audit", 
-            tglMulai: document.getElementById('t1').value, 
-            tglSelesai: document.getElementById('t2').value,
+    async function prosesAudit(){
+        loader(true);
+        const rincian = Array.from(document.querySelectorAll('.in-g')).map(i => ({ bulan: i.dataset.b, gaji: clean(i.value) }));
+        const payload = {
+            action: 'audit',
+            tglMulai: document.getElementById('d1').value,
+            tglSelesai: document.getElementById('d2').value,
             rincianGaji: rincian,
-            pesangonDiterima: clean(document.getElementById('pDiterima').value),
-            isMeninggal: document.getElementById('cDie').checked,
-            masaKerja: Math.floor((new Date(document.getElementById('t2').value) - new Date(document.getElementById('t1').value)) / (365.25 * 24 * 60 * 60 * 1000))
+            pesangonDiterima: clean(document.getElementById('pDone').value),
+            isMeninggal: document.getElementById('isDie').checked,
+            masaKerja: Math.floor((new Date(document.getElementById('d2').value) - new Date(document.getElementById('d1').value))/(365.25*24*60*60*1000))
         };
         try {
-            const r = await (await fetch(API, { method:'POST', body: JSON.stringify(data)})).json();
-            if(r.status === "success") {
-                document.getElementById('oG').innerText = "Rp " + r.sGaji.toLocaleString('id-ID');
-                document.getElementById('oT').innerText = "Rp " + r.sThr.toLocaleString('id-ID');
-                document.getElementById('oK').innerText = "Rp " + r.sKomp.toLocaleString('id-ID');
-                document.getElementById('oP').innerText = "Rp " + r.pesangon.toLocaleString('id-ID');
+            const r = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
+            if(r.status==='success'){
+                document.getElementById('oG').innerText = "Rp "+r.sGaji.toLocaleString('id-ID');
+                document.getElementById('oT').innerText = "Rp "+r.sThr.toLocaleString('id-ID');
+                document.getElementById('oK').innerText = "Rp "+r.sKomp.toLocaleString('id-ID');
+                document.getElementById('oP').innerText = "Rp "+r.pesangon.toLocaleString('id-ID');
                 document.getElementById('oD').innerText = r.detail;
-                document.getElementById('oTot').innerText = "Rp " + r.total.toLocaleString('id-ID');
+                document.getElementById('oTot').innerText = "Rp "+r.total.toLocaleString('id-ID');
                 document.getElementById('rNm').innerText = USER.nama;
-                document.getElementById('rPrd').innerText = data.tglMulai + " s/d " + data.tglSelesai;
-                document.getElementById('signNama').innerText = "(" + USER.nama + ")";
-                document.getElementById('curTgl').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
-                document.getElementById('st2').classList.add('d-none');
-                document.getElementById('stRes').classList.remove('d-none');
+                document.getElementById('rMs').innerText = payload.tglMulai + " s/d " + payload.tglSelesai;
+                document.getElementById('rSign').innerText = "("+USER.nama+")";
+                document.getElementById('rTgl').innerText = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+                document.getElementById('s2').classList.add('d-none');
+                document.getElementById('sRes').classList.remove('d-none');
             }
-        } catch(e) { alert("Gagal Audit!"); }
-        showLoading(false);
+        } catch(e){ alert("Koneksi Gagal!"); }
+        loader(false);
     }
-
-    function doLogout() { localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
