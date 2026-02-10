@@ -3,146 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBSI Pocket Pro</title>
+    <title>SBSI Pocket Pro | Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --sbsi: #dc3545; --bg: #f8f9fa; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; color: #333; }
-        .card-main { border: none; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: white; }
-        .nav-link { color: #666; font-weight: 600; border-bottom: 3px solid transparent; }
-        .nav-link.active { color: var(--sbsi) !important; border-bottom: 3px solid var(--sbsi); }
-        .btn-sbsi { background: var(--sbsi); color: white; border-radius: 12px; font-weight: bold; padding: 12px; transition: 0.3s; border: none; }
-        .btn-sbsi:hover { background: #a71d2a; transform: translateY(-2px); color: white; }
-        .input-monthly { border: 1px solid #eee; border-radius: 12px; padding: 12px; margin-bottom: 10px; background: #fff; display: flex; align-items: center; justify-content: space-between; }
-        .badge-hukum { background: #fff2f2; color: var(--sbsi); border: 1px solid #ffcaca; padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
-        @media print { .no-print { display: none !important; } .card-main { box-shadow: none; border: 1px solid #eee; } body { background: white; } }
+        :root { --sbsi-red: #dc3545; --sbsi-dark: #212529; --glass: rgba(255, 255, 255, 0.9); }
+        body { background: #f0f2f5; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--sbsi-dark); }
+        
+        /* Glassmorphism Effect */
+        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        
+        /* Navbar Modern */
+        .nav-custom { background: white; border-radius: 0 0 30px 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .nav-link { font-weight: 600; color: #6c757d; padding: 12px 20px !important; border-radius: 12px; transition: 0.3s; }
+        .nav-link.active { color: var(--sbsi-red) !important; background: rgba(220, 53, 69, 0.08); }
+
+        /* Dashboard Stats */
+        .stat-card { border-radius: 20px; padding: 20px; border: none; transition: 0.3s; height: 100%; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .icon-box { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 15px; }
+
+        /* Welcome Section */
+        .welcome-hero { background: linear-gradient(135deg, #dc3545, #9c1c27); border-radius: 30px; padding: 40px; color: white; margin-bottom: 30px; position: relative; overflow: hidden; }
+        .welcome-hero::after { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+
+        /* Profile Img Dashboard */
+        .dash-profile-img { width: 80px; height: 80px; object-fit: cover; border-radius: 20px; border: 3px solid rgba(255,255,255,0.3); }
+
+        .btn-action { border-radius: 15px; padding: 12px 25px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: none; transition: 0.3s; }
+        .btn-primary-sbsi { background: var(--sbsi-red); color: white; box-shadow: 0 10px 20px rgba(220, 53, 69, 0.2); }
+        .btn-primary-sbsi:hover { background: #bb2d3b; transform: scale(1.02); color: white; }
+
+        /* Loading */
+        #loading { background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); z-index: 9999; }
+
+        @media print { .no-print { display: none !important; } .container { width: 100% !important; max-width: 100% !important; } }
     </style>
 </head>
 <body>
 
-<div id="loading" class="position-fixed w-100 h-100 d-none justify-content-center align-items-center bg-white" style="z-index:9999; opacity:0.9;">
-    <div class="text-center"><div class="spinner-border text-danger mb-2"></div><div class="fw-bold">Menghitung Data...</div></div>
+<div id="loading" class="position-fixed w-100 h-100 d-none d-flex flex-column justify-content-center align-items-center">
+    <div class="spinner-border text-danger mb-3" style="width: 3rem; height: 3rem;"></div>
+    <div class="fw-bold text-uppercase">Sedangkan Memproses...</div>
 </div>
 
 <div id="secLogin" class="container pt-5">
-    <div class="card card-main p-5 mx-auto text-center" style="max-width: 400px;">
-        <img src="Logo_SBSI.png" width="80" class="mb-3 mx-auto">
-        <h4 class="fw-bold mb-4">SBSI POCKET</h4>
-        <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
-        <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
-        <button class="btn btn-sbsi w-100" onclick="doLogin()">MASUK</button>
+    <div class="card glass-card p-5 mx-auto text-center" style="max-width: 450px;">
+        <img src="Logo_SBSI.png" width="90" class="mb-4 mx-auto drop-shadow">
+        <h3 class="fw-800">SBSI POCKET</h3>
+        <p class="text-muted small mb-4">Sistem Audit Hak Buruh Digital DPC Kota Bitung</p>
+        <div class="form-floating mb-3">
+            <input type="text" id="lNik" class="form-control rounded-4" placeholder="NIK">
+            <label>Masukkan NIK</label>
+        </div>
+        <div class="form-floating mb-4">
+            <input type="password" id="lPin" class="form-control rounded-4" placeholder="PIN">
+            <label>Masukkan PIN</label>
+        </div>
+        <button class="btn btn-action btn-primary-sbsi w-100 py-3" onclick="doLogin()">MASUK KE DASHBOARD</button>
     </div>
 </div>
 
 <div id="app" class="d-none">
-    <nav class="navbar navbar-expand bg-white border-bottom sticky-top no-print">
-        <div class="container justify-content-center">
-            <div class="navbar-nav">
-                <a class="nav-link px-3 active" id="n1" href="#" onclick="showTab('t1','n1')">PROFIL</a>
-                <a class="nav-link px-3" id="n2" href="#" onclick="showTab('t2','n2')">AUDIT</a>
-                <a class="nav-link px-3" id="n3" href="#" onclick="showTab('t3','n3')">Q&A</a>
+    <nav class="navbar navbar-expand nav-custom no-print mb-4">
+        <div class="container">
+            <div class="navbar-nav mx-auto">
+                <a class="nav-link active" id="n1" href="#" onclick="showTab('t1','n1')"><i class="bi bi-grid-fill me-2"></i>DASHBOARD</a>
+                <a class="nav-link" id="n2" href="#" onclick="showTab('t2','n2')"><i class="bi bi-calculator-fill me-2"></i>AUDIT HAK</a>
+                <a class="nav-link" id="n3" href="#" onclick="showTab('t3','n3')"><i class="bi bi-journal-text me-2"></i>PANDUAN</a>
             </div>
         </div>
     </nav>
 
-    <div class="container py-4">
+    <div class="container pb-5">
         <div id="t1" class="tab-content">
-            <div class="card card-main mx-auto text-center p-4" style="max-width: 420px;">
-                <div class="mb-3"><img id="uFoto" src="Logo_SBSI.png" class="rounded-circle border" width="110" height="110" style="object-fit:cover;"></div>
-                <h4 id="uNama" class="fw-bold mb-1">---</h4>
-                <p id="uNik" class="text-muted small">NIK: ---</p>
-                <div class="text-start bg-light p-3 rounded-4 mt-3 small">
-                    <div class="text-muted fw-bold">TEMPAT, TGL LAHIR:</div><div id="uTtl" class="mb-2 fw-bold text-dark">---</div>
-                    <div class="text-muted fw-bold">ALAMAT:</div><div id="uAlamat" class="fw-bold text-dark">---</div>
+            <div class="welcome-hero d-flex align-items-center justify-content-between">
+                <div>
+                    <h2 class="fw-800 mb-1">Halo, <span id="uNama">---</span>!</h2>
+                    <p class="mb-0 opacity-75">Selamat datang di portal audit mandiri SBSI Kota Bitung.</p>
+                    <div class="mt-3">
+                        <span class="badge bg-white text-danger rounded-pill px-3 py-2 fw-bold" id="uNik">NIK: ---</span>
+                    </div>
                 </div>
-                <button class="btn btn-outline-danger btn-sm mt-4 rounded-pill" onclick="location.reload()">LOGOUT</button>
+                <img id="uFoto" src="Logo_SBSI.png" class="dash-profile-img shadow">
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card glass-card p-4 h-100">
+                        <h5 class="fw-bold mb-4">Informasi Personal</h5>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="text-muted small fw-bold">TEMPAT, TANGGAL LAHIR</label>
+                                <p class="fw-bold" id="uTtl">---</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="text-muted small fw-bold">ALAMAT LENGKAP</label>
+                                <p class="fw-bold" id="uAlamat">---</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light rounded-pill px-4" onclick="showTab('t2','n2')">Mulai Audit Baru</button>
+                            <button class="btn btn-outline-danger rounded-pill px-4" onclick="location.reload()">Logout</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card glass-card p-4 h-100 text-center">
+                        <div class="icon-box bg-danger text-white mx-auto"><i class="bi bi-shield-check"></i></div>
+                        <h6 class="fw-bold">Status Keanggotaan</h6>
+                        <p class="small text-muted">Aktif sebagai Anggota FSBSI DPC Kota Bitung</p>
+                        <img src="Logo_SBSI.png" width="80" class="mx-auto mt-2 opacity-25">
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="t2" class="tab-content d-none">
-            <div class="card card-main p-4 mx-auto" style="max-width: 600px;">
+            <div class="card glass-card p-4 mx-auto" style="max-width: 800px;">
                 <div id="s1">
-                    <h5 class="fw-bold mb-4">Audit Hak Mandiri</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-6"><label class="small fw-bold">TGL MULAI</label><input type="date" id="d1" class="form-control"></div>
-                        <div class="col-6"><label class="small fw-bold">TGL PHK</label><input type="date" id="d2" class="form-control"></div>
+                    <div class="text-center mb-5">
+                        <h3 class="fw-800">Mulai Perhitungan Hak</h3>
+                        <p class="text-muted">Pastikan tanggal mulai dan selesai kerja sesuai dengan kontrak/sk.</p>
                     </div>
-                    <button class="btn btn-sbsi w-100 py-3" onclick="genProrata()">MULAI ANALISIS UPAH</button>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-4">
+                                <label class="fw-bold small mb-2 text-danger">TANGGAL MULAI KERJA</label>
+                                <input type="date" id="d1" class="form-control form-control-lg border-0 shadow-sm">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-4">
+                                <label class="fw-bold small mb-2 text-danger">TANGGAL PHK / RESIGN</label>
+                                <input type="date" id="d2" class="form-control form-control-lg border-0 shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-action btn-primary-sbsi w-100 py-3" onclick="genProrata()">LANJUT KE INPUT UPAH</button>
                 </div>
 
                 <div id="s2" class="d-none">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold mb-0">Rincian Upah Per Bulan:</h6>
-                        <span class="badge-hukum">Sistem Pro-rata Hari</span>
+                    <div class="alert alert-info rounded-4 border-0 small mb-4">
+                        <i class="bi bi-info-circle-fill me-2"></i> Sistem kami menggunakan <b>Pro-rata Hari</b>. Jika Anda masuk/keluar di tengah bulan, upah akan dihitung proporsional.
                     </div>
-                    <div id="listIn" class="mb-3 overflow-auto" style="max-height:350px;"></div>
-                    <div class="p-3 border rounded-4 bg-white shadow-sm mb-4">
-                        <label class="small fw-bold">Pesangon Sudah Diterima (Rp)</label>
-                        <input type="text" id="pDone" class="form-control fw-bold text-end" onkeyup="formatRp(this)" value="Rp 0">
-                        <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="isDie"><label class="form-check-label small fw-bold text-danger">PHK Meninggal Dunia (2x Pesangon)</label></div>
+                    <div id="listIn" class="row g-2 mb-4 overflow-auto" style="max-height: 400px;"></div>
+                    
+                    <div class="p-4 bg-light rounded-4 mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <h6 class="fw-bold mb-1">Sudah Menerima Pesangon?</h6>
+                                <p class="small text-muted mb-md-0">Input jumlah jika perusahaan sudah membayar sebagian.</p>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="text" id="pDone" class="form-control form-control-lg text-end fw-bold text-primary" onkeyup="formatRp(this)" value="Rp 0">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isDie">
+                            <label class="form-check-label fw-bold text-danger">Karyawan Meninggal Dunia (Hak Pesangon 2 Kali Lipat)</label>
+                        </div>
                     </div>
-                    <button class="btn btn-sbsi w-100" onclick="prosesAudit()">HITUNG TOTAL HAK</button>
+                    <button class="btn btn-action btn-primary-sbsi w-100 py-3" onclick="prosesAudit()">HITUNG TOTAL TUNTUTAN</button>
                 </div>
 
                 <div id="sRes" class="d-none mt-2">
-                    <div id="printArea" class="p-2">
-                        <div class="text-center border-bottom pb-3 mb-4">
+                    <div id="printArea" class="p-4 bg-white rounded-4 shadow-sm border">
+                        <div class="text-center mb-4 pb-3 border-bottom">
                             <img src="Logo_SBSI.png" width="60" class="mb-2">
-                            <h5 class="fw-bold mb-0">LAPORAN HASIL PERHITUNGAN MANDIRI</h5>
-                            <p class="small text-danger fw-bold mb-0">FSBSI DPC KOTA BITUNG</p>
+                            <h4 class="fw-800 mb-0">HASIL AUDIT HAK DIGITAL</h4>
+                            <p class="text-danger fw-bold mb-0">FSBSI DPC KOTA BITUNG</p>
                         </div>
-                        <div class="small mb-3">
-                            <div class="d-flex justify-content-between"><span>Nama Pekerja:</span><b id="rNm"></b></div>
-                            <div class="d-flex justify-content-between"><span>Masa Kerja:</span><span id="rMs"></span></div>
+                        
+                        <div class="row mb-4 small">
+                            <div class="col-6"><span>Nama Pekerja:</span><br><b id="rNm" class="text-uppercase">---</b></div>
+                            <div class="col-6 text-end"><span>Periode Kerja:</span><br><b id="rMs">---</b></div>
                         </div>
-                        <table class="table table-sm small">
-                            <tr><td>Selisih Upah (Pro-rata Hari)</td><td class="text-end fw-bold" id="oG"></td></tr>
-                            <tr><td>Selisih THR (Pro-rata)</td><td class="text-end fw-bold" id="oT"></td></tr>
-                            <tr><td>Selisih Kompensasi (Pro-rata)</td><td class="text-end fw-bold" id="oK"></td></tr>
-                            <tr class="table-primary fw-bold"><td>Hak Pesangon (<span id="oD"></span>)</td><td class="text-end" id="oP"></td></tr>
-                            <tr class="table-danger h5 fw-bold text-danger"><td class="py-3">TOTAL TUNTUTAN</td><td class="text-end py-3" id="oTot"></td></tr>
-                        </table>
-                        <div class="mt-5 text-end small">Bitung, <span id="rTgl"></span><br><br><br><b id="rSign"></b></div>
+
+                        <div class="list-group list-group-flush mb-4">
+                            <div class="list-group-item d-flex justify-content-between py-3">
+                                <span>Kekurangan Upah (Prorata UMP)</span><b id="oG">Rp 0</b>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between py-3">
+                                <span>Selisih THR Pro-rata</span><b id="oT">Rp 0</b>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between py-3">
+                                <span>Selisih Kompensasi Pro-rata</span><b id="oK">Rp 0</b>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between py-3 bg-light">
+                                <span>Hak Pesangon (<span id="oD"></span>)</span><b id="oP">Rp 0</b>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-danger text-white rounded-4 d-flex justify-content-between align-items-center">
+                            <div><h6 class="mb-0 fw-bold">ESTIMASI TOTAL HAK</h6><small class="opacity-75">*Berdasarkan PP 35/2021</small></div>
+                            <h2 class="fw-800 mb-0" id="oTot">Rp 0</h2>
+                        </div>
+
+                        <div class="mt-5 d-flex justify-content-between align-items-end small">
+                            <div><img src="Logo_SBSI.png" width="40" class="opacity-25"></div>
+                            <div class="text-end">
+                                Bitung, <span id="rTgl"></span><br>Audit Mandiri Pekerja,<br><br><br><b id="rSign" class="text-uppercase"></b>
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn btn-success w-100 py-3 fw-bold no-print mt-3" onclick="window.print()">CETAK / SIMPAN PDF</button>
-                    <button class="btn btn-link w-100 no-print" onclick="location.reload()">Ulangi</button>
+                    <div class="d-grid gap-2 mt-4 no-print">
+                        <button class="btn btn-success btn-action py-3" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK / DOWNLOAD PDF</button>
+                        <button class="btn btn-light btn-action" onclick="location.reload()">ULANGI AUDIT</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="t3" class="tab-content d-none">
-            <div class="card card-main p-4 mx-auto" style="max-width: 600px;">
-                <h5 class="fw-bold mb-4">Panduan Hak Buruh (PP 35/2021)</h5>
-                <div class="accordion accordion-flush" id="faq">
-                    <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f1">Bagaimana pesangon dihitung?</button></h2><div id="f1" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body small text-muted">Sesuai Pasal 40 (2), pesangon diberikan 1-9 bulan upah tergantung masa kerja. Jika meninggal dunia, dikalikan 2.</div></div></div>
-                    <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f2">Apa itu Pro-rata Hari?</button></h2><div id="f2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body small text-muted">Sistem ini membagi UMP dengan jumlah hari dalam sebulan untuk mendapatkan nilai upah yang adil jika Anda tidak bekerja sebulan penuh.</div></div></div>
-                    <div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#f3">Kenapa THR dan Kompensasi berbeda?</button></h2><div id="f3" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body small text-muted">Kedua hak ini diberikan proporsional (jumlah bulan kerja / 12) setiap tahunnya.</div></div></div>
+            <div class="card glass-card p-4 mx-auto" style="max-width: 700px;">
+                <h4 class="fw-800 mb-4 text-danger"><i class="bi bi-book me-2"></i>Dasar Hukum & Panduan</h4>
+                <div class="accordion accordion-flush" id="faqDash">
+                    <div class="accordion-item border-0 mb-3 glass-card shadow-sm">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed fw-bold rounded-4" data-bs-toggle="collapse" data-bs-target="#f1">Uang Pesangon (UP) - Pasal 40 (2)</button></h2>
+                        <div id="f1" class="accordion-collapse collapse" data-bs-parent="#faqDash">
+                            <div class="accordion-body small">Diberikan sesuai masa kerja: 1 thn (1 bln upah), 2-3 thn (3 bln upah), hingga maks 8 thn keatas (9 bln upah).</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item border-0 mb-3 glass-card shadow-sm">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed fw-bold rounded-4" data-bs-toggle="collapse" data-bs-target="#f2">Uang Penghargaan Masa Kerja (UPMK)</button></h2>
+                        <div id="f2" class="accordion-collapse collapse" data-bs-parent="#faqDash">
+                            <div class="accordion-body small">Diberikan bagi yang bekerja minimal 3 tahun. 3-6 thn (2 bln upah), hingga maksimal 24 thn (10 bln upah).</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbxCAeJIg89WXI_lbc4oqF4gkFytz4QL0GXO1ET5_6obf1O93GbHSkXTdttmH-anNYS8/exec"; // <--- GANTI DENGAN URL DEPLOYMENT ANDA
+    const API = "URL_WEB_APP_ANDA"; // <--- GANTI DISINI
     let USER = null;
 
-    function showTab(t,n){ document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('d-none')); document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active')); document.getElementById(t).classList.remove('d-none'); document.getElementById(n).classList.add('active'); }
-    function loader(s){ document.getElementById('loading').className = s ? 'position-fixed w-100 h-100 d-flex justify-content-center align-items-center bg-white' : 'd-none'; }
+    function showTab(t,n){ 
+        document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('d-none')); 
+        document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active')); 
+        document.getElementById(t).classList.remove('d-none'); 
+        document.getElementById(n).classList.add('active'); 
+    }
+    
+    function loader(s){ document.getElementById('loading').classList.toggle('d-none', !s); }
     function formatRp(e){ let v = e.value.replace(/[^,\d]/g,""); e.value = v ? "Rp " + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g,".") : ""; }
     function clean(v){ return Number(v.replace(/[^0-9]/g,'')) || 0; }
 
     async function doLogin(){
         const nik = document.getElementById('lNik').value, pin = document.getElementById('lPin').value;
-        if(!nik || !pin) return alert("Isi NIK & PIN!");
+        if(!nik || !pin) return alert("Silakan masukkan NIK dan PIN.");
         loader(true);
         try {
             const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik, pin})});
             const d = await r.json();
-            if(d.status==='success'){ USER=d.user; document.getElementById('secLogin').classList.add('d-none'); document.getElementById('app').classList.remove('d-none'); renderUser(); }
-            else alert(d.message);
-        } catch(e){ alert("Error Koneksi!"); }
+            if(d.status==='success'){ 
+                USER=d.user; 
+                document.getElementById('secLogin').classList.add('d-none'); 
+                document.getElementById('app').classList.remove('d-none'); 
+                renderUser(); 
+            } else alert(d.message);
+        } catch(e){ alert("Gagal terhubung ke server."); }
         loader(false);
     }
 
@@ -156,12 +283,17 @@
 
     function genProrata(){
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
-        if(isNaN(d1)||isNaN(d2)) return alert("Isi tanggal dengan benar!");
+        if(isNaN(d1)||isNaN(d2)) return alert("Tentukan tanggal dengan benar.");
         let h = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
         const bln = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agt","Sep","Okt","Nov","Des"];
         while(curr <= d2){
             let l = bln[curr.getMonth()] + " " + curr.getFullYear();
-            h += `<div class="input-monthly small"><span>${l}</span><input type="text" class="form-control form-control-sm w-50 in-g text-end fw-bold border-0" data-b="${l}" onkeyup="formatRp(this)" value="Rp 3.500.000"></div>`;
+            h += `<div class="col-sm-6 col-md-4">
+                    <div class="p-3 bg-white border rounded-4 shadow-sm">
+                        <label class="small fw-bold text-muted">${l}</label>
+                        <input type="text" class="form-control border-0 fw-bold in-g text-end" data-b="${l}" onkeyup="formatRp(this)" value="Rp 3.500.000">
+                    </div>
+                  </div>`;
             curr.setMonth(curr.getMonth()+1);
         }
         document.getElementById('listIn').innerHTML = h;
@@ -192,12 +324,12 @@
                 document.getElementById('oTot').innerText = "Rp "+r.total.toLocaleString('id-ID');
                 document.getElementById('rNm').innerText = USER.nama;
                 document.getElementById('rMs').innerText = payload.tglMulai + " s/d " + payload.tglSelesai;
-                document.getElementById('rSign').innerText = "("+USER.nama+")";
+                document.getElementById('rSign').innerText = USER.nama;
                 document.getElementById('rTgl').innerText = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
                 document.getElementById('s2').classList.add('d-none');
                 document.getElementById('sRes').classList.remove('d-none');
             }
-        } catch(e){ alert("Koneksi Gagal!"); }
+        } catch(e){ alert("Gagal menghitung hak."); }
         loader(false);
     }
 </script>
