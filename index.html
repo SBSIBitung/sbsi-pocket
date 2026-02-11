@@ -9,57 +9,65 @@
     <style>
         :root { --sbsi-red: #dc3545; --sbsi-dark: #1e1e2d; }
         * { -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { background-color: #f4f6f9; font-family: sans-serif; margin: 0; }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        
+        /* Splash Screen */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.6s; }
-        .top-bar { background: white; padding: 12px 20px; border-bottom: 2px solid var(--sbsi-red); sticky: top; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
-        .card-custom { border-radius: 20px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .splash-logo { width: 160px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% {transform:scale(1)} 50% {transform:scale(1.05)} 100% {transform:scale(1)} }
+
+        /* App UI */
+        .card-custom { border-radius: 20px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .btn-main { background: var(--sbsi-red); color: white; border-radius: 12px; padding: 14px; font-weight: bold; border: none; width: 100%; }
+        .top-nav { background: white; border-bottom: 2px solid var(--sbsi-red); padding: 10px 20px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
         .tab-content { display: none; } .tab-content.active { display: block; }
-        #loading { background: rgba(255,255,255,0.9); z-index: 9999; display: none; position: fixed; width: 100%; height: 100%; }
+        #loading { background: rgba(255,255,255,0.9); z-index: 9999; display: none; position: fixed; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
 <div id="splash">
-    <img src="Logo_SBSI.png" style="width: 160px;">
-    <div class="mt-4 fw-bold text-danger" style="letter-spacing: 4px;">mySBSI</div>
+    <img src="Logo_SBSI.png" class="splash-logo">
+    <div class="mt-4 fw-bold text-danger" style="letter-spacing: 5px;">mySBSI</div>
 </div>
 
-<div id="loading" class="flex-column justify-content-center align-items-center">
+<div id="loading">
     <div class="spinner-border text-danger"></div>
+    <div class="mt-3 small fw-bold text-muted">MENGHITUNG HAK...</div>
 </div>
 
 <div id="secLogin" class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
     <img src="Logo My SBSI.png" style="width: 180px;" class="mb-5">
     <div class="card card-custom p-4 w-100" style="max-width: 380px;">
-        <input type="text" id="lNik" class="form-control mb-3 p-3" placeholder="Nomor NIK">
-        <input type="password" id="lPin" class="form-control mb-4 p-3" placeholder="PIN">
-        <button class="btn-main" onclick="doLogin()">MASUK</button>
+        <h6 class="text-center fw-bold text-muted mb-4">MASUK ANGGOTA</h6>
+        <input type="text" id="lNik" class="form-control mb-3 p-3 text-center" placeholder="NIK">
+        <input type="password" id="lPin" class="form-control mb-4 p-3 text-center" placeholder="PIN">
+        <button class="btn-main" onclick="doLogin()">LOGIN</button>
     </div>
 </div>
 
 <div id="app" class="d-none">
-    <div class="top-bar">
-        <img src="Logo My SBSI.png" height="32">
-        <button class="btn btn-sm text-danger fw-bold" onclick="location.reload()">LOGOUT</button>
+    <div class="top-nav">
+        <img src="Logo My SBSI.png" height="30">
+        <button class="btn btn-sm text-danger fw-bold" onclick="location.reload()">KELUAR</button>
     </div>
 
     <div class="container py-4">
         <div id="mainMenu" class="tab-content active">
-            <div class="card card-custom bg-dark text-white p-4 mb-4">
-                <small class="opacity-75">Halo,</small>
+            <div class="card card-custom bg-dark text-white p-4 mb-4" style="background: linear-gradient(45deg, #1e1e2d, #3e3e5d);">
+                <small class="opacity-75">Selamat Datang,</small>
                 <h4 id="uNama" class="fw-bold mb-0">--</h4>
-                <div id="uNik" class="small mt-1 text-danger fw-bold">--</div>
+                <div id="uNik" class="badge bg-danger mt-2">--</div>
             </div>
             <div class="row g-3">
                 <div class="col-6" onclick="showTab('tAudit')">
-                    <div class="card card-custom p-4 text-center h-100">
-                        <i class="bi bi-calculator h1 text-danger"></i><br><b>Audit Hak</b>
+                    <div class="card card-custom p-4 text-center">
+                        <i class="bi bi-calculator-fill h1 text-danger"></i><br><b>Audit Hak</b>
                     </div>
                 </div>
                 <div class="col-6" onclick="showTab('tProfil')">
-                    <div class="card card-custom p-4 text-center h-100">
-                        <i class="bi bi-person-badge h1 text-danger"></i><br><b>Profil</b>
+                    <div class="card card-custom p-4 text-center">
+                        <i class="bi bi-person-fill h1 text-danger"></i><br><b>Profil</b>
                     </div>
                 </div>
             </div>
@@ -67,23 +75,32 @@
 
         <div id="tAudit" class="tab-content">
             <div class="card card-custom p-4">
-                <h5 class="fw-bold mb-4">Input Data PHK</h5>
+                <h5 class="fw-bold mb-4 border-bottom pb-2 text-danger">Audit Hak PHK</h5>
                 <div id="s1">
-                    <label class="small fw-bold">Mulai Kerja</label><input type="date" id="d1" class="form-control mb-3">
-                    <label class="small fw-bold">Tanggal PHK</label><input type="date" id="d2" class="form-control mb-4">
+                    <label class="small fw-bold mb-1">TMT Mulai Kerja</label><input type="date" id="d1" class="form-control mb-3">
+                    <label class="small fw-bold mb-1">Tanggal PHK</label><input type="date" id="d2" class="form-control mb-4">
                     <button class="btn-main" onclick="genProrata()">LANJUTKAN</button>
-                    <button class="btn btn-link w-100 text-muted mt-2" onclick="showTab('mainMenu')">Kembali</button>
+                    <button class="btn btn-link w-100 text-muted mt-2" onclick="showTab('mainMenu')">Batal</button>
                 </div>
                 <div id="s2" class="d-none">
-                    <div id="listIn" class="mb-4" style="max-height: 400px; overflow-y: auto;"></div>
+                    <div id="listIn" class="mb-4" style="max-height: 350px; overflow-y: auto;"></div>
                     <button class="btn-main" onclick="prosesAudit()">HITUNG ESTIMASI</button>
                 </div>
-                <div id="sRes" class="d-none text-center">
-                    <div class="p-4 bg-light rounded-4 mb-4">
-                        <small class="fw-bold text-muted">TOTAL ESTIMASI HAK</small>
-                        <h2 id="oTot" class="text-danger fw-bold mt-2">--</h2>
+                <div id="sRes" class="d-none">
+                    <div class="text-center mb-4">
+                        <h6 class="fw-bold text-muted mb-1">Masa Kerja: <span id="resMasa">--</span></h6>
+                        <hr>
                     </div>
-                    <button class="btn btn-outline-danger w-100 p-3" onclick="location.reload()">SELESAI</button>
+                    <div class="p-3 bg-light rounded-4 mb-4 small">
+                        <div class="d-flex justify-content-between mb-2"><span>Selisih UMP:</span> <b id="resUmp">Rp 0</b></div>
+                        <div class="d-flex justify-content-between mb-2"><span>Selisih THR:</span> <b id="resThr">Rp 0</b></div>
+                        <div class="d-flex justify-content-between mb-2"><span>Kompensasi:</span> <b id="resKomp">Rp 0</b></div>
+                        <div class="d-flex justify-content-between mb-2"><span>Pesangon & UPMK:</span> <b id="resPesangon">Rp 0</b></div>
+                        <div class="d-flex justify-content-between border-top pt-2 mt-2 fw-bold text-danger h5">
+                            <span>TOTAL:</span> <span id="oTot">Rp 0</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-danger w-100 p-3 fw-bold" onclick="location.reload()">TUTUP</button>
                 </div>
             </div>
         </div>
@@ -91,43 +108,43 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyDQTK_7YYyjQm0Tds7W_tzuo5y9T9j3o_z1pgNqKyU1WKrsXxmSUh6jfT5dPcQaCcH/exec"; // Masukkan URL Deploy Anda di sini
-    let USER = null;
-
+    const API = "https://script.google.com/macros/s/AKfycbycs4rk9dhFLh6henQp0j39Srt2my3gl1WdmnAujZFTogBfD5xkoBbubtFHvXb-QmBy/exec"; // <--- WAJIB GANTI DENGAN URL DEPLOY ANDA
+    
     window.onload = () => { setTimeout(() => { document.getElementById('splash').style.opacity='0'; setTimeout(()=>document.getElementById('splash').style.display='none',600); }, 2500); };
 
     async function doLogin(){
         const nik = document.getElementById('lNik').value, pin = document.getElementById('lPin').value;
-        if(!nik || !pin) return;
+        if(!nik || !pin) return alert("Isi NIK & PIN!");
         loader(true);
         try {
             const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik, pin})});
             const d = await r.json();
             if(d.status==='success'){
-                USER = d.user;
                 document.getElementById('secLogin').classList.add('d-none');
                 document.getElementById('app').classList.remove('d-none');
-                document.getElementById('uNama').innerText = USER.nama;
-                document.getElementById('uNik').innerText = USER.nik;
+                document.getElementById('uNama').innerText = d.user.nama;
+                document.getElementById('uNik').innerText = d.user.nik;
             } else alert(d.message);
-        } catch(e) { alert("Koneksi gagal!"); }
+        } catch(e) { alert("Gagal menyambung ke server!"); }
         loader(false);
     }
 
     function showTab(id){
         document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
     }
 
     function loader(s){ document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
 
     function genProrata(){
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
+        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
         let h = "";
         let curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
         while(curr <= d2){
             let l = (curr.getMonth()+1)+"/"+curr.getFullYear();
-            h += `<div class="mb-3"><label class="small fw-bold">${l}</label><input type="number" class="form-control in-g" data-b="${l}" value="3500000"></div>`;
+            h += `<div class="mb-3"><label class="small fw-bold text-muted">Gaji ${l}</label><input type="number" class="form-control in-g" data-b="${l}" value="3500000"></div>`;
             curr.setMonth(curr.getMonth()+1);
         }
         document.getElementById('listIn').innerHTML = h;
@@ -141,9 +158,16 @@
         const payload = { action:'audit', tglMulai:document.getElementById('d1').value, tglSelesai:document.getElementById('d2').value, rincianGaji:rincian, pesangonDiterima:0, isMeninggal:false };
         try {
             const r = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
-            document.getElementById('oTot').innerText = "Rp "+r.total.toLocaleString('id-ID');
-            document.getElementById('s2').classList.add('d-none');
-            document.getElementById('sRes').classList.remove('d-none');
+            if(r.status==='success'){
+                document.getElementById('resMasa').innerText = r.masaKerja;
+                document.getElementById('resUmp').innerText = "Rp " + r.rincian.selisihUMP.toLocaleString('id-ID');
+                document.getElementById('resThr').innerText = "Rp " + r.rincian.selisihTHR.toLocaleString('id-ID');
+                document.getElementById('resKomp').innerText = "Rp " + r.rincian.kompensasi.toLocaleString('id-ID');
+                document.getElementById('resPesangon').innerText = "Rp " + r.rincian.pesangon.toLocaleString('id-ID');
+                document.getElementById('oTot').innerText = "Rp " + r.rincian.total.toLocaleString('id-ID');
+                document.getElementById('s2').classList.add('d-none');
+                document.getElementById('sRes').classList.remove('d-none');
+            }
         } catch(e){ alert("Perhitungan gagal!"); }
         loader(false);
     }
