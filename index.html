@@ -11,10 +11,12 @@
 
     <style>
         :root { --sbsi-red: #dc3545; --sbsi-dark: #1e1e2d; --sbsi-gray: #f4f6f9; }
+        
+        /* Reset & Protection */
         * { -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         body { background-color: var(--sbsi-gray); font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
 
-        /* 1. SPLASH SCREEN (MENGGUNAKAN Logo_SBSI.png) */
+        /* SPLASH SCREEN - Logo_SBSI.png */
         #splash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; display: flex; flex-direction: column;
@@ -24,14 +26,16 @@
         .splash-logo { width: 180px; height: auto; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
 
-        /* HEADER & DASHBOARD */
+        /* UI Dashboard */
         .top-bar { background: white; padding: 12px 20px; border-bottom: 2px solid var(--sbsi-red); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .logo-nav { height: 32px; width: auto; }
         
         .login-card { border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 85%; max-width: 380px; padding: 40px 30px; background: white; border:none; }
         .btn-main { background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%); color: white; border-radius: 15px; padding: 14px; font-weight: 700; border: none; box-shadow: 0 8px 15px rgba(220, 53, 69, 0.3); width: 100%; }
         
-        .card-welcome { background: var(--sbsi-dark); border-radius: 25px; padding: 25px; color: white; margin-top: 15px; position: relative; overflow: hidden; }
+        .card-welcome { background: var(--sbsi-dark); border-radius: 25px; padding: 25px; color: white; margin-top: 15px; position: relative; overflow: hidden; border:none; }
+        .card-welcome::after { content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: var(--sbsi-red); filter: blur(80px); opacity: 0.3; }
+        
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 25px; }
         .menu-item { background: white; border-radius: 20px; padding: 20px; text-align: left; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); }
         .menu-icon { width: 45px; height: 45px; background: #fff0f1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--sbsi-red); margin-bottom: 12px; }
@@ -39,6 +43,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: slideUp 0.4s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
         #loading { background: rgba(255,255,255,0.9); z-index: 9999; }
         .form-control { border-radius: 12px; padding: 12px; background: #f8f9fa; border: 1px solid #eee; font-size: 14px; }
     </style>
@@ -47,11 +52,12 @@
 
 <div id="splash">
     <img src="Logo_SBSI.png" class="splash-logo">
-    <div class="mt-4 fw-800 text-danger" style="letter-spacing: 4px; font-size: 12px; opacity: 0.7;">POCKET PRO</div>
+    <div class="mt-4 fw-800 text-danger" style="letter-spacing: 5px; font-size: 14px; opacity: 0.8;">mySBSI</div>
 </div>
 
 <div id="loading" class="position-fixed w-100 h-100 d-none flex-column justify-content-center align-items-center">
     <div class="spinner-border text-danger"></div>
+    <div class="fw-bold mt-3 small text-muted">SINKRONISASI DATA...</div>
 </div>
 
 <div id="secLogin" class="container-fluid d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh; background: white;">
@@ -60,7 +66,8 @@
         <h6 class="fw-800 mb-4 text-center text-muted">LOGIN ANGGOTA</h6>
         <div class="mb-3"><input type="text" id="lNik" class="form-control text-center" placeholder="Nomor NIK"></div>
         <div class="mb-4"><input type="password" id="lPin" class="form-control text-center" placeholder="PIN Keamanan"></div>
-        <button class="btn btn-main" onclick="doLogin()">MASUK APLIKASI</button>
+        <button class="btn btn-main" onclick="doLogin()">MASUK</button>
+        <p class="text-center mt-4 small text-muted" style="font-size: 10px;">SBSI SULAWESI UTARA &copy; 2026</p>
     </div>
 </div>
 
@@ -75,12 +82,12 @@
     <div class="container pb-5">
         <div id="mainMenu" class="tab-content active">
             <div class="card-welcome shadow-sm d-flex justify-content-between align-items-center">
-                <div>
+                <div style="z-index: 1;">
                     <h6 class="fw-bold mb-1 opacity-75">Halo Rekan,</h6>
                     <div id="uNamaSapaan" class="h4 fw-800">--</div>
                     <div class="badge bg-danger rounded-pill mt-2" id="uNik" style="font-size: 10px;">--</div>
                 </div>
-                <img id="uFotoBesar" src="" style="width: 75px; height: 75px; border-radius: 20px; object-fit: cover; border: 2px solid rgba(255,255,255,0.2);">
+                <img id="uFotoBesar" src="" style="width: 75px; height: 75px; border-radius: 20px; object-fit: cover; border: 2px solid rgba(255,255,255,0.2); z-index: 1;">
             </div>
             
             <div class="menu-grid">
@@ -100,8 +107,8 @@
                 <img id="uFotoProfil" src="" class="rounded-4 shadow-sm mb-3" style="width: 110px; height: 110px; object-fit: cover; border: 3px solid var(--sbsi-red);">
                 <h5 class="fw-800 mb-4" id="rNamaProfil">--</h5>
                 <div class="text-start">
-                    <div class="mb-3 p-3 bg-light rounded-3"><small class="text-muted d-block fw-bold" style="font-size: 10px;">TEMPAT, TGL LAHIR</small><b id="uTtl" style="font-size: 13px;">--</b></div>
-                    <div class="mb-3 p-3 bg-light rounded-3"><small class="text-muted d-block fw-bold" style="font-size: 10px;">ALAMAT DOMISILI</small><b id="uAlamat" style="font-size: 13px;">--</b></div>
+                    <div class="mb-3 p-3 bg-light rounded-3"><small class="text-muted d-block fw-bold" style="font-size: 10px;">TTL</small><b id="uTtl" style="font-size: 13px;">--</b></div>
+                    <div class="mb-3 p-3 bg-light rounded-3"><small class="text-muted d-block fw-bold" style="font-size: 10px;">ALAMAT</small><b id="uAlamat" style="font-size: 13px;">--</b></div>
                 </div>
                 <button class="btn btn-light w-100 rounded-3 mt-3 fw-bold" onclick="showTab('mainMenu')">KEMBALI</button>
             </div>
@@ -114,20 +121,25 @@
                     <div class="mb-3"><label class="small fw-bold mb-1">Tanggal Mulai</label><input type="date" id="d1" class="form-control"></div>
                     <div class="mb-4"><label class="small fw-bold mb-1">Tanggal PHK</label><input type="date" id="d2" class="form-control"></div>
                     <button class="btn btn-main" onclick="genProrata()">LANJUTKAN</button>
+                    <button class="btn btn-link w-100 mt-2 text-muted text-decoration-none small fw-bold" onclick="showTab('mainMenu')">BATAL</button>
                 </div>
                 <div id="s2" class="d-none">
-                    <h6 class="fw-800 mb-3">RIWAYAT UPAH</h6>
+                    <h6 class="fw-800 mb-3 text-center">RIWAYAT UPAH</h6>
                     <div id="listIn" class="mb-4" style="max-height: 350px; overflow-y: auto;"></div>
                     <div class="p-3 bg-dark text-white rounded-4 mb-3">
-                        <small class="opacity-75 fw-bold" style="font-size: 10px;">PESANGON SUDAH DITERIMA (RP)</small>
+                        <small class="opacity-75 fw-bold" style="font-size: 10px;">SUDAH DIBAYAR (RP)</small>
                         <input type="text" id="pDone" class="form-control bg-dark text-white border-secondary mt-2" onkeyup="formatRp(this)" value="Rp 0">
                         <div class="form-check form-switch mt-3"><input class="form-check-input" type="checkbox" id="isDie"><label class="form-check-label small">Meninggal Dunia</label></div>
                     </div>
-                    <button class="btn btn-main" onclick="prosesAudit()">HITUNG SEKARANG</button>
+                    <button class="btn btn-main" onclick="prosesAudit()">HITUNG ESTIMASI</button>
                 </div>
                 <div id="sRes" class="d-none">
+                    <div class="text-center border-bottom pb-3 mb-3">
+                        <h6 class="fw-800 mb-0">HASIL AUDIT HAK</h6>
+                        <small class="text-muted fw-bold" id="resMasaKerja" style="font-size: 11px;">--</small>
+                    </div>
                     <div class="bg-danger text-white p-4 rounded-4 text-center">
-                        <small class="fw-bold opacity-75" style="font-size: 10px;">TOTAL HAK ESTIMASI</small>
+                        <small class="fw-bold opacity-75" style="font-size: 10px;">TOTAL HAK</small>
                         <h2 class="fw-800 mb-0" id="oTot">Rp 0</h2>
                     </div>
                     <button class="btn btn-outline-danger w-100 mt-4 rounded-3 fw-bold" onclick="location.reload()">TUTUP</button>
@@ -141,6 +153,7 @@
     const API = "URL_WEB_APP_ANDA"; // GANTI DENGAN URL DEPLOY ANDA
     let USER = null;
 
+    // Splash Screen
     window.addEventListener('load', () => {
         setTimeout(() => {
             const sp = document.getElementById('splash');
@@ -149,7 +162,9 @@
         }, 2500);
     });
 
+    // Anti Inspect
     document.addEventListener('contextmenu', e => e.preventDefault());
+    document.onkeydown = (e) => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };
 
     async function doLogin(){
         const nik = document.getElementById('lNik').value, pin = document.getElementById('lPin').value;
@@ -164,7 +179,7 @@
                 document.getElementById('app').classList.remove('d-none');
                 renderUser();
             } else alert(d.message);
-        } catch(e) { alert("Gagal menyambung ke server!"); }
+        } catch(e) { alert("Koneksi gagal!"); }
         loader(false);
     }
 
@@ -224,7 +239,7 @@
                 document.getElementById('s2').classList.add('d-none');
                 document.getElementById('sRes').classList.remove('d-none');
             }
-        } catch(e){ alert("Error!"); }
+        } catch(e){ alert("Gagal memproses!"); }
         loader(false);
     }
 </script>
