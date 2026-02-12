@@ -33,7 +33,7 @@
         @media print {
             .no-print { display: none !important; }
             #printArea { display: block !important; padding: 20px; text-align: center; }
-            .total-banner { background: var(--primary) !important; color: white !important; padding: 20px; border-radius: 12px; -webkit-print-color-adjust: exact; }
+            .total-banner { background: var(--primary) !important; color: white !important; padding: 20px; border-radius: 12px; -webkit-print-color-adjust: exact; text-align: center; }
             .table { width: 100%; margin-top: 20px; border-collapse: collapse; }
             .table td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
             .table td:last-child { text-align: right; font-weight: bold; }
@@ -53,11 +53,7 @@
 <div id="loading"><div class="spinner-border text-primary"></div></div>
 
 <div id="printArea">
-    <div class="kop-brand">
-        <img src="Logo_SBSI.png" width="80" style="margin-bottom: 10px;">
-        <p class="kop-line1">Federasi Serikat Buruh Sejahtera Indonesia</p>
-        <p class="kop-line2">FSBSI <span>DPC Kota Bitung</span></p>
-    </div>
+    <div id="printHeader"></div>
     <div id="printContent"></div>
 </div>
 
@@ -91,7 +87,7 @@
             </div>
             <div class="card-pro p-4 mt-4 shadow-sm" onclick="startAudit()" style="cursor: pointer;">
                 <h6 class="fw-bold m-0 text-primary">MULAI AUDIT HAK PHK</h6>
-                <small class="text-muted">Gunakan Kalkulator Hak Karyawan</small>
+                <small class="text-muted">Bandingkan Hak vs UMP</small>
             </div>
         </div>
     </div>
@@ -135,7 +131,7 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyIAO6_rHLUqj03p2W-dMeVrssEHMrqw9rBB_1UPHGx-5GvI5owhEQ-opK0tBjnHhmu/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbxo6AEqrjMd9XddcnMhXC0je2C1aP9HHJHnSIybv2x5tmO6Hs6GtO14ib6ofS6oP-fg/exec"; 
     let SESSION = JSON.parse(localStorage.getItem('sbsi_session'));
 
     window.onload = () => { setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; if(SESSION) applySession(); else changeView('viewLogin'); }, 600); }, 2000); };
@@ -167,7 +163,7 @@
         showStep('stepUpah');
     }
 
-    const fmt = (v) => "Rp. " + Math.round(v).toLocaleString('id-ID') + ",00";
+    const fmt = (v) => "Rp. " + Math.floor(v).toLocaleString('id-ID') + ",00";
 
     async function runCalculation() {
         showLoading(true);
@@ -180,26 +176,37 @@
         const res = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
         if(res.status === 'success') {
             const nama = (SESSION.currentWorker || SESSION.nama).toUpperCase();
-            const content = `
-                <h5 class="fw-bold mt-2">Hasil Perhitungan Hak Karyawan</h5>
-                <hr>
-                <div class="mb-4">
+            
+            const headerHtml = `
+                <div class="kop-brand">
+                    <img src="Logo_SBSI.png" width="80" style="margin-bottom: 10px;">
+                    <p class="kop-line1">Federasi Serikat Buruh Sejahtera Indonesia</p>
+                    <p class="kop-line2">FSBSI <span>DPC Kota Bitung</span></p>
+                </div>
+                <hr style="border: 1px solid #000; opacity: 1;">
+            `;
+
+            const contentHtml = `
+                <div class="text-center"><h5 class="fw-bold my-3">Hasil Perhitungan Hak Karyawan</h5></div>
+                <div class="mb-4 text-start">
                     <h4 class="fw-bold text-primary m-0">${nama}</h4>
-                    <small class="text-muted">Masa Kerja: ${res.masaKerja}</small>
+                    <p class="text-muted small">Masa Kerja: <b>${res.masaKerja}</b></p>
                 </div>
                 <table class="table">
-                    <tr><td>Selisih Gaji (Prorata UMP)</td><td>${fmt(res.rincian.selisihUMP)}</td></tr>
-                    <tr><td>Selisih THR</td><td>${fmt(res.rincian.thr)}</td></tr>
-                    <tr><td>Selisih Kompensasi</td><td>${fmt(res.rincian.kompensasi)}</td></tr>
-                    <tr class="fw-bold text-primary"><td>Pesangon (${res.detailUP})</td><td>${fmt(res.rincian.pesangon)}</td></tr>
+                    <tr><td>Selisih Gaji (vs UMP)</td><td class="text-end">${fmt(res.rincian.selisihUMP)}</td></tr>
+                    <tr><td>Selisih THR</td><td class="text-end">${fmt(res.rincian.thr)}</td></tr>
+                    <tr><td>Selisih Kompensasi</td><td class="text-end">${fmt(res.rincian.kompensasi)}</td></tr>
+                    <tr class="fw-bold text-primary"><td>Pesangon (${res.detailUP})</td><td class="text-end">${fmt(res.rincian.pesangon)}</td></tr>
                 </table>
-                <div class="total-banner mt-4">
+                <div class="total-banner mt-4 p-3 bg-primary text-white rounded">
                     <small>TOTAL HAK PHK (SELISIH)</small>
                     <h2 class="fw-bold m-0">${fmt(res.rincian.total)}</h2>
                 </div>
             `;
-            document.getElementById('previewCard').innerHTML = content;
-            document.getElementById('printContent').innerHTML = content;
+            
+            document.getElementById('previewCard').innerHTML = headerHtml + contentHtml;
+            document.getElementById('printHeader').innerHTML = headerHtml;
+            document.getElementById('printContent').innerHTML = contentHtml;
             changeView('viewPreview');
         }
         showLoading(false);
