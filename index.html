@@ -7,126 +7,144 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { --primary: #0d47a1; --dark: #002171; --accent: #29b6f6; --bg: #f0f2f5; }
-        body { background: var(--bg); font-family: 'Segoe UI', Tahoma, sans-serif; color: #333; }
+        :root { --primary: #0d47a1; --dark: #002171; --accent: #29b6f6; --bg: #ffffff; }
+        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
         
-        .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .card-pro { border: none; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); background: white; margin-bottom: 20px; transition: transform 0.2s; }
-        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3); }
-        .btn-blue:active { transform: scale(0.98); }
-        
+        /* FB STYLE SPLASH */
+        #splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 10000;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .splash-center { flex: 1; display: flex; justify-content: center; align-items: center; }
+        .fb-logo-anim { width: 100px; opacity: 0; transform: scale(0.8); animation: fbFadeScale 1.2s forwards; }
+        .splash-footer { padding-bottom: 50px; text-align: center; opacity: 0; animation: fbFadeUp 1s 0.5s forwards; }
+        .brand-text { font-weight: 800; font-size: 1.2rem; letter-spacing: 4px; color: var(--primary); }
+
+        @keyframes fbFadeScale { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes fbFadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* UI Components */
+        .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .card-pro { border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; margin-bottom: 20px; }
+        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; transition: 0.3s; }
+        .step-title { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 15px; text-transform: uppercase; }
+
         .view-section { display: none; }
         .view-section.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
 
         #printArea { display: none; }
         @media print {
             .no-print { display: none !important; }
             #printArea { display: block !important; padding: 40px; background: white; }
-            .kop { border-bottom: 3px solid var(--primary); padding-bottom: 15px; margin-bottom: 25px; }
-            .total-banner { background: var(--primary) !important; color: white !important; padding: 20px; border-radius: 12px; -webkit-print-color-adjust: exact; margin-top: 30px; }
+            .total-banner { background: var(--primary) !important; color: white !important; padding: 20px; border-radius: 12px; text-align: center; -webkit-print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
 
+<div id="splash">
+    <div class="splash-center"><img src="Logo_SBSI.png" class="fb-logo-anim"></div>
+    <div class="splash-footer">
+        <small class="text-muted mb-1">DPC FSBSI KOTA BITUNG</small>
+        <div class="brand-text">POCKET PRO</div>
+    </div>
+</div>
+
+<div id="loading"><div class="spinner-border text-primary"></div></div>
+
 <div id="printArea">
-    <div class="kop d-flex align-items-center">
-        <img src="Logo_SBSI.png" width="85" class="me-4">
-        <div>
-            <h2 class="m-0 fw-bold" style="color: var(--primary);">FSBSI DPC KOTA BITUNG</h2>
-            <p class="m-0 fw-bold">FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</p>
-            <p class="m-0 small text-muted">Laporan Hasil Audit Hak Ketenagakerjaan (Digital Pocket Pro)</p>
-        </div>
+    <div class="d-flex align-items-center mb-4" style="border-bottom: 3px solid var(--primary); padding-bottom: 15px;">
+        <img src="Logo_SBSI.png" width="80" class="me-3">
+        <div><h3 class="m-0 fw-bold">DPC FSBSI KOTA BITUNG</h3><p class="m-0 small">Laporan Hasil Audit Hak Digital</p></div>
     </div>
     <div id="printContent"></div>
 </div>
 
 <div class="no-print">
-    <div id="viewLogin" class="view-section active">
+    <div id="viewLogin" class="view-section">
         <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
-            <img src="Logo My SBSI.png" width="180" class="mb-5">
+            <img src="Logo_SBSI.png" width="120" class="mb-5">
             <div class="card-pro p-4 w-100" style="max-width: 380px;">
-                <h5 class="text-center fw-bold mb-4" style="color: var(--primary);">Akses Anggota</h5>
-                <div class="mb-3"><input type="text" id="lNik" class="form-control" placeholder="NIK"></div>
-                <div class="mb-4"><input type="password" id="lPin" class="form-control" placeholder="PIN"></div>
-                <button class="btn-blue" onclick="handleLogin()">MASUK KE SISTEM</button>
+                <h5 class="text-center fw-bold mb-4">Login Access</h5>
+                <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
+                <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
+                <button class="btn-blue" onclick="handleLogin()">MASUK</button>
             </div>
-            <div class="mt-4 small text-muted">© 2026 DPC SBSI Kota Bitung</div>
         </div>
     </div>
 
     <div id="viewDashboard" class="view-section">
         <nav class="top-nav">
-            <span class="fw-bold"><i class="bi bi-person-badge me-2"></i>mySBSI</span>
+            <span class="fw-bold">mySBSI</span>
             <button class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="handleLogout()">Logout</button>
         </nav>
         <div class="container py-4">
             <div class="card-pro p-4 bg-primary text-white mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="opacity-75">Selamat Datang,</small>
-                        <h4 id="dashNama" class="fw-bold m-0">--</h4>
-                        <div id="dashRole" class="badge bg-info mt-2 text-uppercase">--</div>
-                    </div>
-                    <i class="bi bi-check-circle-fill h1 opacity-50 m-0"></i>
-                </div>
+                <small>Halo,</small>
+                <h4 id="dashNama" class="fw-bold m-0">--</h4>
+                <div id="dashRole" class="badge bg-info mt-2">--</div>
             </div>
 
             <div id="adminPanel" class="d-none mb-4">
                 <div class="card-pro p-3 border-start border-primary border-5">
-                    <label class="small fw-bold text-muted mb-2">ADMIN: PANGGIL DATA NIK ANGGOTA</label>
-                    <div class="input-group shadow-sm">
-                        <input type="text" id="targetNik" class="form-control border-primary" placeholder="Masukkan NIK...">
+                    <label class="small fw-bold mb-2">MODE ADMIN: CARI NIK</label>
+                    <div class="input-group">
+                        <input type="text" id="targetNik" class="form-control" placeholder="Masukkan NIK Pekerja...">
                         <button class="btn btn-primary" onclick="searchWorker()">CARI</button>
                     </div>
                     <div id="workerFound" class="mt-2 small fw-bold text-primary"></div>
                 </div>
             </div>
 
-            <div class="card-pro p-4 d-flex align-items-center" onclick="startAudit()" style="cursor: pointer;">
+            <div class="card-pro p-4 d-flex align-items-center shadow-sm" onclick="startAudit()" style="cursor: pointer;">
                 <div class="bg-light p-3 rounded-circle me-3"><i class="bi bi-calculator-fill text-primary h3 m-0"></i></div>
-                <div>
-                    <h6 class="fw-bold m-0 text-primary">AUDIT HAK PHK</h6>
-                    <small class="text-muted">Hitung selisih UMP & Pesangon otomatis</small>
-                </div>
-                <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                <div><h6 class="fw-bold m-0">AUDIT HAK PHK</h6><small class="text-muted">Mulai perhitungan rincian</small></div>
             </div>
         </div>
     </div>
 
     <div id="viewAudit" class="view-section">
         <nav class="top-nav">
-            <button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left me-1"></i> Home</button>
-            <span class="fw-bold">Input Audit</span>
-            <div style="width:40px"></div>
+            <button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-house-door"></i></button>
+            <span class="fw-bold">Audit Hak</span>
+            <div style="width:30px"></div>
         </nav>
         <div class="container py-4">
-            <div class="card-pro p-4">
-                <div id="step1">
-                    <div class="row g-2 mb-3">
-                        <div class="col-6"><label class="small fw-bold text-muted">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
-                        <div class="col-6"><label class="small fw-bold text-muted">Tgl Efektif PHK</label><input type="date" id="d2" class="form-control"></div>
-                    </div>
-                    <div class="form-check form-switch p-3 border rounded-3 mb-4 bg-light">
-                        <input class="form-check-input ms-0 me-2" type="checkbox" id="isMeninggal">
-                        <label class="form-check-label text-danger fw-bold" for="isMeninggal">Pekerja Meninggal Dunia (Pesangon 2x)</label>
-                    </div>
-                    <button class="btn-blue" onclick="genProrata()">LANJUT INPUT Rincian</button>
+            <div id="stepTanggal" class="card-pro p-4">
+                <div class="step-title">Langkah 1: Periode Kerja</div>
+                <div class="row g-2 mb-4">
+                    <div class="col-6"><label class="small fw-bold">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
+                    <div class="col-6"><label class="small fw-bold">Tgl PHK</label><input type="date" id="d2" class="form-control"></div>
                 </div>
-
-                <div id="step2" class="d-none">
-                    <h6 class="fw-bold text-primary mb-3">1. Gaji Bulanan Diterima</h6>
-                    <div id="listGaji" class="mb-4 p-2 border rounded-3 bg-light" style="max-height: 220px; overflow-y: auto;"></div>
-                    
-                    <h6 class="fw-bold text-primary mb-3">2. Selisih THR & Kompensasi (Tahunan)</h6>
-                    <div id="listTahunan"></div>
-
-                    <div class="mt-4 p-3 bg-primary bg-opacity-10 rounded-4">
-                        <label class="small fw-bold text-primary">Upah Dasar Pesangon (Input Jika Di Atas UMP)</label>
-                        <input type="number" id="upahInput" class="form-control mt-1 border-primary" value="3500000">
+                <button class="btn-blue" onclick="genProrata()">LANJUT INPUT UPAH</button>
+            </div>
+            <div id="stepUpah" class="card-pro p-4 d-none">
+                <div class="step-title">Langkah 2: Gaji Per Bulan</div>
+                <div id="listGaji" class="mb-4 p-2 border rounded bg-light" style="max-height: 250px; overflow-y: auto;"></div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary w-50" onclick="showStep('stepTanggal')">KEMBALI</button>
+                    <button class="btn-blue w-50" onclick="showStep('stepTahunan')">LANJUT</button>
+                </div>
+            </div>
+            <div id="stepTahunan" class="card-pro p-4 d-none">
+                <div class="step-title">Langkah 3: Detail & Status</div>
+                <div id="listTahunan" class="mb-4"></div>
+                <div class="p-3 bg-light rounded-3 mb-4 border shadow-sm">
+                    <label class="small fw-bold text-primary">Upah Terakhir (Dasar Pesangon)</label>
+                    <input type="number" id="upahInput" class="form-control mb-3" value="3500000">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="isMeninggal">
+                        <label class="form-check-label text-danger fw-bold" for="isMeninggal">Pekerja Meninggal Dunia</label>
                     </div>
-                    <button class="btn-blue mt-4" onclick="runCalculation()">LIHAT PREVIEW HASIL</button>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary w-50" onclick="showStep('stepUpah')">KEMBALI</button>
+                    <button class="btn-blue w-50" onclick="runCalculation()">LIHAT HASIL</button>
                 </div>
             </div>
         </div>
@@ -134,23 +152,30 @@
 
     <div id="viewPreview" class="view-section">
         <nav class="top-nav">
-            <button class="btn btn-sm text-white" onclick="changeView('viewAudit')"><i class="bi bi-pencil me-1"></i> Edit</button>
-            <span class="fw-bold">Preview Laporan</span>
-            <div style="width:40px"></div>
+            <button class="btn btn-sm text-white" onclick="showStep('stepTahunan')">Edit</button>
+            <span class="fw-bold">Pratinjau</span>
+            <div style="width:30px"></div>
         </nav>
         <div class="container py-4">
-            <div id="previewCard" class="card-pro p-4 shadow-lg border-top border-primary border-5"></div>
-            <button class="btn-blue p-3 mt-3 shadow" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i>CETAK LAPORAN (PDF)</button>
-            <button class="btn btn-link w-100 text-muted mt-2" onclick="changeView('viewDashboard')">Kembali ke Home</button>
+            <div id="previewCard" class="card-pro p-4 shadow-lg border-top border-primary border-4"></div>
+            <button class="btn-blue p-3 mt-3" onclick="window.print()"><i class="bi bi-printer"></i> CETAK LAPORAN</button>
         </div>
     </div>
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyOD1rm3jfiElBLbZz7PLxO_IZvi57o4zfC3_vMzQWwiIGzTOgTgxoHZYLb5IFJQB2W/exec"; // GANTI DENGAN URL DEPLOY ANDA
+    const API = "https://script.google.com/macros/s/AKfycbxjsEwRSDlfSvAw1svJ78JPlBxUkj7xs7kPtcvvhn77liXTzED_-wAC4ebpZJIFPtx4/exec"; 
     let SESSION = JSON.parse(localStorage.getItem('sbsi_session'));
 
-    window.onload = () => { if(SESSION) applySession(); };
+    window.onload = () => {
+        setTimeout(() => {
+            document.getElementById('splash').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('splash').style.display = 'none';
+                if(SESSION) applySession(); else changeView('viewLogin');
+            }, 600);
+        }, 2500);
+    };
 
     function changeView(id) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -158,110 +183,91 @@
         window.scrollTo(0,0);
     }
 
+    function showStep(stepId) {
+        document.getElementById('stepTanggal').classList.add('d-none');
+        document.getElementById('stepUpah').classList.add('d-none');
+        document.getElementById('stepTahunan').classList.add('d-none');
+        document.getElementById(stepId).classList.remove('d-none');
+        window.scrollTo(0,0);
+    }
+
     async function handleLogin() {
-        const nik = document.getElementById('lNik').value;
-        const pin = document.getElementById('lPin').value;
-        if(!nik || !pin) return alert("Lengkapi NIK dan PIN!");
-        
+        showLoading(true);
+        const nik = document.getElementById('lNik').value, pin = document.getElementById('lPin').value;
         try {
             const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik, pin})});
             const d = await r.json();
-            if(d.status === 'success') {
-                SESSION = d.user;
-                localStorage.setItem('sbsi_session', JSON.stringify(d.user));
-                applySession();
-            } else alert(d.message);
-        } catch(e) { alert("Masalah koneksi server."); }
+            if(d.status === 'success') { SESSION = d.user; localStorage.setItem('sbsi_session', JSON.stringify(d.user)); applySession(); }
+            else alert(d.message);
+        } catch(e) { alert("Error Server"); }
+        showLoading(false);
     }
 
     function applySession() {
         document.getElementById('dashNama').innerText = SESSION.nama;
-        document.getElementById('dashRole').innerText = "Role: " + SESSION.role;
+        document.getElementById('dashRole').innerText = "Akses: " + SESSION.role;
         if(SESSION.role.toUpperCase() === 'ADMIN') document.getElementById('adminPanel').classList.remove('d-none');
         changeView('viewDashboard');
     }
 
-    function handleLogout() {
-        localStorage.removeItem('sbsi_session');
-        location.reload();
-    }
+    function handleLogout() { localStorage.removeItem('sbsi_session'); location.reload(); }
 
     async function searchWorker() {
-        const targetNik = document.getElementById('targetNik').value;
-        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'searchWorker', targetNik})});
+        showLoading(true);
+        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'searchWorker', targetNik: document.getElementById('targetNik').value})});
         const d = await r.json();
-        if(d.status === 'success') {
-            SESSION.currentWorker = d.worker.nama;
-            document.getElementById('workerFound').innerText = "✓ Pekerja: " + d.worker.nama;
-        } else alert("NIK Pekerja tidak ditemukan!");
+        if(d.status === 'success') { SESSION.currentWorker = d.worker.nama; document.getElementById('workerFound').innerText = "✓ " + d.worker.nama; }
+        else alert("NIK tidak ditemukan");
+        showLoading(false);
     }
 
-    function startAudit() {
-        changeView('viewAudit');
-        document.getElementById('step1').classList.remove('d-none');
-        document.getElementById('step2').classList.add('d-none');
-    }
+    function startAudit() { changeView('viewAudit'); showStep('stepTanggal'); }
 
     function genProrata() {
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
-        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal mulai & PHK!");
-
+        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
         let hGaji = "", hTahun = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = new Set();
         while(curr <= d2) {
             let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
-            hGaji += `<div class="d-flex mb-2 align-items-center"><span class="small fw-bold" style="width:70px">${label}</span><input type="number" class="form-control form-control-sm in-g" data-b="${label}" value="3500000"></div>`;
+            hGaji += `<div class="d-flex mb-2 align-items-center"><span class="small fw-bold text-muted" style="width:70px">${label}</span><input type="number" class="form-control form-control-sm in-g" data-b="${label}" value="3500000"></div>`;
             years.add(curr.getFullYear());
             curr.setMonth(curr.getMonth()+1);
         }
         years.forEach(y => {
-            hTahun += `<div class="card p-3 mb-2 border-primary-subtle shadow-sm"><div class="small fw-bold text-primary mb-2">Tahun ${y}</div><div class="row g-2"><div class="col-6 text-center"><small class="text-muted d-block">Selisih THR</small><input type="number" class="form-control form-control-sm in-thr" value="0"></div><div class="col-6 text-center"><small class="text-muted d-block">Kompensasi</small><input type="number" class="form-control form-control-sm in-komp" value="0"></div></div></div>`;
+            hTahun += `<div class="card p-3 mb-2 border-primary-subtle shadow-sm"><div class="small fw-bold text-primary mb-2">Tahun ${y}</div><div class="row g-2"><div class="col-6"><label class="small text-muted">Selisih THR</label><input type="number" class="form-control form-control-sm in-thr" value="0"></div><div class="col-6"><label class="small text-muted">Kompensasi</label><input type="number" class="form-control form-control-sm in-komp" value="0"></div></div></div>`;
         });
         document.getElementById('listGaji').innerHTML = hGaji;
         document.getElementById('listTahunan').innerHTML = hTahun;
-        document.getElementById('step1').classList.add('d-none');
-        document.getElementById('step2').classList.remove('d-none');
+        showStep('stepUpah');
     }
 
     async function runCalculation() {
+        showLoading(true);
         const payload = {
-            action: 'audit',
-            tglMulai: document.getElementById('d1').value,
-            tglSelesai: document.getElementById('d2').value,
+            action: 'audit', tglMulai: document.getElementById('d1').value, tglSelesai: document.getElementById('d2').value,
             rincianGaji: Array.from(document.querySelectorAll('.in-g')).map(i => ({ bulan: i.dataset.b, gaji: Number(i.value) })),
             thrTotal: Array.from(document.querySelectorAll('.in-thr')).reduce((a, b) => a + Number(b.value), 0),
             kompTotal: Array.from(document.querySelectorAll('.in-komp')).reduce((a, b) => a + Number(b.value), 0),
-            upahInput: Number(document.getElementById('upahInput').value),
-            isMeninggal: document.getElementById('isMeninggal').checked
+            upahInput: Number(document.getElementById('upahInput').value), isMeninggal: document.getElementById('isMeninggal').checked
         };
-
         const res = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
         if(res.status === 'success') {
-            const namaPekerja = SESSION.currentWorker || SESSION.nama;
-            const contentHTML = `
-                <div class="text-center mb-4">
-                    <h4 class="fw-bold text-primary mb-1">${namaPekerja.toUpperCase()}</h4>
-                    <p class="text-muted small">Laporan Perhitungan Hak PHK | Masa Kerja: ${res.masaKerja}</p>
-                </div>
-                <table class="table table-bordered table-striped">
-                    <thead class="table-primary"><tr><th>Komponen Hak Pekerja</th><th class="text-end">Estimasi Nilai</th></tr></thead>
-                    <tbody>
-                        <tr><td>Selisih Upah UMP (Prorata)</td><td class="text-end fw-bold">Rp ${res.rincian.selisihUMP.toLocaleString('id-ID')}</td></tr>
-                        <tr><td>Selisih THR (Tahunan)</td><td class="text-end fw-bold">Rp ${res.rincian.thr.toLocaleString('id-ID')}</td></tr>
-                        <tr><td>Uang Kompensasi</td><td class="text-end fw-bold">Rp ${res.rincian.kompensasi.toLocaleString('id-ID')}</td></tr>
-                        <tr class="table-info"><td>Pesangon & UPMK (${res.detailUP})</td><td class="text-end fw-bold text-primary">Rp ${res.rincian.pesangon.toLocaleString('id-ID')}</td></tr>
-                    </tbody>
+            const nama = SESSION.currentWorker || SESSION.nama;
+            const html = `
+                <div class="text-center mb-4"><h4 class="fw-bold text-primary mb-1">${nama.toUpperCase()}</h4><p class="text-muted small">Laporan Audit | Masa Kerja: ${res.masaKerja}</p></div>
+                <table class="table table-sm">
+                    <tr><td>Selisih UMP</td><td class="text-end fw-bold">Rp ${res.rincian.selisihUMP.toLocaleString('id-ID')}</td></tr>
+                    <tr><td>Total THR</td><td class="text-end fw-bold">Rp ${res.rincian.thr.toLocaleString('id-ID')}</td></tr>
+                    <tr><td>Kompensasi</td><td class="text-end fw-bold">Rp ${res.rincian.kompensasi.toLocaleString('id-ID')}</td></tr>
+                    <tr class="text-primary fw-bold"><td>Pesangon (${res.detailUP})</td><td class="text-end">Rp ${res.rincian.pesangon.toLocaleString('id-ID')}</td></tr>
                 </table>
-                <div class="total-banner">
-                    <small>TOTAL SELURUH TUNTUTAN HAK</small>
-                    <h2 class="fw-bold m-0">Rp ${res.rincian.total.toLocaleString('id-ID')}</h2>
-                </div>
-                <div class="mt-4 small text-center text-muted no-print">Laporan ini dibuat secara otomatis oleh sistem digital SBSI.</div>
+                <div class="total-banner mt-3"><small>TOTAL HAK PHK</small><h2 class="m-0 fw-bold">Rp ${res.rincian.total.toLocaleString('id-ID')}</h2></div>
             `;
-            document.getElementById('previewCard').innerHTML = contentHTML;
-            document.getElementById('printContent').innerHTML = contentHTML;
-            changeView('viewPreview');
+            document.getElementById('previewCard').innerHTML = html; document.getElementById('printContent').innerHTML = html; changeView('viewPreview');
         }
+        showLoading(false);
     }
+    function showLoading(s) { document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
 </script>
 </body>
 </html>
