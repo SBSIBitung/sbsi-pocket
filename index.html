@@ -3,33 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mySBSI Audit</title>
+    <title>mySBSI - Audit Hak PHK</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; }
-        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        #splash { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; justify-content:center; align-items:center; z-index:10000; transition:0.6s; }
-        .fb-logo-anim { width: 100px; animation: scaleUp 1.2s forwards; }
-        @keyframes scaleUp { from {opacity:0; transform:scale(0.8);} to {opacity:1; transform:scale(1);} }
+        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        
+        /* ANIMASI SPLASH */
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.6s; }
+        .fb-logo-anim { width: 100px; animation: fbFadeScale 1.2s forwards; }
+        @keyframes fbFadeScale { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+
+        .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); background: white; margin-bottom: 20px; padding: 25px; }
-        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
+        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; transition: 0.3s; }
+        .btn-blue:disabled { background: #ccc; }
+        
         .view-section { display: none; }
         .view-section.active { display: block; }
+        
+        /* PRINT STYLING */
         .kop-brand { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: none; justify-content: center; align-items: center; }
+
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
     </style>
 </head>
 <body>
 
-<div id="splash"><img src="Logo_SBSI.png" class="fb-logo-anim"></div>
+<div id="splash">
+    <img src="Logo_SBSI.png" class="fb-logo-anim">
+    <div class="mt-3 fw-bold text-primary" style="letter-spacing: 3px;">mySBSI</div>
+</div>
+
 <div id="loading"><div class="spinner-border text-primary"></div></div>
 
 <div class="no-print">
     <div id="viewLogin" class="view-section active">
         <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
-            <img src="Logo_SBSI.png" width="100" class="mb-4">
+            <img src="Logo_SBSI.png" width="120" class="mb-4">
             <div class="card-pro w-100" style="max-width: 350px;">
+                <h5 class="text-center fw-bold mb-4">MASUK AKUN</h5>
                 <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
                 <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
                 <button class="btn-blue" onclick="handleLogin()">MASUK</button>
@@ -38,51 +53,77 @@
     </div>
 
     <div id="viewDashboard" class="view-section">
+        <nav class="top-nav"><span>mySBSI</span><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
         <div class="container py-4">
-            <div class="card-pro bg-primary text-white d-flex justify-content-between align-items-center">
-                <div><h4 id="dashNama" class="fw-bold m-0">USER</h4><small id="dashRole">Role</small></div>
-                <button class="btn btn-sm btn-light" onclick="location.reload()">Logout</button>
+            <div class="card-pro bg-primary text-white">
+                <h4 id="dashNama" class="fw-bold m-0">--</h4>
+                <div id="dashRole" class="badge bg-info mt-2 text-uppercase">--</div>
             </div>
+            
             <div id="adminPanel" class="d-none mt-3">
-                <div class="card-pro py-3">
-                    <div class="input-group"><input type="text" id="targetNik" class="form-control" placeholder="NIK Anggota..."><button class="btn btn-primary" onclick="searchWorker()">CARI</button></div>
-                    <div id="workerFound" class="mt-2 small fw-bold text-primary"></div>
+                <div class="card-pro border-start border-primary border-5 py-3">
+                    <label class="small fw-bold mb-2 text-primary">CARI DATA ANGGOTA</label>
+                    <div class="input-group">
+                        <input type="text" id="targetNik" class="form-control" placeholder="Input NIK...">
+                        <button class="btn btn-primary" onclick="searchWorker()">CARI</button>
+                    </div>
+                    <div id="workerFound" class="mt-2 small fw-bold text-success"></div>
                 </div>
             </div>
-            <div class="card-pro mt-3 text-center" onclick="changeView('viewAudit')" style="cursor: pointer;">
-                <h6 class="fw-bold m-0 text-primary">MULAI AUDIT HAK PHK</h6>
+
+            <div class="card-pro mt-3 text-center shadow-sm" onclick="changeView('viewAudit')" style="cursor: pointer; border: 1px dashed var(--primary);">
+                <i class="bi bi-calculator fs-1 text-primary"></i>
+                <h6 class="fw-bold mt-2">MULAI AUDIT HAK PHK</h6>
             </div>
         </div>
     </div>
 
     <div id="viewAudit" class="view-section">
+        <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Input Data Audit</span><div></div></nav>
         <div class="container py-4">
+            
             <div id="stepTanggal" class="card-pro">
-                <label class="small fw-bold">TMT Kerja</label><input type="date" id="d1" class="form-control mb-3">
-                <label class="small fw-bold">Tgl PHK</label><input type="date" id="d2" class="form-control mb-4">
-                <button class="btn-blue" onclick="genProrata()">LANJUT INPUT GAJI</button>
+                <label class="fw-bold small mb-2 text-muted">MASA KERJA</label>
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><label class="small">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
+                    <div class="col-6"><label class="small">Tanggal PHK</label><input type="date" id="d2" class="form-control" onchange="fetchUmpAuto()"></div>
+                </div>
+                
+                <div class="bg-light p-3 rounded-3 mb-4 border">
+                    <label class="small fw-bold text-primary">UMP ACUAN PHK (DATABASE)</label>
+                    <div class="input-group mt-1">
+                        <span class="input-group-text bg-white">Rp</span>
+                        <input type="number" id="umpAuto" class="form-control fw-bold" readonly placeholder="Pilih Tgl PHK...">
+                    </div>
+                    <small style="font-size: 10px;" class="text-danger">*Otomatis mengambil data Sheet2 tahun PHK</small>
+                </div>
+
+                <button class="btn-blue" id="btnNext1" onclick="genProrata()" disabled>LANJUT INPUT GAJI</button>
             </div>
+
             <div id="stepGaji" class="card-pro d-none">
-                <h6 class="fw-bold mb-3 border-bottom pb-2">Rincian Gaji Bulanan</h6>
-                <div id="listGaji" style="max-height: 350px; overflow-y: auto;"></div>
-                <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT THR/KOMP</button>
+                <h6 class="fw-bold mb-3 border-bottom pb-2">Gaji Diterima Setiap Bulan</h6>
+                <div id="listGaji" style="max-height: 350px; overflow-y: auto; padding-right: 5px;"></div>
+                <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT THR & KOMPENSASI</button>
             </div>
+
             <div id="stepTahunan" class="card-pro d-none">
-                <h6 class="fw-bold mb-3 border-bottom pb-2">Rincian THR & Komp.</h6>
+                <h6 class="fw-bold mb-3 border-bottom pb-2">Rincian THR & Kompensasi</h6>
                 <div id="listTahunan"></div>
                 <div class="form-check form-switch my-4">
                     <input class="form-check-input" type="checkbox" id="isMeninggal">
-                    <label class="form-check-label fw-bold text-danger">Pekerja Meninggal Dunia</label>
+                    <label class="form-check-label fw-bold text-danger">Pekerja Meninggal Dunia (2X Pesangon)</label>
                 </div>
-                <button class="btn-blue" onclick="runCalculation()">LIHAT HASIL</button>
+                <button class="btn-blue" onclick="runCalculation()">PROSES HASIL AKHIR</button>
             </div>
         </div>
     </div>
 
     <div id="viewPreview" class="view-section">
         <div class="container py-4">
-            <div id="previewCard" class="card-pro"></div>
-            <button class="btn-blue" onclick="window.print()">CETAK LAPORAN</button>
+            <div id="previewCard" class="card-pro shadow-lg"></div>
+            <button class="btn-blue mt-3 mb-2" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK LAPORAN</button>
+            <button class="btn btn-light w-100" onclick="location.reload()">KEMBALI KE BERANDA</button>
         </div>
     </div>
 </div>
@@ -90,30 +131,54 @@
 <div id="printArea" style="display:none; padding:40px;"></div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbzomEwP8Kvxd9VbFh023DAJJ5LKK96Y5V-uqR6Emqn8wM9iZZcJ4e6dPqvK_W8Z2lAE/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbz5DLQ_roXsZTGxUn-bacAW2cf9Y-WvbHYqzdEGDd3URh2YmsupOi8u3Vmi8SFxK3kS/exec"; // <--- GANTI DENGAN URL DEPLOY ANDA
     let SESSION = {};
 
     window.onload = () => setTimeout(() => { document.getElementById('splash').style.display='none'; }, 2000);
 
-    function changeView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function changeView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
+    
     function showStep(id) { 
         document.getElementById('stepTanggal').classList.add('d-none'); 
         document.getElementById('stepGaji').classList.add('d-none'); 
         document.getElementById('stepTahunan').classList.add('d-none'); 
         document.getElementById(id).classList.remove('d-none'); 
+        window.scrollTo(0,0);
     }
 
     async function handleLogin() {
         showLoading(true);
-        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('lNik').value, pin:document.getElementById('lPin').value})});
-        const d = await r.json();
-        if(d.status === 'success') {
-            SESSION = d.user;
-            document.getElementById('dashNama').innerText = SESSION.nama;
-            document.getElementById('dashRole').innerText = SESSION.role;
-            if(SESSION.role.toUpperCase()==='ADMIN') document.getElementById('adminPanel').classList.remove('d-none');
-            changeView('viewDashboard');
-        } else alert("NIK/PIN Salah");
+        try {
+            const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('lNik').value, pin:document.getElementById('lPin').value})});
+            const d = await r.json();
+            if(d.status === 'success') {
+                SESSION = d.user;
+                document.getElementById('dashNama').innerText = SESSION.nama;
+                document.getElementById('dashRole').innerText = SESSION.role;
+                if(SESSION.role.toUpperCase()==='ADMIN') document.getElementById('adminPanel').classList.remove('d-none');
+                changeView('viewDashboard');
+            } else alert(d.message);
+        } catch(e) { alert("Masalah Koneksi"); }
+        showLoading(false);
+    }
+
+    async function fetchUmpAuto() {
+        const d2Val = document.getElementById('d2').value;
+        if(!d2Val) return;
+        const year = new Date(d2Val).getFullYear();
+        showLoading(true);
+        try {
+            const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year: year})});
+            const d = await r.json();
+            if(d.status === 'success' && d.ump > 0) {
+                document.getElementById('umpAuto').value = d.ump;
+                document.getElementById('btnNext1').disabled = false;
+            } else {
+                alert("Data UMP " + year + " tidak ditemukan di Sheet2. Silakan hubungi admin.");
+                document.getElementById('btnNext1').disabled = true;
+                document.getElementById('umpAuto').value = "";
+            }
+        } catch(e) { alert("Gagal mengambil data UMP"); }
         showLoading(false);
     }
 
@@ -121,22 +186,23 @@
         showLoading(true);
         const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'searchWorker', targetNik:document.getElementById('targetNik').value})});
         const d = await r.json();
-        if(d.status === 'success') { SESSION.targetName = d.worker.nama; document.getElementById('workerFound').innerText = "Anggota: "+d.worker.nama; } else alert("Kosong");
+        if(d.status === 'success') { SESSION.targetName = d.worker.nama; document.getElementById('workerFound').innerText = "Data Ditemukan: "+d.worker.nama; } else alert("NIK Tidak Ditemukan");
         showLoading(false);
     }
 
     function genProrata() {
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
-        if(isNaN(d1)) return;
+        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal dengan benar!");
+        
         let hGaji = "", hTahunan = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = {};
         while(curr <= d2) {
             let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
-            hGaji += `<div class="d-flex mb-2 small"><span>${label}</span><input type="number" class="form-control form-control-sm in-g ms-auto" style="width:160px" data-b="${label}" value="2000000"></div>`;
+            hGaji += `<div class="d-flex align-items-center mb-2 small"><span style="width:70px">${label}</span><input type="number" class="form-control form-control-sm in-g" data-b="${label}" value="2000000"></div>`;
             years[curr.getFullYear()] = (years[curr.getFullYear()] || 0) + 1;
             curr.setMonth(curr.getMonth()+1);
         }
         Object.keys(years).forEach(y => {
-            hTahunan += `<div class="p-2 border rounded mb-2 small"><b>Tahun ${y}</b><div class="d-flex gap-2">THR:<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"> Komp:<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${years[y]}" value="0"></div></div>`;
+            hTahunan += `<div class="mb-3 p-2 border rounded-3 small bg-light"><b>Tahun ${y} (${years[y]} bln kerja)</b><div class="row g-2 mt-1"><div class="col-6">THR Diterima:<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div><div class="col-6">Komp Diterima:<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${years[y]}" value="0"></div></div></div>`;
         });
         document.getElementById('listGaji').innerHTML = hGaji;
         document.getElementById('listTahunan').innerHTML = hTahunan;
@@ -147,6 +213,7 @@
         showLoading(true);
         const payload = {
             action:'audit', tglMulai: document.getElementById('d1').value, tglSelesai: document.getElementById('d2').value,
+            umpInput: Number(document.getElementById('umpAuto').value),
             isMeninggal: document.getElementById('isMeninggal').checked,
             rincianGaji: Array.from(document.querySelectorAll('.in-g')).map(i => ({ bulan: i.dataset.b, gaji: Number(i.value) })),
             rincianTahunan: Array.from(document.querySelectorAll('.in-thr')).map((i, idx) => {
@@ -158,21 +225,22 @@
         const d = await r.json();
         if(d.status === 'success') {
             const fmt = (v) => "Rp. " + v.toLocaleString('id-ID') + ",00";
-            const h = `<div class="kop-brand"><img src="Logo_SBSI.png" width="80"><p style="color:red;font-weight:bold;margin:0">FSBSI DPC KOTA BITUNG</p></div>`;
+            const h = `<div class="kop-brand"><img src="Logo_SBSI.png" width="80"><p style="color:var(--sbsi-red);font-weight:bold;margin:0; text-transform:uppercase">Federasi Serikat Buruh Sejahtera Indonesia</p><p style="color:var(--primary);font-weight:bold;margin:0">DPC KOTA BITUNG</p></div>`;
             const c = `
-                <div class="text-center fw-bold mb-4">LAPORAN AUDIT HAK PHK</div>
-                <div class="small mb-4 border-bottom pb-2">
+                <h5 class="text-center fw-bold mb-4">HASIL AUDIT KEKURANGAN HAK BURUH</h5>
+                <div class="small mb-3 p-3 bg-light rounded">
                     Nama Anggota: <b>${SESSION.targetName || SESSION.nama}</b><br>
                     Masa Kerja: <b>${d.masaKerja}</b><br>
-                    <span class="text-primary">UMP ACUAN PHK: <b>${fmt(d.umpPhk)}</b></span>
+                    <span class="text-primary fw-bold">UMP ACUAN PHK: ${fmt(d.umpPhk)}</span>
                 </div>
                 <table class="table table-sm">
-                    <tr><td>Selisih Gaji</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
-                    <tr><td>Selisih THR</td><td class="text-end">${fmt(d.rincian.thr)}</td></tr>
-                    <tr><td>Selisih Komp</td><td class="text-end">${fmt(d.rincian.kompensasi)}</td></tr>
+                    <tr><td>Selisih Gaji Bulanan</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
+                    <tr><td>Selisih THR Tahunan</td><td class="text-end">${fmt(d.rincian.thr)}</td></tr>
+                    <tr><td>Selisih Kompensasi</td><td class="text-end">${fmt(d.rincian.kompensasi)}</td></tr>
                     <tr class="fw-bold text-primary"><td>Pesangon & UPMK (${d.detailUP})</td><td class="text-end">${fmt(d.rincian.pesangon)}</td></tr>
-                    <tr class="table-dark fw-bold"><td>TOTAL SELISIH HAK</td><td class="text-end">${fmt(d.rincian.total)}</td></tr>
+                    <tr class="table-dark fw-bold" style="font-size:1.1rem;"><td>TOTAL KEKURANGAN</td><td class="text-end">${fmt(d.rincian.total)}</td></tr>
                 </table>
+                <div class="mt-4 small text-center text-muted border-top pt-2">Audit ini dihitung berdasarkan standar UMP terdaftar di database FSBSI.</div>
             `;
             document.getElementById('previewCard').innerHTML = h + c;
             document.getElementById('printArea').innerHTML = h + c;
