@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { --primary: #0d47a1; --dark: #002171; --bg: #ffffff; }
+        :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; --bg: #ffffff; }
         body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         
         /* FB STYLE SPLASH */
@@ -37,10 +37,16 @@
 
         #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
 
+        /* Branding Preview */
+        .kop-brand { text-align: left; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .kop-line1 { color: var(--sbsi-red); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
+        .kop-line2 { color: var(--primary); font-weight: 800; font-size: 1.3rem; margin: 0; }
+        .kop-line2 span { color: #000; }
+
         #printArea { display: none; }
         @media print {
             .no-print { display: none !important; }
-            #printArea { display: block !important; padding: 40px; }
+            #printArea { display: block !important; padding: 20px; }
             .total-banner { background: var(--primary) !important; color: white !important; padding: 20px; border-radius: 12px; text-align: center; -webkit-print-color-adjust: exact; }
         }
     </style>
@@ -50,7 +56,7 @@
 <div id="splash">
     <div class="splash-center"><img src="Logo_SBSI.png" class="fb-logo-anim"></div>
     <div class="splash-footer">
-        <small class="text-muted mb-1">DPC FSBSI KOTA BITUNG</small>
+        <small class="text-muted mb-1">FSBSI DPC Kota Bitung</small>
         <div class="brand-text">mySBSI</div>
     </div>
 </div>
@@ -58,9 +64,12 @@
 <div id="loading"><div class="spinner-border text-primary"></div></div>
 
 <div id="printArea">
-    <div class="d-flex align-items-center mb-4" style="border-bottom: 3px solid var(--primary); padding-bottom: 15px;">
+    <div class="d-flex align-items-center mb-4 kop-brand">
         <img src="Logo_SBSI.png" width="80" class="me-3">
-        <div><h3 class="m-0 fw-bold">DPC FSBSI KOTA BITUNG</h3><p class="m-0 small">Hasil Audit Hak Ketenagakerjaan</p></div>
+        <div>
+            <p class="kop-line1">Federasi Serikat Buruh Sejahtera Indonesia</p>
+            <p class="kop-line2">FSBSI <span>DPC Kota Bitung</span></p>
+        </div>
     </div>
     <div id="printContent"></div>
 </div>
@@ -85,7 +94,7 @@
         </nav>
         <div class="container py-4">
             <div class="card-pro p-4 bg-primary text-white shadow">
-                <small>Halo,</small>
+                <small>Selamat Datang,</small>
                 <h4 id="dashNama" class="fw-bold m-0">--</h4>
                 <div id="dashRole" class="badge bg-info mt-2">--</div>
             </div>
@@ -103,7 +112,7 @@
 
             <div class="card-pro p-4 d-flex align-items-center mt-4 shadow-sm" onclick="startAudit()" style="cursor: pointer;">
                 <div class="bg-light p-3 rounded-circle me-3"><i class="bi bi-calculator-fill text-primary h3 m-0"></i></div>
-                <div><h6 class="fw-bold m-0">AUDIT HAK PHK</h6><small class="text-muted">Hitung selisih UMP & Pesangon</small></div>
+                <div><h6 class="fw-bold m-0">AUDIT HAK PHK</h6><small class="text-muted">Gunakan Kalkulator Hak Karyawan</small></div>
             </div>
         </div>
     </div>
@@ -116,14 +125,13 @@
         </nav>
         <div class="container py-4">
             <div id="stepTanggal" class="card-pro p-4">
-                <div class="step-title">Langkah 1: Masa Kerja</div>
+                <div class="step-title">Langkah 1: Periode Kerja</div>
                 <div class="row g-2 mb-4">
                     <div class="col-6"><label class="small fw-bold">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
                     <div class="col-6"><label class="small fw-bold">Tgl PHK</label><input type="date" id="d2" class="form-control"></div>
                 </div>
                 <button class="btn-blue" onclick="genProrata()">LANJUT KE UPAH</button>
             </div>
-
             <div id="stepUpah" class="card-pro p-4 d-none">
                 <div class="step-title">Langkah 2: Gaji Bulanan</div>
                 <div id="listGaji" class="mb-4 p-2 border rounded bg-light" style="max-height: 250px; overflow-y: auto;"></div>
@@ -132,13 +140,12 @@
                     <button class="btn-blue w-50" onclick="showStep('stepTahunan')">LANJUT</button>
                 </div>
             </div>
-
             <div id="stepTahunan" class="card-pro p-4 d-none">
                 <div class="step-title">Langkah 3: Detail Tambahan</div>
                 <div id="listTahunan" class="mb-4"></div>
                 <div class="p-3 bg-light rounded-3 mb-4 border shadow-sm">
                     <label class="small fw-bold text-primary">Gaji Terakhir (Dasar Pesangon)</label>
-                    <input type="number" id="upahInput" class="form-control mb-3" value="3500000">
+                    <input type="number" id="upahInput" class="form-control mb-3" placeholder="Masukkan gaji terakhir">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="isMeninggal">
                         <label class="form-check-label text-danger fw-bold" for="isMeninggal">Pekerja Meninggal Dunia</label>
@@ -160,13 +167,13 @@
         </nav>
         <div class="container py-4">
             <div id="previewCard" class="card-pro p-4 shadow-lg border-top border-primary border-4"></div>
-            <button class="btn-blue p-3 mt-3" onclick="window.print()"><i class="bi bi-printer"></i> CETAK SEKARANG</button>
+            <button class="btn-blue p-3 mt-3 shadow" onclick="window.print()"><i class="bi bi-printer"></i> CETAK LAPORAN</button>
         </div>
     </div>
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbwLp2fGy3iVfAjjFVMPP7QNe0wjP94QM5oybkQdD3kSj-_45wiiRulcHK5TbCv7TfqH/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbw-DDxe6KCVi8uovKToFcS5QU6xdmB5_48U-Ry9LP0J4kVJ-K1ChyZRu6hAxipwYEaO/exec"; 
     let SESSION = JSON.parse(localStorage.getItem('sbsi_session'));
 
     window.onload = () => {
@@ -200,7 +207,7 @@
             const d = await r.json();
             if(d.status === 'success') { SESSION = d.user; localStorage.setItem('sbsi_session', JSON.stringify(d.user)); applySession(); }
             else alert(d.message);
-        } catch(e) { alert("Server Error"); }
+        } catch(e) { alert("Error Koneksi"); }
         showLoading(false);
     }
 
@@ -227,15 +234,26 @@
     function genProrata() {
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
         if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
-        let hGaji = "", hTahun = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = new Set();
+        
+        let hGaji = "", hTahun = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
+        let yearsData = {};
+
         while(curr <= d2) {
             let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
+            let y = curr.getFullYear();
             hGaji += `<div class="d-flex mb-2 align-items-center"><span class="small fw-bold text-muted" style="width:70px">${label}</span><input type="number" class="form-control form-control-sm in-g" data-b="${label}" value="3500000"></div>`;
-            years.add(curr.getFullYear());
+            yearsData[y] = (yearsData[y] || 0) + 1;
             curr.setMonth(curr.getMonth()+1);
         }
-        years.forEach(y => {
-            hTahun += `<div class="card p-3 mb-2 border-primary-subtle shadow-sm"><div class="small fw-bold text-primary mb-2">Tahun ${y}</div><div class="row g-2"><div class="col-6"><input type="number" class="form-control form-control-sm in-thr" value="0"></div><div class="col-6"><input type="number" class="form-control form-control-sm in-komp" value="0"></div></div></div>`;
+
+        Object.keys(yearsData).forEach(y => {
+            hTahun += `<div class="card p-3 mb-2 border-primary-subtle shadow-sm">
+                <div class="small fw-bold text-primary mb-2">Tahun ${y} (${yearsData[y]} Bln Kerja)</div>
+                <div class="row g-2">
+                    <div class="col-6"><label class="small">THR Diterima</label><input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div>
+                    <div class="col-6"><label class="small">Komp. Diterima</label><input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${yearsData[y]}" value="0"></div>
+                </div>
+            </div>`;
         });
         document.getElementById('listGaji').innerHTML = hGaji;
         document.getElementById('listTahunan').innerHTML = hTahun;
@@ -247,25 +265,37 @@
         const payload = {
             action: 'audit', tglMulai: document.getElementById('d1').value, tglSelesai: document.getElementById('d2').value,
             rincianGaji: Array.from(document.querySelectorAll('.in-g')).map(i => ({ bulan: i.dataset.b, gaji: Number(i.value) })),
-            thrTotal: Array.from(document.querySelectorAll('.in-thr')).reduce((a, b) => a + Number(b.value), 0),
-            kompTotal: Array.from(document.querySelectorAll('.in-komp')).reduce((a, b) => a + Number(b.value), 0),
+            rincianTahunan: Array.from(document.querySelectorAll('.in-thr')).map((i, idx) => {
+                const k = document.querySelectorAll('.in-komp')[idx];
+                return { tahun: i.dataset.y, thrDiterima: Number(i.value), kompDiterima: Number(k.value), bulanKerja: Number(k.dataset.m) };
+            }),
             upahInput: Number(document.getElementById('upahInput').value), isMeninggal: document.getElementById('isMeninggal').checked
         };
-        const res = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
-        if(res.status === 'success') {
-            const nama = SESSION.currentWorker || SESSION.nama;
-            const html = `
-                <div class="text-center mb-4"><h4 class="fw-bold text-primary mb-1">${nama.toUpperCase()}</h4><p class="text-muted small">Masa Kerja: <b>${res.masaKerja}</b></p></div>
-                <table class="table table-sm">
-                    <tr><td>Selisih UMP</td><td class="text-end fw-bold">Rp ${res.rincian.selisihUMP.toLocaleString('id-ID')}</td></tr>
-                    <tr><td>Total THR</td><td class="text-end fw-bold">Rp ${res.rincian.thr.toLocaleString('id-ID')}</td></tr>
-                    <tr><td>Kompensasi</td><td class="text-end fw-bold">Rp ${res.rincian.kompensasi.toLocaleString('id-ID')}</td></tr>
-                    <tr class="text-primary fw-bold"><td>Pesangon (${res.detailUP})</td><td class="text-end">Rp ${res.rincian.pesangon.toLocaleString('id-ID')}</td></tr>
-                </table>
-                <div class="total-banner mt-3"><small>TOTAL HAK PHK</small><h2 class="m-0 fw-bold">Rp ${res.rincian.total.toLocaleString('id-ID')}</h2></div>
-            `;
-            document.getElementById('previewCard').innerHTML = html; document.getElementById('printContent').innerHTML = html; changeView('viewPreview');
-        }
+        
+        try {
+            const res = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
+            if(res.status === 'success') {
+                const nama = SESSION.currentWorker || SESSION.nama;
+                const html = `
+                    <div class="kop-brand text-start mb-4">
+                        <p class="kop-line1">Federasi Serikat Buruh Sejahtera Indonesia</p>
+                        <p class="kop-line2">FSBSI <span style="color:#000">DPC Kota Bitung</span></p>
+                        <h5 class="mt-4 fw-bold text-center text-dark">Hasil Perhitungan Hak Karyawan</h5>
+                    </div>
+                    <div class="text-center mb-4"><h4 class="fw-bold text-primary mb-1">${nama.toUpperCase()}</h4><p class="text-muted small">Masa Kerja: <b>${res.masaKerja}</b></p></div>
+                    <table class="table table-sm">
+                        <tr><td>Selisih Gaji (vs UMP)</td><td class="text-end fw-bold">Rp ${res.rincian.selisihUMP.toLocaleString('id-ID')}</td></tr>
+                        <tr><td>Selisih THR</td><td class="text-end fw-bold">Rp ${res.rincian.thr.toLocaleString('id-ID')}</td></tr>
+                        <tr><td>Selisih Kompensasi</td><td class="text-end fw-bold">Rp ${res.rincian.kompensasi.toLocaleString('id-ID')}</td></tr>
+                        <tr class="text-primary fw-bold"><td>Pesangon (${res.detailUP})</td><td class="text-end">Rp ${res.rincian.pesangon.toLocaleString('id-ID')}</td></tr>
+                    </table>
+                    <div class="total-banner mt-3"><small>TOTAL HAK PHK (SELISIH)</small><h2 class="m-0 fw-bold">Rp ${res.rincian.total.toLocaleString('id-ID')}</h2></div>
+                `;
+                document.getElementById('previewCard').innerHTML = html;
+                document.getElementById('printContent').innerHTML = html;
+                changeView('viewPreview');
+            }
+        } catch(e) { alert("Gagal memproses data"); }
         showLoading(false);
     }
     function showLoading(s) { document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
