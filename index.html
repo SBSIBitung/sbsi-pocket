@@ -2,150 +2,143 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mySBSI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mySBSI Audit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; }
-        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.6s; }
-        .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); background: white; margin-bottom: 20px; }
-        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
+        :root { --primary: #0d47a1; --sbsi-red: #d32f2f; }
+        body { background: #f4f7f9; font-family: sans-serif; }
+        .card-pro { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; padding: 20px; margin-bottom: 20px; }
+        .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        
-        /* PRINT STYLING */
-        .kop-brand { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
-        .kop-line1 { color: var(--sbsi-red); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
-        .kop-line2 { color: var(--primary); font-weight: 800; font-size: 1.3rem; margin: 0; }
-        .kop-line2 span { color: #000; }
-        
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
-        #printArea { display: none; }
-        @media print {
-            .no-print { display: none !important; }
-            #printArea { display: block !important; padding: 20px; }
-            .total-banner { background: var(--primary) !important; color: white !important; padding: 20px; border-radius: 12px; -webkit-print-color-adjust: exact; text-align: center; }
-        }
+        .kop-brand { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); display:none; justify-content:center; align-items:center; z-index:9999; }
+        @media print { .no-print { display: none; } #printArea { display: block !important; } }
     </style>
 </head>
 <body>
 
-<div id="splash">
-    <img src="Logo_SBSI.png" width="100" class="mb-3">
-    <div class="fw-bold fs-4 text-primary">mySBSI</div>
-</div>
-
 <div id="loading"><div class="spinner-border text-primary"></div></div>
 
-<div id="printArea"><div id="printHeader"></div><div id="printContent"></div></div>
-
-<div class="no-print">
-    <div id="viewDashboard" class="view-section">
-        <nav class="top-nav"><span class="fw-bold">mySBSI</span><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
-        <div class="container py-4">
-            <div class="card-pro p-4 bg-primary text-white"><h4 id="dashNama" class="fw-bold">USER</h4></div>
-            <div class="card-pro p-4 mt-3" onclick="changeView('viewAudit')" style="cursor: pointer;">
-                <h6 class="fw-bold text-primary">MULAI AUDIT PHK</h6>
+<div class="container py-4 no-print">
+    <div id="view1" class="view-section active">
+        <div class="card-pro text-center">
+            <img src="Logo_SBSI.png" width="80" class="mb-3">
+            <h5 class="fw-bold">Audit Hak PHK</h5>
+            <div class="row g-2 mt-3">
+                <div class="col-6 text-start"><label class="small">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
+                <div class="col-6 text-start"><label class="small">Tanggal PHK</label><input type="date" id="d2" class="form-control"></div>
             </div>
+            <button class="btn-blue mt-4" onclick="initAudit()">MULAI INPUT RINCIAN</button>
         </div>
     </div>
 
-    <div id="viewAudit" class="view-section">
-        <div class="container py-4">
-            <div id="stepTanggal" class="card-pro p-4">
-                <div class="row g-2 mb-4">
-                    <div class="col-6"><label>TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
-                    <div class="col-6"><label>Tgl PHK</label><input type="date" id="d2" class="form-control"></div>
-                </div>
-                <button class="btn-blue" onclick="genProrata()">LANJUT</button>
-            </div>
-            <div id="stepUpah" class="card-pro p-4 d-none">
-                <div id="listGaji" class="mb-3" style="max-height: 250px; overflow-y: auto;"></div>
-                <button class="btn-blue" onclick="showStep('stepTahunan')">LANJUT</button>
-            </div>
-            <div id="stepTahunan" class="card-pro p-4 d-none">
-                <div id="listTahunan" class="mb-3"></div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="isMeninggal">
-                    <label class="form-check-label fw-bold text-danger">Meninggal Dunia</label>
-                </div>
-                <input type="hidden" id="upahInput" value="2000000"> 
-                <button class="btn-blue" onclick="runCalculation()">HITUNG HASIL</button>
-            </div>
+    <div id="view2" class="view-section">
+        <div class="card-pro">
+            <h6 class="fw-bold border-bottom pb-2 mb-3">Rincian Gaji Diterima (Per Bulan)</h6>
+            <div id="listGaji" style="max-height: 400px; overflow-y: auto;"></div>
+            <button class="btn-blue mt-3" onclick="changeView('view3')">LANJUT KE THR & KOMPENSASI</button>
         </div>
     </div>
 
-    <div id="viewPreview" class="view-section">
-        <div class="container py-4">
-            <div id="previewCard" class="card-pro p-4 shadow"></div>
-            <button class="btn-blue mt-3" onclick="window.print()">CETAK</button>
+    <div id="view3" class="view-section">
+        <div class="card-pro">
+            <h6 class="fw-bold border-bottom pb-2 mb-3">Rincian THR & Kompensasi Diterima</h6>
+            <div id="listTahunan"></div>
+            <div class="form-check form-switch my-4">
+                <input class="form-check-input" type="checkbox" id="isMeninggal">
+                <label class="form-check-label fw-bold text-danger">Pekerja Meninggal Dunia</label>
+            </div>
+            <button class="btn-blue" onclick="processAudit()">HITUNG HASIL AKHIR</button>
         </div>
+    </div>
+
+    <div id="view4" class="view-section">
+        <div id="resultContent" class="card-pro"></div>
+        <button class="btn-blue mt-3" onclick="window.print()">CETAK LAPORAN</button>
+        <button class="btn btn-light w-100 mt-2" onclick="location.reload()">RESET</button>
     </div>
 </div>
 
+<div id="printArea" style="display:none;"></div>
+
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbxLqlg9y1Pe36oKP22w7T22UVqYyYVoLvLBzmOqMflzH_cQ-DGFgu8YC-kqryErU_0R/exec";
-    window.onload = () => setTimeout(() => { document.getElementById('splash').style.display='none'; changeView('viewDashboard'); }, 1000);
+    const API = "MASUKKAN_URL_WEB_APP_ANDA";
 
-    function changeView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-    function showStep(id) { document.getElementById('stepTanggal').classList.add('d-none'); document.getElementById('stepUpah').classList.add('d-none'); document.getElementById('stepTahunan').classList.add('d-none'); document.getElementById(id).classList.remove('d-none'); }
+    function changeView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); window.scrollTo(0,0); }
 
-    function genProrata() {
+    function initAudit() {
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
-        let hGaji = "", hTahun = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = {};
+        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal dengan benar");
+        
+        let htmlGaji = "", htmlTahun = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = {};
         while(curr <= d2) {
             let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
-            hGaji += `<div class="d-flex mb-1 small"><span>${label}</span><input type="number" class="form-control form-control-sm in-g ms-auto" style="width:150px" value="2000000"></div>`;
+            htmlGaji += `<div class="d-flex align-items-center mb-2 small">
+                <span style="width:80px">${label}</span>
+                <input type="number" class="form-control form-control-sm in-g" data-b="${label}" value="0">
+            </div>`;
             years[curr.getFullYear()] = (years[curr.getFullYear()] || 0) + 1;
-            curr.setMonth(curr.setMonth()+1);
+            curr.setMonth(curr.getMonth()+1);
         }
         Object.keys(years).forEach(y => {
-            hTahun += `<div class="mb-2 p-2 border rounded small"><b>Tahun ${y}</b><div class="d-flex gap-2">THR:<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"> Komp:<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${years[y]}" value="0"></div></div>`;
+            htmlTahun += `<div class="p-2 border rounded mb-2 small">
+                <b>Tahun ${y}</b> (${years[y]} bulan kerja)
+                <div class="row g-2 mt-1">
+                    <div class="col-6">THR:<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div>
+                    <div class="col-6">Komp:<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${years[y]}" value="0"></div>
+                </div>
+            </div>`;
         });
-        document.getElementById('listGaji').innerHTML = hGaji;
-        document.getElementById('listTahunan').innerHTML = hTahun;
-        showStep('stepUpah');
+        document.getElementById('listGaji').innerHTML = htmlGaji;
+        document.getElementById('listTahunan').innerHTML = htmlTahun;
+        changeView('view2');
     }
 
-    const fmt = (v) => "Rp. " + Math.floor(v).toLocaleString('id-ID') + ",00";
-
-    async function runCalculation() {
-        document.getElementById('loading').style.display='flex';
+    async function processAudit() {
+        document.getElementById('loading').style.display = 'flex';
         const payload = {
-            action: 'audit', tglMulai: document.getElementById('d1').value, tglSelesai: document.getElementById('d2').value,
-            rincianGaji: Array.from(document.querySelectorAll('.in-g')).map((i,idx) => ({ bulan: document.querySelectorAll('.small span')[idx].innerText, gaji: Number(i.value) })),
-            rincianTahunan: Array.from(document.querySelectorAll('.in-thr')).map((i, idx) => { const k = document.querySelectorAll('.in-komp')[idx]; return { tahun: i.dataset.y, thrDiterima: Number(i.value), kompDiterima: Number(k.value), bulanKerja: Number(k.dataset.m) }; }),
-            isMeninggal: document.getElementById('isMeninggal').checked
+            action: 'audit',
+            tglMulai: document.getElementById('d1').value,
+            tglSelesai: document.getElementById('d2').value,
+            isMeninggal: document.getElementById('isMeninggal').checked,
+            rincianGaji: Array.from(document.querySelectorAll('.in-g')).map(i => ({ bulan: i.dataset.b, gaji: Number(i.value) })),
+            rincianTahunan: Array.from(document.querySelectorAll('.in-thr')).map((i, idx) => {
+                const k = document.querySelectorAll('.in-komp')[idx];
+                return { tahun: i.dataset.y, thrDiterima: Number(i.value), kompDiterima: Number(k.value), bulanKerja: Number(k.dataset.m) };
+            })
         };
-        const res = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
-        if(res.status === 'success') {
-            const header = `
-                <div class="kop-brand">
-                    <img src="Logo_SBSI.png" width="80">
-                    <p class="kop-line1">Federasi Serikat Buruh Sejahtera Indonesia</p>
-                    <p class="kop-line2">FSBSI <span>DPC Kota Bitung</span></p>
-                </div><hr>`;
-            const content = `
-                <div class="text-center"><h5>Hasil Audit Hak Buruh</h5><br></div>
-                <p>Masa Kerja: <b>${res.masaKerja}</b><br>Dasar UMP PHK: <b>${fmt(res.umpReferensi)}</b></p>
-                <table class="table table-sm">
-                    <tr><td>Selisih Gaji</td><td class="text-end">${fmt(res.rincian.selisihUMP)}</td></tr>
-                    <tr><td>Selisih THR</td><td class="text-end">${fmt(res.rincian.thr)}</td></tr>
-                    <tr><td>Selisih Kompensasi</td><td class="text-end">${fmt(res.rincian.kompensasi)}</td></tr>
-                    <tr class="fw-bold text-primary"><td>Pesangon & UPMK</td><td class="text-end">${fmt(res.rincian.pesangon)}</td></tr>
-                </table>
-                <div class="total-banner mt-3">
-                    <small>TOTAL HAK (SELISIH)</small><h2 class="fw-bold">${fmt(res.rincian.total)}</h2>
-                </div>`;
-            document.getElementById('previewCard').innerHTML = header + content;
-            document.getElementById('printHeader').innerHTML = header;
-            document.getElementById('printContent').innerHTML = content;
-            changeView('viewPreview');
-        }
-        document.getElementById('loading').style.display='none';
+
+        try {
+            const r = await fetch(API, { method: 'POST', body: JSON.stringify(payload) });
+            const d = await r.json();
+            if(d.status === 'success') {
+                const fmt = (v) => "Rp. " + v.toLocaleString('id-ID') + ",00";
+                const content = `
+                    <div class="kop-brand">
+                        <img src="Logo_SBSI.png" width="70">
+                        <p style="color:var(--sbsi-red); font-weight:bold; margin:0;">FSBSI DPC KOTA BITUNG</p>
+                    </div>
+                    <h5 class="text-center fw-bold mb-4">LAPORAN HASIL AUDIT HAK PHK</h5>
+                    <div class="small mb-4">
+                        Masa Kerja: <b>${d.masaKerja}</b><br>
+                        UMP Acuan PHK: <b>${fmt(d.umpPhk)}</b> (Sebagai Dasar Pesangon)
+                    </div>
+                    <table class="table table-sm">
+                        <tr><td>Selisih UMP Bulanan (Prorata)</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
+                        <tr><td>Selisih THR Tahunan</td><td class="text-end">${fmt(d.rincian.selisihThr)}</td></tr>
+                        <tr><td>Selisih Kompensasi (Prorata)</td><td class="text-end">${fmt(res = d.rincian.selisihKomp)}</td></tr>
+                        <tr class="table-light fw-bold"><td>Pesangon & UPMK (${d.detailUP})</td><td class="text-end text-primary">${fmt(d.rincian.pesangon)}</td></tr>
+                        <tr class="table-dark text-white fw-bold"><td>TOTAL KEKURANGAN HAK</td><td class="text-end">${fmt(d.rincian.total)}</td></tr>
+                    </table>
+                `;
+                document.getElementById('resultContent').innerHTML = content;
+                document.getElementById('printArea').innerHTML = content;
+                changeView('view4');
+            }
+        } catch(e) { alert("Error Server"); }
+        document.getElementById('loading').style.display = 'none';
     }
 </script>
 </body>
