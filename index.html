@@ -87,7 +87,7 @@
             </div>
             <div class="card-pro p-4 mt-4 shadow-sm" onclick="startAudit()" style="cursor: pointer;">
                 <h6 class="fw-bold m-0 text-primary">MULAI AUDIT HAK PHK</h6>
-                <small class="text-muted">Bandingkan Hak vs UMP</small>
+                <small class="text-muted">Gunakan Kalkulator Hak Karyawan</small>
             </div>
         </div>
     </div>
@@ -131,7 +131,7 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbxo6AEqrjMd9XddcnMhXC0je2C1aP9HHJHnSIybv2x5tmO6Hs6GtO14ib6ofS6oP-fg/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbx5Eo4os5202RcM4dgAK1q9MM43YpfDuWwJ9EKGM_x_gKkbiOOgleXZowEwtzhCS7Nk/exec"; 
     let SESSION = JSON.parse(localStorage.getItem('sbsi_session'));
 
     window.onload = () => { setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; if(SESSION) applySession(); else changeView('viewLogin'); }, 600); }, 2000); };
@@ -176,7 +176,6 @@
         const res = await (await fetch(API, {method:'POST', body:JSON.stringify(payload)})).json();
         if(res.status === 'success') {
             const nama = (SESSION.currentWorker || SESSION.nama).toUpperCase();
-            
             const headerHtml = `
                 <div class="kop-brand">
                     <img src="Logo_SBSI.png" width="80" style="margin-bottom: 10px;">
@@ -185,25 +184,24 @@
                 </div>
                 <hr style="border: 1px solid #000; opacity: 1;">
             `;
-
             const contentHtml = `
                 <div class="text-center"><h5 class="fw-bold my-3">Hasil Perhitungan Hak Karyawan</h5></div>
                 <div class="mb-4 text-start">
                     <h4 class="fw-bold text-primary m-0">${nama}</h4>
                     <p class="text-muted small">Masa Kerja: <b>${res.masaKerja}</b></p>
+                    <p class="small m-0">UMP Dasar Perhitungan: <b>${fmt(res.umpDigunakan)}</b></p>
                 </div>
                 <table class="table">
                     <tr><td>Selisih Gaji (vs UMP)</td><td class="text-end">${fmt(res.rincian.selisihUMP)}</td></tr>
                     <tr><td>Selisih THR</td><td class="text-end">${fmt(res.rincian.thr)}</td></tr>
                     <tr><td>Selisih Kompensasi</td><td class="text-end">${fmt(res.rincian.kompensasi)}</td></tr>
-                    <tr class="fw-bold text-primary"><td>Pesangon (${res.detailUP})</td><td class="text-end">${fmt(res.rincian.pesangon)}</td></tr>
+                    <tr class="fw-bold text-primary"><td>Pesangon & UPMK (${res.detailUP})</td><td class="text-end">${fmt(res.rincian.pesangon)}</td></tr>
                 </table>
                 <div class="total-banner mt-4 p-3 bg-primary text-white rounded">
                     <small>TOTAL HAK PHK (SELISIH)</small>
                     <h2 class="fw-bold m-0">${fmt(res.rincian.total)}</h2>
                 </div>
             `;
-            
             document.getElementById('previewCard').innerHTML = headerHtml + contentHtml;
             document.getElementById('printHeader').innerHTML = headerHtml;
             document.getElementById('printContent').innerHTML = contentHtml;
