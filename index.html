@@ -10,21 +10,18 @@
         :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; }
         body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
         
-        /* SPLASH */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.6s; }
         .fb-logo-anim { width: 100px; animation: fbFadeScale 1.2s forwards; }
         .splash-footer { padding-bottom: 50px; text-align: center; animation: fbFadeUp 1s 0.5s forwards; opacity: 0; }
         @keyframes fbFadeScale { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes fbFadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
 
-        /* UI */
         .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); background: white; margin-bottom: 20px; }
         .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
         .view-section { display: none; }
         .view-section.active { display: block; }
 
-        /* PRINT / PREVIEW STYLING */
         .kop-brand { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
         .kop-line1 { color: var(--sbsi-red); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
         .kop-line2 { color: var(--primary); font-weight: 800; font-size: 1.3rem; margin: 0; }
@@ -38,8 +35,8 @@
             #printArea { display: block !important; padding: 20px; text-align: center; }
             .total-banner { background: var(--primary) !important; color: white !important; padding: 20px; border-radius: 12px; -webkit-print-color-adjust: exact; }
             .table { width: 100%; margin-top: 20px; border-collapse: collapse; }
-            .table td { padding: 8px; border-bottom: 1px solid #eee; text-align: left; }
-            .table td:last-child { text-align: right; }
+            .table td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+            .table td:last-child { text-align: right; font-weight: bold; }
         }
     </style>
 </head>
@@ -94,7 +91,7 @@
             </div>
             <div class="card-pro p-4 mt-4 shadow-sm" onclick="startAudit()" style="cursor: pointer;">
                 <h6 class="fw-bold m-0 text-primary">MULAI AUDIT HAK PHK</h6>
-                <small class="text-muted">Bandingkan Gaji/THR/Komp vs UMP</small>
+                <small class="text-muted">Gunakan Kalkulator Hak Karyawan</small>
             </div>
         </div>
     </div>
@@ -138,7 +135,7 @@
 </div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbz_DfaDkznNHucd3ZC20Y7_td8DDHNMMcuAiXwyUgnMPn_68MQbzC68vShDgbsR8tTT/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbyIAO6_rHLUqj03p2W-dMeVrssEHMrqw9rBB_1UPHGx-5GvI5owhEQ-opK0tBjnHhmu/exec"; 
     let SESSION = JSON.parse(localStorage.getItem('sbsi_session'));
 
     window.onload = () => { setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => { document.getElementById('splash').style.display = 'none'; if(SESSION) applySession(); else changeView('viewLogin'); }, 600); }, 2000); };
@@ -163,15 +160,14 @@
             curr.setMonth(curr.getMonth()+1);
         }
         Object.keys(yearsData).forEach(y => {
-            hTahun += `<div class="card p-3 mb-2 small"><b>Tahun ${y}</b><div class="row g-2 mt-1"><div class="col-6">THR Rec<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div><div class="col-6">Komp Rec<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${yearsData[y]}" value="0"></div></div></div>`;
+            hTahun += `<div class="card p-3 mb-2 small"><b>Tahun ${y} (${yearsData[y]} Bulan)</b><div class="row g-2 mt-1"><div class="col-6">THR Rec<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div><div class="col-6">Komp Rec<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${yearsData[y]}" value="0"></div></div></div>`;
         });
         document.getElementById('listGaji').innerHTML = hGaji;
         document.getElementById('listTahunan').innerHTML = hTahun;
         showStep('stepUpah');
     }
 
-    // Formatter Rupiah dengan ,00
-    const fmt = (v) => "Rp. " + v.toLocaleString('id-ID') + ",00";
+    const fmt = (v) => "Rp. " + Math.round(v).toLocaleString('id-ID') + ",00";
 
     async function runCalculation() {
         showLoading(true);
@@ -192,7 +188,7 @@
                     <small class="text-muted">Masa Kerja: ${res.masaKerja}</small>
                 </div>
                 <table class="table">
-                    <tr><td>Selisih Gaji (vs UMP)</td><td>${fmt(res.rincian.selisihUMP)}</td></tr>
+                    <tr><td>Selisih Gaji (Prorata UMP)</td><td>${fmt(res.rincian.selisihUMP)}</td></tr>
                     <tr><td>Selisih THR</td><td>${fmt(res.rincian.thr)}</td></tr>
                     <tr><td>Selisih Kompensasi</td><td>${fmt(res.rincian.kompensasi)}</td></tr>
                     <tr class="fw-bold text-primary"><td>Pesangon (${res.detailUP})</td><td>${fmt(res.rincian.pesangon)}</td></tr>
