@@ -9,22 +9,16 @@
     <style>
         :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; }
         body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        
-        /* ANIMASI SPLASH */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.6s; }
         .fb-logo-anim { width: 100px; animation: fbFadeScale 1.2s forwards; }
         @keyframes fbFadeScale { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-
         .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); background: white; margin-bottom: 20px; padding: 25px; }
         .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
-        
         .view-section { display: none; }
         .view-section.active { display: block; }
-        
         .kop-brand { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
         #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; }
-
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
     </style>
 </head>
@@ -42,7 +36,6 @@
         <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
             <img src="Logo_SBSI.png" width="120" class="mb-4">
             <div class="card-pro w-100" style="max-width: 350px;">
-                <h5 class="text-center fw-bold mb-4">MASUK AKUN</h5>
                 <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
                 <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
                 <button class="btn-blue" onclick="handleLogin()">MASUK</button>
@@ -57,18 +50,15 @@
                 <h4 id="dashNama" class="fw-bold m-0">--</h4>
                 <div id="dashRole" class="badge bg-info mt-2">--</div>
             </div>
-            
             <div id="adminPanel" class="d-none mt-3">
                 <div class="card-pro border-start border-primary border-5 py-3">
-                    <label class="small fw-bold mb-2">Cari Anggota (Input NIK)</label>
                     <div class="input-group">
-                        <input type="text" id="targetNik" class="form-control" placeholder="NIK...">
+                        <input type="text" id="targetNik" class="form-control" placeholder="NIK Anggota...">
                         <button class="btn btn-primary" onclick="searchWorker()">CARI</button>
                     </div>
                     <div id="workerFound" class="mt-2 small fw-bold text-primary"></div>
                 </div>
             </div>
-
             <div class="card-pro mt-3 text-center" onclick="changeView('viewAudit')" style="cursor: pointer;">
                 <i class="bi bi-calculator fs-1 text-primary"></i>
                 <h6 class="fw-bold mt-2">MULAI AUDIT HAK PHK</h6>
@@ -85,7 +75,7 @@
                 <button class="btn-blue" onclick="genProrata()">LANJUT INPUT GAJI</button>
             </div>
             <div id="stepGaji" class="card-pro d-none">
-                <h6 class="fw-bold mb-3 border-bottom pb-2">Gaji Diterima (Per Bulan)</h6>
+                <h6 class="fw-bold mb-3 border-bottom pb-2">Gaji Diterima (Bulanan)</h6>
                 <div id="listGaji" style="max-height: 350px; overflow-y: auto;"></div>
                 <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT THR/KOMP</button>
             </div>
@@ -94,7 +84,7 @@
                 <div id="listTahunan"></div>
                 <div class="form-check form-switch my-4">
                     <input class="form-check-input" type="checkbox" id="isMeninggal">
-                    <label class="form-check-label fw-bold text-danger">Pekerja Meninggal Dunia</label>
+                    <label class="form-check-label fw-bold text-danger">Meninggal Dunia</label>
                 </div>
                 <button class="btn-blue" onclick="runCalculation()">PROSES HASIL</button>
             </div>
@@ -112,8 +102,8 @@
 <div id="printArea" style="display:none; padding:40px;"></div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbzOAGfK2KXLR0DaZMJHZP9td35YhiDzZ7LcPRucGp3fHKmveYeYqcj7fiRJo608pTDD/exec";
-    let SESSION = null;
+    const API = "https://script.google.com/macros/s/AKfycbwqYa9IvmKvxWVL4zn8P_FZPz4CHA-Pe-1Fz-Oo1VFqd3JqJvtSgFG6ggAt49OMLP2W/exec";
+    let SESSION = {};
 
     window.onload = () => setTimeout(() => { document.getElementById('splash').style.display='none'; }, 2000);
 
@@ -127,15 +117,17 @@
 
     async function handleLogin() {
         showLoading(true);
-        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('lNik').value, pin:document.getElementById('lPin').value})});
-        const d = await r.json();
-        if(d.status === 'success') {
-            SESSION = d.user;
-            document.getElementById('dashNama').innerText = SESSION.nama;
-            document.getElementById('dashRole').innerText = SESSION.role;
-            if(SESSION.role.toUpperCase()==='ADMIN') document.getElementById('adminPanel').classList.remove('d-none');
-            changeView('viewDashboard');
-        } else alert(d.message);
+        try {
+            const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('lNik').value, pin:document.getElementById('lPin').value})});
+            const d = await r.json();
+            if(d.status === 'success') {
+                SESSION = d.user;
+                document.getElementById('dashNama').innerText = SESSION.nama;
+                document.getElementById('dashRole').innerText = SESSION.role;
+                if(SESSION.role.toUpperCase()==='ADMIN') document.getElementById('adminPanel').classList.remove('d-none');
+                changeView('viewDashboard');
+            } else alert(d.message);
+        } catch(e) { alert("Koneksi Gagal"); }
         showLoading(false);
     }
 
@@ -143,12 +135,13 @@
         showLoading(true);
         const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'searchWorker', targetNik:document.getElementById('targetNik').value})});
         const d = await r.json();
-        if(d.status === 'success') { SESSION.targetName = d.worker.nama; document.getElementById('workerFound').innerText = "Anggota: "+d.worker.nama; } else alert("NIK Tidak Ada");
+        if(d.status === 'success') { SESSION.targetName = d.worker.nama; document.getElementById('workerFound').innerText = "Anggota: "+d.worker.nama; } else alert("NIK Tidak Ditemukan");
         showLoading(false);
     }
 
     function genProrata() {
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
+        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
         let hGaji = "", hTahunan = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = {};
         while(curr <= d2) {
             let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
@@ -157,7 +150,7 @@
             curr.setMonth(curr.getMonth()+1);
         }
         Object.keys(years).forEach(y => {
-            hTahunan += `<div class="mb-3 p-2 border rounded small"><b>Tahun ${y} (${years[y]} bln)</b><div class="row g-2 mt-1"><div class="col-6">THR:<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div><div class="col-6">Komp:<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${years[y]}" value="0"></div></div></div>`;
+            hTahunan += `<div class="mb-3 p-2 border rounded small"><b>Tahun ${y}</b><div class="row g-2 mt-1"><div class="col-6">THR:<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div><div class="col-6">Komp:<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${years[y]}" value="0"></div></div></div>`;
         });
         document.getElementById('listGaji').innerHTML = hGaji;
         document.getElementById('listTahunan').innerHTML = hTahunan;
@@ -175,25 +168,32 @@
                 return { tahun: i.dataset.y, thrDiterima: Number(i.value), kompDiterima: Number(k.value), bulanKerja: Number(k.dataset.m) };
             })
         };
-        const r = await fetch(API, {method:'POST', body:JSON.stringify(payload)});
-        const d = await r.json();
-        if(d.status === 'success') {
-            const fmt = (v) => "Rp. " + v.toLocaleString('id-ID') + ",00";
-            const h = `<div class="kop-brand"><img src="Logo_SBSI.png" width="80"><p style="color:red;font-weight:bold;margin:0">FSBSI DPC KOTA BITUNG</p></div>`;
-            const c = `
-                <div class="text-center fw-bold mb-4">HASIL AUDIT HAK PHK</div>
-                <div class="small mb-3">Nama: <b>${SESSION.targetName || SESSION.nama}</b><br>Masa Kerja: <b>${d.masaKerja}</b><br>UMP Dasar PHK: <b>${fmt(d.umpPhk)}</b></div>
-                <table class="table table-sm">
-                    <tr><td>Selisih Gaji</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
-                    <tr><td>Selisih THR</td><td class="text-end">${fmt(d.rincian.thr)}</td></tr>
-                    <tr><td>Selisih Komp</td><td class="text-end">${fmt(d.rincian.kompensasi)}</td></tr>
-                    <tr class="fw-bold text-primary"><td>Pesangon & UPMK (${d.detailUP})</td><td class="text-end">${fmt(d.rincian.pesangon)}</td></tr>
-                    <tr class="table-dark fw-bold"><td>TOTAL SELISIH HAK</td><td class="text-end">${fmt(d.rincian.total)}</td></tr>
-                </table>`;
-            document.getElementById('previewCard').innerHTML = h + c;
-            document.getElementById('printArea').innerHTML = h + c;
-            changeView('viewPreview');
-        }
+        try {
+            const r = await fetch(API, {method:'POST', body:JSON.stringify(payload)});
+            const d = await r.json();
+            if(d.status === 'success') {
+                const fmt = (v) => "Rp. " + v.toLocaleString('id-ID') + ",00";
+                const h = `<div class="kop-brand"><img src="Logo_SBSI.png" width="80"><p style="color:red;font-weight:bold;margin:0">FSBSI DPC KOTA BITUNG</p></div>`;
+                const c = `
+                    <div class="text-center fw-bold mb-4">LAPORAN HASIL AUDIT HAK PHK</div>
+                    <div class="small mb-3">
+                        Nama: <b>${SESSION.targetName || SESSION.nama}</b><br>
+                        Masa Kerja: <b>${d.masaKerja}</b><br>
+                        <b>UMP ACUAN PHK: ${fmt(d.umpPhk)}</b>
+                    </div>
+                    <table class="table table-sm">
+                        <tr><td>Selisih Gaji</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
+                        <tr><td>Selisih THR</td><td class="text-end">${fmt(d.rincian.thr)}</td></tr>
+                        <tr><td>Selisih Komp</td><td class="text-end">${fmt(d.rincian.kompensasi)}</td></tr>
+                        <tr class="fw-bold text-primary"><td>Pesangon & UPMK (${d.detailUP})</td><td class="text-end">${fmt(d.rincian.pesangon)}</td></tr>
+                        <tr class="table-dark fw-bold"><td>TOTAL SELISIH HAK</td><td class="text-end">${fmt(d.rincian.total)}</td></tr>
+                    </table>
+                `;
+                document.getElementById('previewCard').innerHTML = h + c;
+                document.getElementById('printArea').innerHTML = h + c;
+                changeView('viewPreview');
+            }
+        } catch(e) { alert("Error Server"); }
         showLoading(false);
     }
     function showLoading(s) { document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
