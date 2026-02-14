@@ -3,57 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mySBSI - Advokasi Buruh</title>
+  <title>mySBSI - Wizard Perhitungan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    :root { --sbsi-red: #b71c1c; }
-    body { background: #f4f4f4; font-family: sans-serif; }
-    .btn-sbsi { background: var(--sbsi-red); color: white; border: none; }
-    .card-login { max-width: 400px; margin: 80px auto; border-radius: 15px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-    #loader { display: none; }
-    .nav-sbsi { background: var(--sbsi-red); color: white; }
+    :root { --sbsi: #b71c1c; }
+    body { background: #f8f9fa; font-family: sans-serif; }
+    .bg-sbsi { background: var(--sbsi); color: white; }
+    .card-wizard { border: none; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .step { display: none; }
+    .step.active { display: block; }
+    .input-group-text { background: #eee; font-weight: bold; }
   </style>
 </head>
 <body>
 
 <div id="app">
-  <div id="loginSection" class="container">
-    <div class="card card-login p-4">
-      <div class="text-center mb-4">
-        <h2 class="fw-bold text-danger">mySBSI</h2>
-        <p class="text-muted small">Kalkulator Hak Buruh PP 35/2021</p>
-      </div>
-      <input type="text" id="username" class="form-control mb-2" placeholder="NIK (Username)">
-      <input type="password" id="password" class="form-control mb-3" placeholder="Kata Sandi">
-      <button onclick="prosesLogin()" id="btnLogin" class="btn btn-sbsi w-100 mb-2">LOGIN</button>
-      <button onclick="masukGuest()" class="btn btn-outline-dark w-100 fw-bold small">GUEST</button>
-      <div id="loader" class="text-center mt-3"><div class="spinner-border text-danger spinner-border-sm"></div></div>
-      <div id="msgError" class="text-danger text-center mt-2 small fw-bold"></div>
-      <button onclick="resetUrl()" class="btn btn-link btn-sm mt-3 text-muted" style="text-decoration:none">Ganti URL Web App</button>
+  <div id="loginSection" class="container mt-5" style="max-width: 400px;">
+    <div class="card card-wizard p-4 text-center">
+      <h2 class="text-danger fw-bold">mySBSI</h2>
+      <p class="small text-muted">Advokasi Buruh & Anggota</p>
+      <input type="text" id="username" class="form-control mb-2" placeholder="NIK">
+      <input type="password" id="password" class="form-control mb-3" placeholder="Sandi">
+      <button onclick="doLogin()" id="btnLogin" class="btn bg-sbsi w-100 mb-2">MASUK</button>
+      <button onclick="showGuest()" class="btn btn-outline-dark w-100 small">GUEST</button>
+      <div id="loader" class="mt-3" style="display:none;"><div class="spinner-border text-danger spinner-border-sm"></div></div>
+      <div id="msgError" class="text-danger mt-2 small fw-bold"></div>
     </div>
   </div>
 
   <div id="mainSection" style="display:none;">
-    <nav class="navbar nav-sbsi px-3 mb-4 shadow-sm">
-      <span class="navbar-brand fw-bold">mySBSI Dashboard</span>
+    <nav class="navbar bg-sbsi px-3 mb-4 shadow-sm">
+      <span class="navbar-brand fw-bold text-white">mySBSI Wizard</span>
       <button class="btn btn-sm btn-light fw-bold" onclick="location.reload()">Logout</button>
     </nav>
-    <div class="container">
-      <div id="viewGuest" class="card p-5 text-center shadow-sm" style="display:none;">
-        <h3 class="text-danger fw-bold">Profil mySBSI</h3>
-        <p>Gunakan akun Anggota untuk menghitung hak PHK & Pesangon.</p>
+
+    <div class="container" style="max-width: 700px;">
+      <div id="viewGuest" class="card card-wizard p-5 text-center" style="display:none;">
+        <h4 class="text-danger fw-bold">Selamat Datang di SBSI</h4>
+        <p>Aplikasi perhitungan hak buruh sesuai PP 35/2021.</p>
+        <p class="text-muted small">Guest hanya bisa melihat informasi ini.</p>
       </div>
+
       <div id="viewUser" style="display:none;">
-        <div class="card p-4 shadow-sm border-0 mb-4">
-          <h5 class="fw-bold text-danger">Kalkulator PHK</h5>
-          <hr>
-          <div class="row g-3">
-            <div class="col-md-6"><label class="small fw-bold">Tgl Mulai</label><input type="date" id="tglMulai" class="form-control"></div>
-            <div class="col-md-6"><label class="small fw-bold">Tgl PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
-            <div class="col-12"><label class="small fw-bold">Upah Terakhir</label><input type="number" id="upah" class="form-control" placeholder="Rp"></div>
-            <div class="col-12"><button onclick="hitung()" class="btn btn-danger w-100">HITUNG HAK</button></div>
+        <div class="card card-wizard p-4">
+          <div id="step1" class="step active">
+            <h5 class="fw-bold text-danger mb-3">Langkah 1: Informasi Kerja</h5>
+            <div class="mb-3"><label class="small fw-bold">Tanggal Mulai Kerja</label><input type="date" id="tglMulai" class="form-control"></div>
+            <div class="mb-3"><label class="small fw-bold">Tanggal PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
+            <button onclick="nextStep(2)" class="btn btn-danger w-100">Lanjut ke Input Upah</button>
           </div>
-          <div id="hasil" class="mt-4 p-3 bg-light rounded shadow-sm" style="display:none;"></div>
+
+          <div id="step2" class="step text-center">
+            <h5 class="fw-bold text-danger mb-3">Langkah 2: Upah Per Bulan</h5>
+            <div class="input-group mb-3">
+              <span class="input-group-text">Rp</span>
+              <input type="text" id="upah" class="form-control form-control-lg" onkeyup="formatRupiah(this)" placeholder="0">
+            </div>
+            <p class="small text-muted">*Masukkan Gaji Pokok + Tunjangan Tetap</p>
+            <div class="d-flex gap-2">
+              <button onclick="nextStep(1)" class="btn btn-outline-secondary w-50">Kembali</button>
+              <button onclick="nextStep(3)" class="btn btn-danger w-50">Lanjut THR & Komp</button>
+            </div>
+          </div>
+
+          <div id="step3" class="step">
+            <h5 class="fw-bold text-danger mb-3">Langkah 3: THR & Kompensasi</h5>
+            <div class="mb-3">
+              <label class="small fw-bold">Total THR yang belum dibayar</label>
+              <div class="input-group"><span class="input-group-text">Rp</span><input type="text" id="thr" class="form-control" onkeyup="formatRupiah(this)" value="0"></div>
+            </div>
+            <div class="mb-3">
+              <label class="small fw-bold">Kompensasi Lainnya / Penggantian Hak</label>
+              <div class="input-group"><span class="input-group-text">Rp</span><input type="text" id="komp" class="form-control" onkeyup="formatRupiah(this)" value="0"></div>
+            </div>
+            <div class="d-flex gap-2">
+              <button onclick="nextStep(2)" class="btn btn-outline-secondary w-50">Kembali</button>
+              <button onclick="hitungFinal()" class="btn btn-success w-50">Hitung Hasil Akhir</button>
+            </div>
+          </div>
+
+          <div id="step4" class="step">
+            <h4 class="fw-bold text-danger text-center">Analisa Hak PHK</h4>
+            <hr>
+            <div id="hasilRincian" class="small"></div>
+            <button onclick="location.reload()" class="btn btn-dark w-100 mt-4">Ulangi Perhitungan</button>
+          </div>
         </div>
       </div>
     </div>
@@ -61,76 +95,105 @@
 </div>
 
 <script>
-let appUrl = localStorage.getItem('sbsi_url');
+// !!! GANTI URL INI DENGAN URL WEB APP GOOGLE SCRIPT ANDA !!!
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby026lb13yxXsUKUYkZoDFXKcBYKbvgNzQM-GgHFTBQj7RxCf9TBgmyaB5PJ-8tnfit/exec";
+
 let currentUser = {};
+let masterUMP = {};
 
-function resetUrl() {
-  let url = prompt("Masukkan URL Web App Google Script Anda:", appUrl || "");
-  if(url) {
-    localStorage.setItem('sbsi_url', url);
-    appUrl = url;
-    location.reload();
-  }
+function formatRupiah(el) {
+  let val = el.value.replace(/\D/g, "");
+  el.value = new Intl.NumberFormat('id-ID').format(val);
 }
 
-// Jika belum ada URL, minta saat startup
-if(!appUrl) resetUrl();
-
-function callback(res) {
-  window.lastResponse = res;
+function parseInput(val) {
+  return parseFloat(val.replace(/\./g, "")) || 0;
 }
 
-function prosesLogin() {
+function callback(res) { window.lastRes = res; }
+
+function doLogin() {
   const u = document.getElementById('username').value;
   const p = document.getElementById('password').value;
-  if(!u || !p) return alert("Isi Username/Sandi");
-  
   document.getElementById('loader').style.display = 'block';
   
   const script = document.createElement('script');
-  script.src = `${appUrl}?action=login&u=${u}&p=${p}&callback=callback`;
-  
+  script.src = `${WEB_APP_URL}?action=login&u=${u}&p=${p}&callback=callback`;
   document.body.appendChild(script);
 
   setTimeout(() => {
     document.getElementById('loader').style.display = 'none';
-    if(window.lastResponse && window.lastResponse.success) {
-      showDashboard(window.lastResponse);
+    if(window.lastRes && window.lastRes.success) {
+      currentUser = window.lastRes;
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('mainSection').style.display = 'block';
+      if(currentUser.role === 'Guest') {
+        document.getElementById('viewGuest').style.display = 'block';
+      } else {
+        document.getElementById('viewUser').style.display = 'block';
+        google.script.run.withSuccessHandler(d => masterUMP = d).getUMP(); // Pre-load UMP
+      }
     } else {
-      document.getElementById('msgError').innerText = window.lastResponse ? window.lastResponse.message : "Gagal terhubung ke Script";
+      document.getElementById('msgError').innerText = "NIK/Sandi Salah!";
     }
-  }, 2000);
+  }, 1500);
 }
 
-function masukGuest() { showDashboard({role:'Guest', nama:'Tamu'}); }
-
-function showDashboard(user) {
-  currentUser = user;
-  document.getElementById('loginSection').style.display='none';
-  document.getElementById('mainSection').style.display='block';
-  
-  if(user.role === 'Guest') {
-    document.getElementById('viewGuest').style.display='block';
-  } else {
-    document.getElementById('viewUser').style.display='block';
-  }
+function showGuest() {
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('mainSection').style.display = 'block';
+  document.getElementById('viewGuest').style.display = 'block';
 }
 
-function hitung() {
+function nextStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+}
+
+function hitungFinal() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
-  const upah = parseFloat(document.getElementById('upah').value);
-  
-  const diff = Math.floor((d2 - d1) / (1000*60*60*24*30.44));
-  const thn = Math.floor(diff/12);
-  let faktor = thn < 1 ? 1 : (thn >= 8 ? 9 : thn + 1);
-  let total = faktor * upah;
+  const upah = parseInput(document.getElementById('upah').value);
+  const thrVal = parseInput(document.getElementById('thr').value);
+  const kompVal = parseInput(document.getElementById('komp').value);
 
-  document.getElementById('hasil').style.display = 'block';
-  document.getElementById('hasil').innerHTML = `
-    <h6 class="fw-bold">Estimasi Hak:</h6>
-    <div class="d-flex justify-content-between"><span>Masa Kerja:</span><span>${thn} Tahun</span></div>
-    <div class="d-flex justify-content-between h5 fw-bold text-danger mt-2"><span>Total Pesangon:</span><span>Rp ${total.toLocaleString()}</span></div>
+  const diffBulan = Math.floor((d2 - d1) / (1000 * 60 * 60 * 24 * 30.44));
+  const thn = Math.floor(diffBulan / 12);
+  const thnPHK = d2.getFullYear().toString();
+  const umpTerakhir = masterUMP[thnPHK] || 0;
+
+  // Logic PP 35/2021
+  // Pesangon (Pasal 40 ayat 2)
+  let kaliPesangon = thn < 1 ? 1 : (thn >= 8 ? 9 : thn + 1);
+  let totalPesangon = kaliPesangon * upah;
+
+  // UPMK (Uang Penghargaan Masa Kerja - Pasal 40 ayat 3)
+  let kaliUPMK = 0;
+  if(thn >= 3 && thn < 6) kaliUPMK = 2;
+  else if(thn >= 6 && thn < 9) kaliUPMK = 3;
+  else if(thn >= 9 && thn < 12) kaliUPMK = 4;
+  else if(thn >= 12 && thn < 15) kaliUPMK = 5;
+  else if(thn >= 15 && thn < 18) kaliUPMK = 6;
+  else if(thn >= 18 && thn < 21) kaliUPMK = 7;
+  else if(thn >= 21 && thn < 24) kaliUPMK = 8;
+  else if(thn >= 24) kaliUPMK = 10;
+  let totalUPMK = kaliUPMK * upah;
+
+  const totalSemua = totalPesangon + totalUPMK + thrVal + kompVal;
+
+  nextStep(4);
+  document.getElementById('hasilRincian').innerHTML = `
+    <div class="list-group">
+      <div class="list-group-item d-flex justify-content-between"><span>Masa Kerja</span><b>${thn} Tahun</b></div>
+      <div class="list-group-item d-flex justify-content-between"><span>UMP ${thnPHK}</span><b>Rp ${umpTerakhir.toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between bg-light"><span>Pesangon (${kaliPesangon}x)</span><b>Rp ${totalPesangon.toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between bg-light"><span>UPMK (${kaliUPMK}x)</span><b>Rp ${totalUPMK.toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between"><span>Sisa THR</span><b>Rp ${thrVal.toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between"><span>Kompensasi Hak</span><b>Rp ${kompVal.toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between bg-danger text-white h5 mt-2">
+        <span>TOTAL HAK</span><b>Rp ${totalSemua.toLocaleString()}</b>
+      </div>
+    </div>
   `;
 }
 </script>
