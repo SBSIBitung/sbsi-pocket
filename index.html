@@ -2,129 +2,149 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mySBSI Pocket Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>mySBSI - Pocket Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { --primary: #0d47a1; --dark: #002171; }
-        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-        .card-pro { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; }
-        .top-nav { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; margin-bottom: 15px; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.7); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; --gold: #ffc107; }
+        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; }
+        .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; margin-bottom: 20px; padding: 25px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .menu-item { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #eee; transition: 0.3s; }
+        .menu-item:active { transform: scale(0.95); }
+        .video-yt { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; margin-bottom: 15px; }
+        .video-yt iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .video-portrait { width: 100%; max-width: 340px; margin: 0 auto 15px; border-radius: 15px; overflow: hidden; background: #000; height: 580px; }
+        .view-section { display: none; padding-bottom: 50px; }
+        .view-section.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: none; justify-content: center; align-items: center; }
+        @media print { .no-print { display: none !important; } #printArea { display: block !important; background: white; } }
     </style>
 </head>
 <body>
 
+<div id="splash"><img src="Logo_SBSI.png" width="100"><div class="mt-3 fw-bold text-primary" style="letter-spacing: 3px;">mySBSI</div></div>
 <div id="loading"><div class="spinner-border text-primary"></div></div>
 
-<div id="viewLogin" class="view-section active">
-    <div class="container py-5">
-        <div class="text-center mb-4">
-            <img src="https://raw.githubusercontent.com/sbsibitung/sbsi-pocket/main/Logo_SBSI.png" width="70">
-            <h4 class="fw-bold mt-2">mySBSI Pocket</h4>
+<div class="no-print">
+    <div id="viewLogin" class="view-section active">
+        <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
+            <img src="Logo_SBSI.png" width="120" class="mb-4">
+            <div class="card-pro w-100" style="max-width: 350px;">
+                <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
+                <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
+                <button class="btn-blue" onclick="handleLogin()">MASUK</button>
+            </div>
         </div>
-        <div class="card-pro mx-auto" style="max-width: 350px;">
-            <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
-            <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
-            <button class="btn-blue" onclick="handleLogin()">LOGIN</button>
+    </div>
+
+    <div id="viewDashboard" class="view-section">
+        <nav class="top-nav"><span>mySBSI</span><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
+        <div class="container py-4">
+            <div class="card-pro bg-primary text-white">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1"><small>Selamat Datang,</small><h4 id="dashNama" class="fw-bold m-0">--</h4><div id="dashRole" class="badge bg-warning text-dark mt-2">--</div></div>
+                    <i class="bi bi-person-circle fs-1"></i>
+                </div>
+            </div>
+            <div class="menu-grid">
+                <div class="menu-item" onclick="changeView('viewAudit')"><i class="bi bi-calculator text-primary fs-2"></i><br><span class="small fw-bold">Audit Hak</span></div>
+                <div class="menu-item" onclick="changeView('viewVisiMisi')"><i class="bi bi-flag-fill text-danger fs-2"></i><br><span class="small fw-bold">Visi & Misi</span></div>
+                <div class="menu-item" onclick="changeView('viewVideo')"><i class="bi bi-play-circle-fill text-success fs-2"></i><br><span class="small fw-bold">Edukasi TV</span></div>
+                <div class="menu-item" onclick="alert('Fitur Segera Hadir')"><i class="bi bi-journal-text text-info fs-2"></i><br><span class="small fw-bold">Regulasi</span></div>
+            </div>
         </div>
-        
-        <div class="card-pro mx-auto mt-4" style="max-width: 500px;">
-            <h6 class="fw-bold text-primary"><i class="bi bi-info-circle-fill"></i> Tentang SBSI</h6>
-            <p class="small text-muted">Serikat Buruh Sejahtera Indonesia (SBSI) adalah organisasi buruh independen pertama di Indonesia yang didirikan untuk memperjuangkan keadilan sosial, demokrasi, dan kesejahteraan buruh melalui Tiga Pilar Perjuangan.</p>
-            <ul class="small text-muted">
-                <li><b>Visi:</b> Terwujudnya buruh yang sejahtera dan bermartabat.</li>
-                <li><b>Misi:</b> Melindungi, membela hak, dan meningkatkan kesejahteraan buruh beserta keluarganya.</li>
-            </ul>
+    </div>
+
+    <div id="viewVideo" class="view-section">
+        <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Edukasi TV</span><div></div></nav>
+        <div class="container py-4">
+            <h6 class="fw-bold mb-3"><i class="bi bi-youtube text-danger me-2"></i>MARS SBSI</h6>
+            <div class="video-yt shadow-sm"><iframe id="yt1" src="https://www.youtube.com/embed/08hfTSNWW_k" allowfullscreen></iframe></div>
+            <hr>
+            <h6 class="fw-bold mb-3"><i class="bi bi-tiktok me-2"></i>EDUKASI HAK BURUH</h6>
+            <div class="video-portrait shadow-sm"><iframe id="tk1" src="https://www.tiktok.com/embed/v2/7571414420832767239"></iframe></div>
+        </div>
+    </div>
+
+    <div id="viewVisiMisi" class="view-section">
+        <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Visi & Misi</span><div></div></nav>
+        <div class="container py-4">
+            <div class="card-pro">
+                <h5 class="fw-bold text-danger border-bottom pb-2">VISI</h5>
+                <p class="small text-muted">Mewujudkan kaum buruh yang sejahtera, mandiri, dan bermartabat.</p>
+                <h5 class="fw-bold text-primary border-bottom pb-2 mt-4">MISI</h5>
+                <ul class="small text-muted"><li>Advokasi Hukum Maksimal.</li><li>Peningkatan Kualitas SDM Buruh.</li><li>Organisasi yang Solid & Kuat.</li></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewAudit" class="view-section">
+        <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Input Audit</span><div></div></nav>
+        <div class="container py-4">
+            <div id="stepTanggal" class="card-pro">
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><label class="small fw-bold">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
+                    <div class="col-6"><label class="small fw-bold">Tanggal PHK</label><input type="date" id="d2" class="form-control" onchange="fetchUmpAuto()"></div>
+                </div>
+                <div class="bg-light p-3 rounded-3 mb-4 text-center border">
+                    <label class="small fw-bold text-primary">UMP ACUAN PHK</label>
+                    <input type="number" id="umpAuto" class="form-control text-center fw-bold bg-transparent border-0" readonly placeholder="...">
+                </div>
+                <button class="btn-blue" id="btnNext1" onclick="genProrata()" disabled>LANJUT INPUT GAJI</button>
+            </div>
+            <div id="stepGaji" class="card-pro d-none">
+                <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">Upah Diterima</h6>
+                <div id="listGaji" style="max-height: 300px; overflow-y: auto;"></div>
+                <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT THR & KOMP</button>
+            </div>
+            <div id="stepTahunan" class="card-pro d-none">
+                <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">THR & Kompensasi</h6>
+                <div id="listTahunan"></div>
+                <div class="form-check form-switch my-4"><input class="form-check-input" type="checkbox" id="isMeninggal"><label class="form-check-label fw-bold text-danger">Meninggal Dunia</label></div>
+                <button class="btn-blue" onclick="runCalculation()">LIHAT HASIL AKHIR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewPreview" class="view-section">
+        <nav class="top-nav"><span>Hasil Audit</span><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
+        <div class="container py-4">
+            <div id="previewCard" class="card-pro shadow-lg"></div>
+            <button class="btn-blue mb-3" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK LAPORAN</button>
+            <button class="btn btn-primary w-100 py-2 fw-bold" onclick="changeView('viewDashboard')" style="border-radius:12px;">KEMBALI KE BERANDA</button>
         </div>
     </div>
 </div>
 
-<div id="viewDashboard" class="view-section">
-    <nav class="top-nav"><b>mySBSI Dashboard</b><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
-    <div class="container py-4">
-        <div class="card-pro bg-primary text-white d-flex align-items-center mb-3">
-            <img id="userFoto" src="" style="width:55px; height:55px; border-radius:50%; border:2px solid #fff; margin-right:15px; object-fit:cover;">
-            <div><h6 id="dashNama" class="fw-bold m-0"></h6><small id="dashRole"></small></div>
-        </div>
-        
-        <div id="adminPanel" class="d-none mb-3">
-            <button class="btn btn-warning w-100 fw-bold shadow-sm" onclick="openSearchModal()">🔍 CARI ANGGOTA (ADMIN)</button>
-        </div>
-
-        <div class="row g-2 text-center">
-            <div class="col-6" onclick="startAuditSelf()">
-                <div class="card-pro h-100"><i class="bi bi-calculator fs-2 text-primary"></i><p class="small fw-bold mb-0 mt-1">Audit Hak</p></div>
-            </div>
-            <div class="col-6" onclick="changeView('viewEdukasi')">
-                <div class="card-pro h-100"><i class="bi bi-play-circle-fill fs-2 text-success"></i><p class="small fw-bold mb-0 mt-1">Edukasi TV</p></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="viewEdukasi" class="view-section">
-    <nav class="top-nav"><button class="btn text-white" onclick="changeView('viewDashboard')">←</button><b>Edukasi TV</b><div></div></nav>
-    <div class="container py-4">
-        <div class="card-pro">
-            <h6 class="fw-bold mb-3"><i class="bi bi-music-note-beamed"></i> Mars SBSI</h6>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/S_8SNDV-9bY" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </div>
-        <div class="card-pro">
-            <h6 class="fw-bold mb-3"><i class="bi bi-book"></i> Edukasi 1: Hak Buruh</h6>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE_1" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </div>
-        <div class="card-pro">
-            <h6 class="fw-bold mb-3"><i class="bi bi-shield-check"></i> Edukasi 2: Tata Cara PHK</h6>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE_2" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="viewAudit" class="view-section">
-    <nav class="top-nav"><button class="btn text-white" onclick="changeView('viewDashboard')">←</button><b id="auditTargetName">Audit Hak</b><div></div></nav>
-    <div class="container py-4">
-        <div class="card-pro">
-            <div class="mb-2"><label class="small fw-bold">Tanggal Masuk</label><input type="date" id="d1" class="form-control"></div>
-            <div class="mb-2"><label class="small fw-bold">Tanggal PHK</label><input type="date" id="d2" class="form-control" onchange="fetchUmp()"></div>
-            <div class="mb-3"><label class="small fw-bold">UMP Acuan</label><input type="text" id="umpVal" class="form-control bg-light" readonly></div>
-            <div class="mb-3"><label class="small fw-bold">Gaji Pokok + Tunj. Tetap</label><input type="number" id="gajiInp" class="form-control"></div>
-            <button class="btn-blue" onclick="hitungFinal()">HITUNG HAK</button>
-        </div>
-        <div id="hasilBox" class="card-pro d-none bg-light border-primary">
-            <h6 class="fw-bold text-center mb-3">HASIL AUDIT</h6>
-            <table class="table table-sm small">
-                <tr><td>Masa Kerja</td><td id="resMasa" class="text-end fw-bold"></td></tr>
-                <tr><td>Pesangon</td><td id="resPesangon" class="text-end"></td></tr>
-                <tr><td>Uang PMK</td><td id="resPmk" class="text-end"></td></tr>
-                <tr class="table-primary fw-bold"><td>TOTAL</td><td id="resTotal" class="text-end"></td></tr>
-            </table>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalSearch" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-body">
-    <input type="text" id="searchInp" class="form-control mb-3" placeholder="Cari Anggota..." onkeyup="filterAnggota()">
-    <div id="listRes" class="list-group"></div>
-</div></div></div></div>
+<div id="printArea" style="display:none; padding:40px;"></div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyI2q7Y-qEXflkl0_gnR4g-PqbGksQMsy0sQE8Kdn5ZQkiGZn6eZP08UATqxHSBwEVA/exec"; 
-    let ALL_ANGGOTA = [], SESSION = {}, TARGET = {};
+    const API = "https://script.google.com/macros/s/AKfycbxnlxFNAHVK6FxItd0iBLLVKqDyh-V_Pt8ZAzPkZlZZOMiNtpDjxgEnC66D6hEjREBH/exec";
+    let SESSION = {};
 
-    function formatFoto(url) { return (url && url.includes('id=')) ? "https://lh3.googleusercontent.com/d/" + url.split('id=')[1] : "https://cdn-icons-png.flaticon.com/512/149/149071.png"; }
+    window.onload = () => setTimeout(() => { document.getElementById('splash').style.display='none'; }, 2000);
+
+    function stopAllVideos() {
+        document.querySelectorAll('iframe').forEach(f => { const s = f.src; f.src = ""; f.src = s; });
+    }
+
+    function changeView(id) {
+        stopAllVideos();
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function showStep(id) {
+        document.querySelectorAll('#viewAudit .card-pro').forEach(c => c.classList.add('d-none'));
+        document.getElementById(id).classList.remove('d-none');
+    }
 
     async function handleLogin() {
         showLoading(true);
@@ -134,50 +154,78 @@
             SESSION = d.user;
             document.getElementById('dashNama').innerText = SESSION.nama;
             document.getElementById('dashRole').innerText = SESSION.role;
-            document.getElementById('userFoto').src = formatFoto(SESSION.foto);
-            if(SESSION.role.toLowerCase()==='admin') { document.getElementById('adminPanel').classList.remove('d-none'); loadList(); }
             changeView('viewDashboard');
-        } else alert(d.msg);
+        } else alert("Akses Ditolak!");
         showLoading(false);
     }
 
-    async function fetchUmp() {
-        const d2 = document.getElementById('d2').value;
-        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year:new Date(d2).getFullYear()})});
+    async function fetchUmpAuto() {
+        const d2Val = document.getElementById('d2').value;
+        if(!d2Val) return;
+        showLoading(true);
+        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year: new Date(d2Val).getFullYear()})});
         const d = await r.json();
-        if(d.status==='success' && d.ump > 0) {
-            document.getElementById('umpVal').value = "Rp " + d.ump.toLocaleString();
-        } else { document.getElementById('umpVal').removeAttribute('readonly'); document.getElementById('umpVal').value = ""; }
+        if(d.status === 'success' && d.ump > 0) {
+            document.getElementById('umpAuto').value = d.ump;
+            document.getElementById('btnNext1').disabled = false;
+        } else { alert("Data UMP tidak ada!"); document.getElementById('btnNext1').disabled = true; }
+        showLoading(false);
     }
 
-    function hitungFinal() {
-        const d1 = new Date(document.getElementById('d1').value);
-        const d2 = new Date(document.getElementById('d2').value);
-        const upah = parseFloat(document.getElementById('gajiInp').value);
-        if(!d1 || !d2 || !upah) return alert("Lengkapi data!");
-
-        const mk = (d2 - d1) / (1000 * 60 * 60 * 24 * 365.25);
-        let p = (mk < 1)?1:(mk < 2)?2:(mk < 3)?3:(mk < 4)?4:(mk < 5)?5:(mk < 6)?6:(mk < 7)?7:(mk < 8)?8:9;
-        let pmk = (mk < 3)?0:(mk < 6)?2:(mk < 9)?3:(mk < 12)?4:(mk < 15)?5:(mk < 18)?6:(mk < 21)?7:(mk < 24)?8:10;
-
-        document.getElementById('hasilBox').classList.remove('d-none');
-        document.getElementById('resMasa').innerText = mk.toFixed(1) + " Tahun";
-        document.getElementById('resPesangon').innerText = "Rp " + (upah * p).toLocaleString();
-        document.getElementById('resPmk').innerText = "Rp " + (upah * pmk).toLocaleString();
-        document.getElementById('resTotal').innerText = "Rp " + ((upah * p) + (upah * pmk)).toLocaleString();
+    function genProrata() {
+        const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
+        let hGaji = "", hTahunan = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = {};
+        while(curr <= d2) {
+            let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
+            hGaji += `<div class="d-flex mb-2 small"><span>${label}</span><input type="number" class="form-control form-control-sm in-g ms-auto" style="width:140px" data-b="${label}" value="2000000"></div>`;
+            years[curr.getFullYear()] = (years[curr.getFullYear()] || 0) + 1;
+            curr.setMonth(curr.getMonth()+1);
+        }
+        Object.keys(years).forEach(y => {
+            hTahunan += `<div class="mb-3 p-2 border rounded small"><b>Tahun ${y}</b><div class="row g-2 mt-1"><div class="col-6">THR:<input type="number" class="form-control form-control-sm in-thr" data-y="${y}" value="0"></div><div class="col-6">Komp:<input type="number" class="form-control form-control-sm in-komp" data-y="${y}" data-m="${years[y]}" value="0"></div></div></div>`;
+        });
+        document.getElementById('listGaji').innerHTML = hGaji;
+        document.getElementById('listTahunan').innerHTML = hTahunan;
+        showStep('stepGaji');
     }
 
-    async function loadList() { const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getAnggotaList'})}); const d = await r.json(); ALL_ANGGOTA = d.data; }
-    function filterAnggota() {
-        const key = document.getElementById('searchInp').value.toLowerCase();
-        const res = ALL_ANGGOTA.filter(a => a.nama.toLowerCase().includes(key));
-        document.getElementById('listRes').innerHTML = res.map(a => `<button class="list-group-item" onclick="selAudit('${a.nama}')">${a.nama}</button>`).join('');
+    async function runCalculation() {
+        showLoading(true);
+        const payload = {
+            action:'audit', tglMulai: document.getElementById('d1').value, tglSelesai: document.getElementById('d2').value,
+            umpInput: Number(document.getElementById('umpAuto').value), isMeninggal: document.getElementById('isMeninggal').checked,
+            rincianGaji: Array.from(document.querySelectorAll('.in-g')).map(i => ({ gaji: Number(i.value) })),
+            rincianTahunan: Array.from(document.querySelectorAll('.in-thr')).map((i, idx) => {
+                const k = document.querySelectorAll('.in-komp')[idx];
+                return { thrDiterima: Number(i.value), kompDiterima: Number(k.value), bulanKerja: Number(k.dataset.m) };
+            })
+        };
+        const r = await fetch(API, {method:'POST', body:JSON.stringify(payload)});
+        const d = await r.json();
+        if(d.status === 'success') {
+            const fmt = (v) => "Rp " + Number(v).toLocaleString('id-ID');
+            const h = `<div class="text-center mb-4"><img src="Logo_SBSI.png" width="100"><h5 class="fw-bold mt-2" style="color:var(--sbsi-red);">FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</h5><h4 class="fw-bold text-primary">DPC KOTA BITUNG</h4><hr style="border:2px solid #000; opacity:1"></div>`;
+            const c = `
+                <h6 class="text-center fw-bold mb-4" style="text-decoration:underline">HASIL AUDIT HAK PEKERJA</h6>
+                <div class="small mb-3 p-3 bg-light rounded border"><table class="w-100">
+                <tr><td>Nama Anggota</td><td>: <b>${SESSION.nama}</b></td></tr>
+                <tr><td>Masa Kerja</td><td>: <b>${d.masaKerja}</b></td></tr>
+                <tr class="text-primary fw-bold"><td>UMP Acuan</td><td>: ${fmt(d.umpPhk)}</td></tr></table></div>
+                <table class="table table-bordered small">
+                <tr class="table-secondary"><th>Deskripsi Hak</th><th class="text-end">Jumlah</th></tr>
+                <tr><td>Selisih Gaji Bulanan</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
+                <tr><td>Selisih THR</td><td class="text-end">${fmt(d.rincian.thr)}</td></tr>
+                <tr><td>Selisih Kompensasi</td><td class="text-end">${fmt(d.rincian.kompensasi)}</td></tr>
+                <tr class="fw-bold"><td>Pesangon & UPMK (${d.detailUP})</td><td class="text-end text-primary">${fmt(d.rincian.pesangon)}</td></tr>
+                <tr class="table-dark fw-bold"><td>TOTAL KEKURANGAN</td><td class="text-end text-warning">${fmt(d.rincian.total)}</td></tr>
+                </table>`;
+            document.getElementById('previewCard').innerHTML = h + c;
+            document.getElementById('printArea').innerHTML = h + c;
+            changeView('viewPreview');
+        }
+        showLoading(false);
     }
-    function selAudit(n) { TARGET={nama:n}; document.getElementById('auditTargetName').innerText = "Audit: "+n; bootstrap.Modal.getInstance(document.getElementById('modalSearch')).hide(); changeView('viewAudit'); }
-    function startAuditSelf() { TARGET={nama:SESSION.nama}; document.getElementById('auditTargetName').innerText = "Audit Mandiri"; changeView('viewAudit'); }
-    function changeView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
     function showLoading(s) { document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
-    function openSearchModal() { new bootstrap.Modal(document.getElementById('modalSearch')).show(); }
 </script>
 </body>
 </html>
