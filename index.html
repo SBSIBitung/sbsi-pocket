@@ -1,198 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root { --primary: #0d47a1; --danger: #d32f2f; }
-    body { background: #f8f9fa; font-size: 13px; font-family: 'Segoe UI', sans-serif; }
-    .card-pro { background: white; border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px; }
-    .step-view { display: none; }
-    .step-view.active { display: block; }
-    .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; }
-    .audit-label { background: #fff3e0; padding: 5px 10px; border-radius: 5px; font-weight: bold; color: #e65100; }
-    .table-audit input { width: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 4px; text-align: right; }
-  </style>
-</head>
-<body>
-
-<div class="container py-4">
-  <div id="viewLogin" class="step-view active text-center">
-    <img src="https://raw.githubusercontent.com/sbsibitung/sbsi-pocket/main/Logo_SBSI.png" width="80" class="mb-4">
-    <div class="card-pro mx-auto" style="max-width: 350px;">
-      <h5 class="fw-bold mb-3">Login Auditor Hak</h5>
-      <input type="text" id="lNik" class="form-control mb-2" placeholder="NIK">
-      <input type="password" id="lPin" class="form-control mb-3" placeholder="PIN">
-      <button class="btn-blue" onclick="handleLogin()">MASUK SISTEM</button>
-    </div>
-  </div>
-
-  <div id="appBody" class="step-view">
-    <div id="step1" class="step-view active">
-      <div id="adminPanel" class="d-none card-pro border-primary">
-        <label class="fw-bold small">Cari Anggota (Admin: David)</label>
-        <input type="text" id="searchInp" class="form-control mb-2" placeholder="Ketik Nama..." onkeyup="searchMember()">
-        <div id="searchRes" class="list-group"></div>
-      </div>
-      <div class="card-pro">
-        <h6 class="fw-bold mb-3 text-primary">Tahap 1: Periode Kerja & Masa Kerja</h6>
-        <label class="small fw-bold">Tanggal Masuk (TMT)</label><input type="date" id="tmt" class="form-control mb-2">
-        <label class="small fw-bold">Tanggal PHK</label><input type="date" id="phk" class="form-control mb-3">
-        <button class="btn-blue" onclick="toStep2()">LANJUT AUDIT UPAH BULANAN</button>
-      </div>
-    </div>
-
-    <div id="step2" class="step-view">
-      <div class="card-pro">
-        <h6 class="fw-bold text-primary mb-2">Tahap 2: Audit Selisih Upah Perbulan</h6>
-        <p class="text-muted small">Input upah yang <b>benar-benar Anda terima</b> di setiap tahun:</p>
-        <div class="table-responsive">
-          <table class="table table-sm table-bordered">
-            <thead class="table-dark"><tr><th>Tahun</th><th>UMP (Aturan)</th><th>Upah Diterima</th></tr></thead>
-            <tbody id="upahTable"></tbody>
-          </table>
-        </div>
-        <button class="btn-blue mt-3" onclick="toStep3()">LANJUT INPUT THR & KOMPENSASI</button>
-      </div>
-    </div>
-
-    <div id="step3" class="step-view">
-      <div class="card-pro">
-        <h6 class="fw-bold text-primary mb-3">Tahap 3: Dana Yang Sudah Dibayar Perusahaan</h6>
-        <div id="thrList"></div>
-        <div id="boxMeninggal" class="d-none mt-3 p-3 border border-danger rounded bg-light text-center">
-          <label class="text-danger fw-bold"><input type="checkbox" id="isMeninggal"> PEKERJA MENINGGAL DUNIA (Pesangon 2x)</label>
-        </div>
-        <button class="btn-blue mt-4" onclick="hitungFinal()">LIHAT HASIL AUDIT SELISIH</button>
-      </div>
-    </div>
-
-    <div id="step4" class="step-view">
-      <div class="card-pro border-danger">
-        <h5 class="fw-bold text-center mb-3">REKAPITULASI SELISIH HAK</h5>
-        <div id="hasilDetail"></div>
-        <button class="btn btn-warning w-100 mt-3" onclick="location.reload()">RE-AUDIT ULANG</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-  const API = "https://script.google.com/macros/s/AKfycbwy9ojeqHYxpOGZcf7P5T_GrBQUWTxtvBAwhDw-54m9lYvs1C48GFfrWHbVMcjqAyru/exec";
-  let USER = {}, UMP = {};
-
-  async function handleLogin() {
-    const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('lNik').value, pin:document.getElementById('lPin').value})});
-    const d = await res.json();
-    if(d.status==='success') {
-      USER = d.user;
-      document.getElementById('viewLogin').classList.remove('active');
-      document.getElementById('appBody').classList.add('active');
-      if(USER.role === "Admin") {
-        document.getElementById('adminPanel').classList.remove('d-none');
-        document.getElementById('boxMeninggal').classList.remove('d-none');
-      }
-      const r2 = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef'})});
-      const d2 = await r2.json(); UMP = d2.data;
-    } else alert(d.message);
-  }
-
-  async function searchMember() {
-    const q = document.getElementById('searchInp').value;
-    if(q.length < 3) return;
-    const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'searchMember', query:q})});
-    const d = await res.json();
-    document.getElementById('searchRes').innerHTML = d.data.map(a => `<button class='list-group-item small' onclick='selectMember("${a.tmt}")'>${a.nama}</button>`).join('');
-  }
-
-  function selectMember(tmt) {
-    document.getElementById('tmt').value = new Date(tmt).toISOString().split('T')[0];
-    document.getElementById('searchRes').innerHTML = "";
-  }
+  // ... (fungsi login tetap sama)
 
   function toStep2() {
-    const y1 = new Date(document.getElementById('tmt').value).getFullYear();
-    const y2 = new Date(document.getElementById('phk').value).getFullYear();
-    if(isNaN(y1) || isNaN(y2)) return alert("Isi tanggal dulu!");
+    const tmtInput = document.getElementById('tmt').value;
+    const phkInput = document.getElementById('phk').value;
+    
+    if(!tmtInput || !phkInput) {
+      alert("Harap isi Tanggal Masuk dan Tanggal PHK terlebih dahulu.");
+      return;
+    }
+
+    const y1 = new Date(tmtInput).getFullYear();
+    const y2 = new Date(phkInput).getFullYear();
+    
+    // Validasi urutan tahun
+    if (y1 > y2) {
+      alert("Tahun PHK tidak boleh lebih awal dari Tahun Masuk.");
+      return;
+    }
+
     let html = '';
+    // Loop untuk membuat baris input selisih upah per bulan selama masa kerja
     for(let y = y1; y <= y2; y++) {
       let valUmp = UMP[y] || 0;
-      html += `<tr><td>${y}</td><td>Rp ${Number(valUmp).toLocaleString()}</td><td><input type="number" class="u-in" data-y="${y}" value="${valUmp}"></td></tr>`;
+      let labelUmp = valUmp > 0 ? `Rp ${Number(valUmp).toLocaleString()}` : "Data Tidak Ada";
+      
+      html += `
+        <tr>
+          <td class="fw-bold">${y}</td>
+          <td>${labelUmp}</td>
+          <td>
+            <input type="number" class="u-in form-control form-control-sm" 
+                   data-y="${y}" value="${valUmp}" placeholder="Input Upah Bulanan">
+          </td>
+        </tr>`;
     }
+    
     document.getElementById('upahTable').innerHTML = html;
-    toStep(2);
+    toStep(2); // Pindah ke tampilan tahap 2
   }
 
-  function toStep3() {
-    const y1 = new Date(document.getElementById('tmt').value).getFullYear();
-    const y2 = new Date(document.getElementById('phk').value).getFullYear();
-    let html = '';
-    for(let y = y1; y <= y2; y++) {
-      html += `<div class="mb-2"><label class="small">THR & Kompensasi Diterima Thn ${y}</label><input type="number" class="t-in form-control form-control-sm" value="0"></div>`;
-    }
-    document.getElementById('thrList').innerHTML = html;
-    toStep(3);
-  }
-
-  function hitungFinal() {
-    const tmt = new Date(document.getElementById('tmt').value);
-    const phk = new Date(document.getElementById('phk').value);
-    const mk = (phk - tmt) / (1000 * 60 * 60 * 24 * 365.25);
-    
-    // LOGIKA PP 35/2021
-    let pF = (mk<1)?1:(mk<2)?2:(mk<3)?3:(mk<4)?4:(mk<5)?5:(mk<6)?6:(mk<7)?7:(mk<8)?8:9;
-    let pmkF = (mk<3)?0:(mk<6)?2:(mk<9)?3:(mk<12)?4:(mk<15)?5:(mk<18)?6:(mk<21)?7:(mk<24)?8:10;
-    
-    const mult = document.getElementById('isMeninggal').checked ? 2 : 1;
-    const lastUmp = parseFloat(UMP[phk.getFullYear()]) || 0;
-    
-    const pesangonAturan = (lastUmp * pF) * mult;
-    const upmkAturan = lastUmp * pmkF;
-    const totalHakSeharusnya = pesangonAturan + upmkAturan;
-
-    // 1. HITUNG SELISIH UPAH PERBULAN DARI AWAL
-    let selisihUpahTotal = 0;
-    let rincianUpah = "";
-    document.querySelectorAll('.u-in').forEach(el => {
-      let thn = el.dataset.y;
-      let seharusnya = parseFloat(UMP[thn] || 0);
-      let aktual = parseFloat(el.value) || 0;
-      let selisihSetahun = (seharusnya - aktual) * 12;
-      selisihUpahTotal += selisihSetahun;
-      if(selisihSetahun > 0) rincianUpah += `<li>Thn ${thn}: Selisih Rp ${(seharusnya-aktual).toLocaleString()} x 12 bln = <b>Rp ${selisihSetahun.toLocaleString()}</b></li>`;
-    });
-
-    // 2. HITUNG TOTAL AKTUAL CAIR
-    let totalAktualCair = 0;
-    document.querySelectorAll('.t-in').forEach(el => totalAktualCair += parseFloat(el.value) || 0);
-
-    const grandTotalTuntutan = (selisihUpahTotal + totalHakSeharusnya) - totalAktualCair;
-
-    document.getElementById('hasilDetail').innerHTML = `
-      <div class="alert alert-secondary small mb-2">
-        <b>Transparansi Rumus (PP 35/2021):</b><br>
-        Pesangon: Rp ${lastUmp.toLocaleString()} x ${pF} bln ${mult>1?'x 2':''} = Rp ${pesangonAturan.toLocaleString()}<br>
-        UPMK: Rp ${lastUmp.toLocaleString()} x ${pmkF} bln = Rp ${upmkAturan.toLocaleString()}
-      </div>
-      <div class="small mb-3">
-        <b>Audit Selisih Upah Bulanan:</b>
-        <ul class="ps-3">${rincianUpah || '<li>Tidak ada selisih upah</li>'}</ul>
-      </div>
-      <table class="table table-sm border">
-        <tr><td>Total Hak Aturan</td><td class="text-end">Rp ${totalHakSeharusnya.toLocaleString()}</td></tr>
-        <tr><td>Total Selisih Upah</td><td class="text-end">Rp ${selisihUpahTotal.toLocaleString()}</td></tr>
-        <tr><td>Dana Sudah Cair</td><td class="text-end text-danger">- Rp ${totalAktualCair.toLocaleString()}</td></tr>
-        <tr class="table-danger fw-bold"><td>TOTAL KEKURANGAN (TUNTUTAN)</td><td class="text-end">Rp ${grandTotalTuntutan.toLocaleString()}</td></tr>
-      </table>`;
-    toStep(4);
-  }
-
-  function toStep(n) {
-    document.querySelectorAll('.step-view').forEach(v => v.classList.remove('active'));
-    document.getElementById('appBody').classList.add('active');
-    document.getElementById('step'+n).classList.add('active');
-  }
+  // ... (fungsi hitung selisih tetap sama)
 </script>
-</body>
-</html>
