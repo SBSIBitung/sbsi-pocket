@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mySBSI - Wizard Prorata</title>
+  <title>mySBSI - Audit Selisih Hak</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root { --sbsi: #b71c1c; }
@@ -12,8 +12,8 @@
     .card-wizard { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .step { display: none; }
     .step.active { display: block; }
-    .table-input input { border: 1px solid #ddd; border-radius: 4px; padding: 2px 5px; width: 100%; text-align: right; font-size: 0.8rem; }
-    .sticky-header { position: sticky; top: 0; background: white; z-index: 10; }
+    .table-input input { border: 1px solid #ddd; border-radius: 4px; padding: 2px 5px; width: 100%; text-align: right; }
+    .ump-info { font-size: 0.7rem; color: #b71c1c; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -30,60 +30,60 @@
   </div>
 
   <div id="mainSection" style="display:none;">
-    <nav class="navbar bg-sbsi px-3 mb-3 shadow-sm"><span class="fw-bold">Wizard Advokasi PP 35/2021</span></nav>
-    <div class="container-fluid" style="max-width: 900px;">
-      
+    <nav class="navbar bg-sbsi px-3 mb-3 shadow-sm"><span class="fw-bold">Audit Tuntutan Hak Anggota</span></nav>
+    <div class="container-fluid" style="max-width: 950px;">
       <div class="card card-wizard p-3">
+        
         <div id="step1" class="step active">
-          <h6 class="fw-bold text-danger mb-3">Langkah 1: Masa Kerja</h6>
+          <h6 class="fw-bold text-danger mb-3">1. Periode Audit Kerja</h6>
           <div class="row g-2">
-            <div class="col-6"><label class="small fw-bold">Tgl Mulai</label><input type="date" id="tglMulai" class="form-control"></div>
-            <div class="col-6"><label class="small fw-bold">Tgl PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
+            <div class="col-6"><label class="small fw-bold">Mulai Kerja</label><input type="date" id="tglMulai" class="form-control"></div>
+            <div class="col-6"><label class="small fw-bold">Tanggal PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
           </div>
-          <button onclick="generateMonthly()" class="btn btn-danger w-100 mt-3 fw-bold">Lanjut: Input Upah Bulanan</button>
+          <button onclick="generateAuditTables()" class="btn btn-danger w-100 mt-3 fw-bold">Buat Tabel Audit</button>
         </div>
 
         <div id="step2" class="step">
-          <h6 class="fw-bold text-danger mb-2">Langkah 2: Upah Per Bulan</h6>
-          <div class="table-responsive" style="max-height: 350px;">
+          <h6 class="fw-bold text-danger">2. Audit Upah Bulanan</h6>
+          <p class="text-muted small">Input upah yang diterima karyawan. Jika di bawah UMP, selisih akan dihitung.</p>
+          <div class="table-responsive" style="max-height: 300px;">
             <table class="table table-sm table-input border">
-              <thead class="sticky-header small text-center"><tr><th>Bulan & Tahun</th><th>Upah Dibayar (Rp)</th></tr></thead>
+              <thead class="bg-light sticky-top"><tr><th>Bulan</th><th>Diterima (Rp)</th><th>Audit UMP</th></tr></thead>
               <tbody id="bodyBulan"></tbody>
             </table>
           </div>
-          <div class="d-flex gap-2 mt-3">
-            <button onclick="nextStep(1)" class="btn btn-secondary w-25">Kembali</button>
-            <button onclick="generateYearly()" class="btn btn-danger w-75 fw-bold">Lanjut: THR & Kompensasi</button>
-          </div>
+          <button onclick="nextStep(3)" class="btn btn-danger w-100 mt-3">Lanjut Audit THR & Kompensasi</button>
         </div>
 
         <div id="step3" class="step">
-          <h6 class="fw-bold text-danger mb-2">Langkah 3: THR & Kompensasi (Prorata Otomatis)</h6>
+          <h6 class="fw-bold text-danger">3. Audit THR & Kompensasi (Tahunan)</h6>
+          <p class="text-muted small">Input nilai yang sudah dibayar perusahaan per tahun.</p>
           <div class="table-responsive">
-            <table class="table table-sm table-input border">
-              <thead class="small text-center"><tr><th>Tahun</th><th>Bulan Kerja</th><th>THR Prorata (Rp)</th><th>Kompensasi (Rp)</th></tr></thead>
+            <table class="table table-sm table-input border text-center">
+              <thead class="bg-light">
+                <tr><th>Tahun</th><th>Bulan Kerja</th><th>THR Diterima (Rp)</th><th>Komp. Diterima (Rp)</th></tr>
+              </thead>
               <tbody id="bodyTahun"></tbody>
             </table>
           </div>
-          <div class="d-flex gap-2 mt-3">
-            <button onclick="nextStep(2)" class="btn btn-secondary w-25">Kembali</button>
-            <button onclick="hitungFinal()" class="btn btn-success w-75 fw-bold text-white">LIHAT HASIL AKHIR</button>
-          </div>
+          <button onclick="hitungAuditFinal()" class="btn btn-success w-100 mt-3 fw-bold">HITUNG TOTAL TUNTUTAN</button>
         </div>
 
         <div id="step4" class="step">
-          <h5 class="fw-bold text-danger text-center mb-3">REKAPITULASI HAK PESANGON</h5>
-          <div id="hasilFinal" class="border rounded p-3 bg-white shadow-sm"></div>
-          <button onclick="location.reload()" class="btn btn-dark w-100 mt-3 fw-bold">SELESAI & LOGOUT</button>
+          <h5 class="fw-bold text-danger text-center mb-3">REKAPITULASI SELISIH HAK</h5>
+          <div id="hasilFinal"></div>
+          <button onclick="location.reload()" class="btn btn-dark w-100 mt-3 fw-bold">SELESAI</button>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynVHxYTbpxDYxHX4XceW4LaaCdQ6pO2yXiTRhwKoqGPkbIehJapPAAzagLBuJntEBD/exec"; 
+// GANTI DENGAN URL WEB APP ANDA
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0KNWfb8DyzdNR_GV1NpIipiO2jDYXakqQgkpU7Gvo6m3Lbb2abk_foi6BChjX_Qcn/exec"; 
+
 let masterUMP = {};
 const listBulan = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 
@@ -107,7 +107,7 @@ function doLogin() {
       document.getElementById('loginSection').style.display='none';
       document.getElementById('mainSection').style.display='block';
       fetchUMP();
-    } else { alert("Login Gagal!"); }
+    } else { alert("NIK/Sandi Salah atau Script belum di-Deploy!"); }
   }, 2000);
 }
 
@@ -123,90 +123,89 @@ function nextStep(n) {
   document.getElementById('step'+n).classList.add('active');
 }
 
-function generateMonthly() {
+function generateAuditTables() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
   if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
 
-  let html = '';
+  let htmlBln = '';
   let curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
   while(curr <= new Date(d2.getFullYear(), d2.getMonth(), 1)) {
-    html += `<tr><td class="bg-light">${listBulan[curr.getMonth()]} ${curr.getFullYear()}</td>
-             <td><input type="text" class="in-gaji" data-thn="${curr.getFullYear()}" onkeyup="formatIDR(this)" placeholder="0"></td></tr>`;
+    let thn = curr.getFullYear();
+    let ump = masterUMP[thn] || 0;
+    htmlBln += `<tr>
+      <td class="bg-light small">${listBulan[curr.getMonth()]} ${thn}</td>
+      <td><input type="text" class="in-gaji-audit" data-thn="${thn}" onkeyup="formatIDR(this)" value="0"></td>
+      <td><span class="ump-info">Rp ${ump.toLocaleString()}</span></td>
+    </tr>`;
     curr.setMonth(curr.getMonth() + 1);
   }
-  document.getElementById('bodyBulan').innerHTML = html;
+  document.getElementById('bodyBulan').innerHTML = htmlBln;
+
+  let htmlThn = '';
+  for(let y = d1.getFullYear(); y <= d2.getFullYear(); y++) {
+    let s = (y === d1.getFullYear()) ? d1.getMonth() : 0;
+    let e = (y === d2.getFullYear()) ? d2.getMonth() : 11;
+    let jml = (e - s) + 1;
+    htmlThn += `<tr>
+      <td class="fw-bold">${y}</td><td>${jml} bln</td>
+      <td><input type="text" class="in-thr-audit" data-thn="${y}" data-bln="${jml}" onkeyup="formatIDR(this)" value="0"></td>
+      <td><input type="text" class="in-komp-audit" data-thn="${y}" data-bln="${jml}" onkeyup="formatIDR(this)" value="0"></td>
+    </tr>`;
+  }
+  document.getElementById('bodyTahun').innerHTML = htmlThn;
   nextStep(2);
 }
 
-function generateYearly() {
-  const d1 = new Date(document.getElementById('tglMulai').value);
-  const d2 = new Date(document.getElementById('tglSelesai').value);
-  let html = '';
-  
-  // Mencari upah terakhir dari input sebelumnya
-  const gajis = document.querySelectorAll('.in-gaji');
-  let upahTerakhir = parseIDR(gajis[gajis.length-1].value) || 0;
-
-  for(let y = d1.getFullYear(); y <= d2.getFullYear(); y++) {
-    // Hitung prorata bulan dalam tahun tersebut
-    let startBln = (y === d1.getFullYear()) ? d1.getMonth() : 0;
-    let endBln = (y === d2.getFullYear()) ? d2.getMonth() : 11;
-    let jmlBulan = (endBln - startBln) + 1;
-    
-    // Nilai THR Prorata otomatis (Upah / 12 * JmlBulan)
-    let thrProrata = Math.round((upahTerakhir / 12) * jmlBulan);
-
-    html += `<tr>
-      <td class="fw-bold text-center">${y}</td>
-      <td class="text-center">${jmlBulan} bln</td>
-      <td><input type="text" class="in-thr" value="${new Intl.NumberFormat('id-ID').format(thrProrata)}" onkeyup="formatIDR(this)"></td>
-      <td><input type="text" class="in-komp" placeholder="0" onkeyup="formatIDR(this)"></td>
-    </tr>`;
-  }
-  document.getElementById('bodyTahun').innerHTML = html;
-  nextStep(3);
-}
-
-function hitungFinal() {
+function hitungAuditFinal() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
   const totalBulan = Math.floor((d2 - d1) / (1000*60*60*24*30.44));
   const thnKerja = Math.floor(totalBulan / 12);
 
-  let gajis = document.querySelectorAll('.in-gaji'), totalSelisih = 0;
-  let upahTerakhir = parseIDR(gajis[gajis.length-1].value);
-  gajis.forEach(el => {
-    let ump = masterUMP[el.getAttribute('data-thn')] || 0;
-    let gaji = parseIDR(el.value);
-    if(gaji > 0 && gaji < ump) totalSelisih += (ump - gaji);
+  let sGaji = 0, sTHR = 0, sKomp = 0;
+  
+  // Audit Gaji
+  document.querySelectorAll('.in-gaji-audit').forEach(el => {
+    let seharusnya = masterUMP[el.getAttribute('data-thn')] || 0;
+    let diterima = parseIDR(el.value);
+    if(diterima < seharusnya) sGaji += (seharusnya - diterima);
   });
 
-  let sumTHR = 0, sumKomp = 0;
-  document.querySelectorAll('.in-thr').forEach(el => sumTHR += parseIDR(el.value));
-  document.querySelectorAll('.in-komp').forEach(el => sumKomp += parseIDR(el.value));
+  // Audit THR & Komp
+  const inThrs = document.querySelectorAll('.in-thr-audit');
+  const inKomps = document.querySelectorAll('.in-komp-audit');
+  inThrs.forEach((el, i) => {
+    let thn = el.getAttribute('data-thn'), bln = parseInt(el.getAttribute('data-bln'));
+    let ump = masterUMP[thn] || 0;
+    let auditProrata = (ump / 12) * bln;
+    
+    let dTHR = parseIDR(el.value);
+    if(dTHR < auditProrata) sTHR += (auditProrata - dTHR);
 
-  // PP 35/2021
+    let dKomp = parseIDR(inKomps[i].value);
+    if(dKomp < auditProrata) sKomp += (auditProrata - dKomp);
+  });
+
+  // Pesangon & UPMK Audit (Berdasarkan UMP Akhir)
+  let umpAudit = masterUMP[d2.getFullYear()] || 0;
   let kPes = thnKerja < 1 ? 1 : (thnKerja >= 8 ? 9 : thnKerja + 1);
   let kUPMK = (thnKerja < 3) ? 0 : (thnKerja < 6 ? 2 : (thnKerja < 9 ? 3 : (thnKerja < 12 ? 4 : (thnKerja < 15 ? 5 : (thnKerja < 18 ? 6 : (thnKerja < 21 ? 7 : (thnKerja < 24 ? 8 : 10)))))));
   
-  let pesangon = kPes * upahTerakhir, upmk = kUPMK * upahTerakhir;
-  let grandTotal = totalSelisih + pesangon + upmk + sumTHR + sumKomp;
+  let pesangon = kPes * umpAudit, upmk = kUPMK * umpAudit;
+  let grandTotal = sGaji + sTHR + sKomp + pesangon + upmk;
 
   nextStep(4);
   document.getElementById('hasilFinal').innerHTML = `
-    <div class="row g-2 small">
-      <div class="col-7">Masa Kerja:</div><div class="col-5 text-end fw-bold">${thnKerja} Thn (${totalBulan} bln)</div>
-      <div class="col-7">Upah Terakhir:</div><div class="col-5 text-end fw-bold">Rp ${upahTerakhir.toLocaleString()}</div>
-      <hr class="my-1">
-      <div class="col-7 text-danger">Kekurangan Gaji (vs UMP):</div><div class="col-5 text-end text-danger">Rp ${totalSelisih.toLocaleString()}</div>
-      <div class="col-7">Uang Pesangon (${kPes}x):</div><div class="col-5 text-end">Rp ${pesangon.toLocaleString()}</div>
-      <div class="col-7">Uang Penghargaan Masa Kerja (${kUPMK}x):</div><div class="col-5 text-end">Rp ${upmk.toLocaleString()}</div>
-      <div class="col-7">Total Hak THR (Prorata):</div><div class="col-5 text-end">Rp ${sumTHR.toLocaleString()}</div>
-      <div class="col-7">Total Penggantian Hak:</div><div class="col-5 text-end">Rp ${sumKomp.toLocaleString()}</div>
-      <div class="col-12 mt-3 p-3 bg-danger text-white rounded text-center shadow">
-        <div class="small fw-bold">TOTAL TUNTUTAN HAK ANGGOTA</div>
-        <div class="h3 fw-bold mb-0">Rp ${grandTotal.toLocaleString()}</div>
+    <div class="list-group small">
+      <div class="list-group-item d-flex justify-content-between text-danger"><span>Selisih Gaji Bulanan</span><b>Rp ${Math.round(sGaji).toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between text-danger"><span>Selisih THR</span><b>Rp ${Math.round(sTHR).toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between text-danger"><span>Selisih Kompensasi</span><b>Rp ${Math.round(sKomp).toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between"><span>Pesangon (Standar UMP)</span><b>Rp ${pesangon.toLocaleString()}</b></div>
+      <div class="list-group-item d-flex justify-content-between"><span>UPMK (Standar UMP)</span><b>Rp ${upmk.toLocaleString()}</b></div>
+      <div class="list-group-item bg-danger text-white p-3 text-center mt-2">
+        <div class="small fw-bold">TOTAL TUNTUTAN AUDIT</div>
+        <div class="h3 fw-bold mb-0">Rp ${Math.round(grandTotal).toLocaleString()}</div>
       </div>
     </div>`;
 }
