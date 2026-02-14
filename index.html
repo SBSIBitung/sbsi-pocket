@@ -11,6 +11,7 @@
     .view-section { display: none; }
     .view-section.active { display: block; }
     .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; }
+    .text-selisih { color: #dc3545; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -19,6 +20,7 @@
   <div class="container py-5 text-center">
     <img src="https://raw.githubusercontent.com/sbsibitung/sbsi-pocket/main/Logo_SBSI.png" width="70" class="mb-3">
     <div class="card-pro mx-auto" style="max-width: 350px;">
+      <h5 class="fw-bold mb-3">Login Audit</h5>
       <input type="text" id="nik" class="form-control mb-2" placeholder="NIK">
       <input type="password" id="pin" class="form-control mb-3" placeholder="PIN">
       <button class="btn-blue" onclick="doLogin()">MASUK</button>
@@ -27,33 +29,35 @@
 </div>
 
 <div id="viewAudit" class="view-section">
-  <nav class="navbar navbar-dark bg-primary mb-3"><div class="container"><span class="navbar-brand small">Audit Selisih Hak</span></div></nav>
-  <div class="container">
+  <nav class="navbar navbar-dark bg-primary mb-3"><div class="container"><span class="navbar-brand">Kalkulator Audit Hak</span></div></nav>
+  <div class="container pb-5">
     
     <div class="card-pro">
-      <label class="fw-bold small">Tgl Masuk</label><input type="date" id="d1" class="form-control mb-2">
-      <label class="fw-bold small">Tgl PHK</label><input type="date" id="d2" class="form-control mb-2" onchange="getUmp()">
-      <label class="fw-bold small">Upah Seharusnya (Berdasarkan UMP)</label>
-      <input type="text" id="uAturan" class="form-control mb-2 bg-light" readonly>
+      <h6 class="fw-bold text-primary mb-3">Data Aturan (Seharusnya)</h6>
+      <label class="small fw-bold">Tgl Masuk</label><input type="date" id="d1" class="form-control mb-2">
+      <label class="small fw-bold">Tgl PHK</label><input type="date" id="d2" class="form-control mb-2" onchange="getUmp()">
+      <label class="small fw-bold">Upah Seharusnya (Sesuai UMP/Kontrak)</label>
+      <input type="number" id="uAturan" class="form-control mb-1" placeholder="Contoh: 3775000">
+      <small>UMP Referensi: <span id="umpTxt" class="fw-bold">-</span></small>
     </div>
 
     <div class="card-pro">
-      <h6 class="text-danger fw-bold">Data Aktual (Yang Diterima)</h6>
-      <label class="small">Upah yg dibayar Perusahaan</label><input type="number" id="uAktual" class="form-control mb-2">
-      <label class="small">Pesangon + UPMK yg sudah cair</label><input type="number" id="hAktual" class="form-control mb-3">
-      <button class="btn-blue" onclick="prosesAudit()">HITUNG SELISIH</button>
+      <h6 class="fw-bold text-danger mb-3">Data Aktual (Yang Diterima)</h6>
+      <label class="small fw-bold">Upah yang dibayar Perusahaan</label><input type="number" id="uAktual" class="form-control mb-2" value="0">
+      <label class="small fw-bold">Pesangon + UPMK yang dibayar</label><input type="number" id="hAktual" class="form-control mb-3" value="0">
+      <button class="btn-blue" onclick="hitungSelisih()">AUDIT SELISIH SEKARANG</button>
     </div>
 
     <div id="hasilBox" class="card-pro d-none border-primary border">
-      <h6 class="fw-bold border-bottom pb-2">Hasil Analisis Audit</h6>
-      <div id="rincian" class="small"></div>
+      <h6 class="fw-bold border-bottom pb-2">Hasil Audit Kekurangan Hak</h6>
+      <div id="rincian"></div>
     </div>
 
   </div>
 </div>
 
 <script>
-  const API = "https://script.google.com/macros/s/AKfycbwbgTTY3Vv2LD9cYEQ_vc5H0bjYnAN11HuHtCjMZ75ZHNEvEipZSHefu7KTe1eUdUL0/exec"; 
+  const API = "https://script.google.com/macros/s/AKfycbwy9ojeqHYxpOGZcf7P5T_GrBQUWTxtvBAwhDw-54m9lYvs1C48GFfrWHbVMcjqAyru/exec"; 
 
   async function doLogin() {
     const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('nik').value, pin:document.getElementById('pin').value})});
@@ -65,34 +69,38 @@
     const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year:new Date(document.getElementById('d2').value).getFullYear()})});
     const d = await r.json();
     if(d.status==='success') {
+      document.getElementById('umpTxt').innerText = "Rp " + d.ump.toLocaleString();
       document.getElementById('uAturan').value = d.ump;
-      document.getElementById('uAturan').dataset.val = d.ump;
     }
   }
 
-  function prosesAudit() {
+  function hitungSelisih() {
     const d1 = new Date(document.getElementById('d1').value);
     const d2 = new Date(document.getElementById('d2').value);
-    const uAturan = parseFloat(document.getElementById('uAturan').dataset.val);
+    const uAturan = parseFloat(document.getElementById('uAturan').value) || 0;
     const uAktual = parseFloat(document.getElementById('uAktual').value) || 0;
     const hAktual = parseFloat(document.getElementById('hAktual').value) || 0;
 
     const mk = (d2 - d1) / (1000 * 60 * 60 * 24 * 365.25);
     
-    // Logika Perkalian (p + pmk)
+    // RUMUS PESANGON (P) & UPMK (PMK)
     let p = (mk<1)?1:(mk<2)?2:(mk<3)?3:(mk<4)?4:(mk<5)?5:(mk<6)?6:(mk<7)?7:(mk<8)?8:9;
     let pmk = (mk<3)?0:(mk<6)?2:(mk<9)?3:(mk<12)?4:(mk<15)?5:(mk<18)?6:(mk<21)?7:(mk<24)?8:10;
 
-    const totalAturan = uAturan * (p + pmk);
+    const totalHakAturan = uAturan * (p + pmk);
     const selisihUpah = uAturan - uAktual;
-    const selisihHak = totalAturan - hAktual;
+    const selisihHak = totalHakAturan - hAktual;
+    const totalKurangBayar = (selisihUpah * 1) + selisihHak; // Sederhananya selisih 1 bulan upah + pesangon
 
     document.getElementById('hasilBox').classList.remove('d-none');
     document.getElementById('rincian').innerHTML = `
-      <p>Masa Kerja: <b>${mk.toFixed(1)} Tahun</b></p>
-      <p>Hak Seharusnya (${p}+${pmk} bln): <b>Rp ${totalAturan.toLocaleString()}</b></p>
-      <p>Selisih Upah Bulanan: <b class="text-danger">Rp ${selisihUpah.toLocaleString()}</b></p>
-      <p>Kekurangan Pesangon/UPMK: <b class="text-danger">Rp ${selisihHak.toLocaleString()}</b></p>
+      <table class="table table-sm">
+        <tr><td>Masa Kerja</td><td class="text-end"><b>${mk.toFixed(1)} Tahun</b></td></tr>
+        <tr><td>Hak Aturan (${p}+${pmk} bln)</td><td class="text-end">Rp ${totalHakAturan.toLocaleString()}</td></tr>
+        <tr><td>Selisih Upah</td><td class="text-end text-selisih">Rp ${selisihUpah.toLocaleString()}</td></tr>
+        <tr><td>Kurang Bayar Hak</td><td class="text-end text-selisih">Rp ${selisihHak.toLocaleString()}</td></tr>
+        <tr class="table-dark"><td><b>TOTAL KEKURANGAN</b></td><td class="text-end"><b>Rp ${totalKurangBayar.toLocaleString()}</b></td></tr>
+      </table>
     `;
   }
 
