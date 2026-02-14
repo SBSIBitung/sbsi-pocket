@@ -9,40 +9,26 @@
     <style>
         :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; --gold: #ffc107; }
         body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; }
-        
-        /* LOGIN LAYOUT */
         .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 15px; }
         .login-card-wrapper { display: flex; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 850px; width: 100%; }
         .intro-section { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; padding: 30px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .form-section { padding: 30px; width: 350px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        
-        @media (max-width: 768px) {
-            .login-card-wrapper { flex-direction: column; }
-            .form-section { width: 100%; }
-        }
-
-        /* NAVIGATION & CARDS */
+        @media (max-width: 768px) { .login-card-wrapper { flex-direction: column; } .form-section { width: 100%; } }
         .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; margin-bottom: 20px; padding: 20px; }
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
         .menu-item { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #eee; transition: 0.3s; }
         .menu-item:active { transform: scale(0.95); }
-
-        /* VIDEO STYLES */
         .video-yt { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; margin-bottom: 15px; cursor: pointer; }
         .video-yt iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
         .video-portrait { width: 100%; max-width: 320px; margin: 0 auto 15px; border-radius: 15px; overflow: hidden; background: #000; height: 550px; cursor: pointer; }
         .video-portrait iframe { width: 100%; height: 100%; border: none; }
-
         .view-section { display: none; padding-bottom: 50px; }
         .view-section.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
         #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: none; justify-content: center; align-items: center; }
-        
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
     </style>
 </head>
@@ -62,12 +48,8 @@
                     <button class="btn-blue" onclick="handleLogin()">MASUK</button>
                 </div>
                 <div class="intro-section">
-                    <h4 class="fw-bold mb-2">Perkenalan SBSI</h4>
-                    <p class="small mb-3" style="opacity: 0.9;">SBSI berkomitmen memperjuangkan hak-hak buruh demi kesejahteraan dan keadilan sosial yang merata.</p>
-                    <div class="d-flex gap-2">
-                        <div class="flex-fill p-2 border border-light rounded-3 text-center small"><i class="bi bi-shield-check"></i> Advokasi</div>
-                        <div class="flex-fill p-2 border border-light rounded-3 text-center small"><i class="bi bi-people"></i> Solidaritas</div>
-                    </div>
+                    <h4 class="fw-bold mb-2">Pilar Keadilan</h4>
+                    <p class="small mb-3" style="opacity: 0.9;">SBSI hadir untuk memastikan setiap keringat buruh dihargai sesuai hukum dan martabat kemanusiaan.</p>
                 </div>
             </div>
         </div>
@@ -76,16 +58,16 @@
     <div id="viewDashboard" class="view-section">
         <nav class="top-nav"><span>mySBSI</span><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
         <div class="container py-4">
-            <div class="card-pro bg-primary text-white">
+            <div class="card-pro bg-primary text-white shadow">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1"><small>Selamat Datang,</small><h4 id="dashNama" class="fw-bold m-0">--</h4><div id="dashRole" class="badge bg-warning text-dark mt-2">--</div></div>
-                    <i class="bi bi-person-circle fs-1"></i>
+                    <i class="bi bi-person-badge fs-1"></i>
                 </div>
             </div>
 
             <div id="adminPanel" class="d-none mt-3">
                 <h6 class="fw-bold text-muted small mb-2">MENU ADMIN</h6>
-                <div class="card-pro border-primary bg-light" onclick="openSearchModal()" style="cursor:pointer; border:1px dashed var(--primary);">
+                <div class="card-pro border-primary bg-light shadow-sm" onclick="openSearchModal()" style="cursor:pointer; border: 1px dashed var(--primary);">
                     <div class="d-flex align-items-center">
                         <i class="bi bi-search text-primary fs-3 me-3"></i>
                         <div><span class="fw-bold d-block">Audit Anggota Lain</span><small class="text-muted">Cari database anggota</small></div>
@@ -94,58 +76,58 @@
             </div>
 
             <div class="menu-grid">
-                <div class="menu-item" onclick="startAuditSelf()"><i class="bi bi-calculator text-primary fs-2"></i><br><span class="small fw-bold">Audit Hak</span></div>
-                <div class="menu-item" onclick="changeView('viewVisiMisi')"><i class="bi bi-flag-fill text-danger fs-2"></i><br><span class="small fw-bold">Visi & Misi</span></div>
-                <div class="menu-item" onclick="changeView('viewVideo')"><i class="bi bi-play-circle-fill text-success fs-2"></i><br><span class="small fw-bold">Edukasi TV</span></div>
-                <div class="menu-item" onclick="alert('Segera Hadir')"><i class="bi bi-journal-text text-info fs-2"></i><br><span class="small fw-bold">Regulasi</span></div>
+                <div class="menu-item shadow-sm" onclick="startAuditSelf()"><i class="bi bi-calculator text-primary fs-2"></i><br><span class="small fw-bold">Audit Mandiri</span></div>
+                <div class="menu-item shadow-sm" onclick="changeView('viewVisiMisi')"><i class="bi bi-flag-fill text-danger fs-2"></i><br><span class="small fw-bold">Visi & Misi</span></div>
+                <div class="menu-item shadow-sm" onclick="changeView('viewVideo')"><i class="bi bi-play-circle-fill text-success fs-2"></i><br><span class="small fw-bold">Edukasi TV</span></div>
+                <div class="menu-item shadow-sm" onclick="alert('Segera Hadir')"><i class="bi bi-journal-text text-info fs-2"></i><br><span class="small fw-bold">Regulasi</span></div>
             </div>
         </div>
     </div>
 
     <div id="viewVideo" class="view-section">
         <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Edukasi TV</span><div></div></nav>
-        <div class="container py-4 text-center">
-            <h6 class="fw-bold mb-3 text-start">MARS SBSI</h6>
-            <div class="video-yt shadow-sm" onclick="openFullscreen(this)"><iframe src="https://www.youtube.com/embed/08hfTSNWW_k"></iframe></div>
+        <div class="container py-4">
+            <h6 class="fw-bold mb-3">MARS SBSI</h6>
+            <div class="video-yt shadow" onclick="openFullscreen(this)"><iframe src="https://www.youtube.com/embed/08hfTSNWW_k"></iframe></div>
             <hr>
-            <h6 class="fw-bold mb-3 text-start">EDUKASI HAK BURUH</h6>
-            <div class="video-portrait shadow-sm" onclick="openFullscreen(this)"><iframe src="https://www.tiktok.com/embed/v2/7571414420832767239"></iframe></div>
+            <h6 class="fw-bold mb-3">EDUKASI HAK</h6>
+            <div class="video-portrait shadow" onclick="openFullscreen(this)"><iframe src="https://www.tiktok.com/embed/v2/7571414420832767239"></iframe></div>
         </div>
     </div>
 
     <div id="viewAudit" class="view-section">
         <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span id="auditTitle">Audit Hak</span><div></div></nav>
         <div class="container py-4">
-            <div id="stepTanggal" class="card-pro">
+            <div id="stepTanggal" class="card-pro shadow">
                 <div class="row g-2 mb-3">
                     <div class="col-6"><label class="small fw-bold">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
                     <div class="col-6"><label class="small fw-bold">Tanggal PHK</label><input type="date" id="d2" class="form-control" onchange="fetchUmpAuto()"></div>
                 </div>
                 <div class="bg-light p-3 rounded-3 mb-4 text-center border">
                     <label class="small fw-bold text-primary">UMP ACUAN PHK</label>
-                    <input type="number" id="umpAuto" class="form-control text-center fw-bold bg-transparent border-0" readonly placeholder="...">
+                    <input type="number" id="umpAuto" class="form-control text-center fw-bold bg-transparent border-0" readonly>
                 </div>
                 <button class="btn-blue" id="btnNext1" onclick="genProrata()" disabled>LANJUT INPUT GAJI</button>
             </div>
-            <div id="stepGaji" class="card-pro d-none">
-                <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">Gaji Per Bulan</h6>
+            <div id="stepGaji" class="card-pro d-none shadow">
+                <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">Gaji Bulanan</h6>
                 <div id="listGaji" style="max-height: 300px; overflow-y: auto;"></div>
                 <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT</button>
             </div>
-            <div id="stepTahunan" class="card-pro d-none">
+            <div id="stepTahunan" class="card-pro d-none shadow">
                 <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">Rincian Tahunan</h6>
                 <div id="listTahunan"></div>
                 <div class="form-check form-switch my-4"><input class="form-check-input" type="checkbox" id="isMeninggal"><label class="form-check-label fw-bold text-danger">Meninggal Dunia</label></div>
-                <button class="btn-blue" onclick="runCalculation()">LIHAT HASIL</button>
+                <button class="btn-blue" onclick="runCalculation()">LIHAT HASIL AKHIR</button>
             </div>
         </div>
     </div>
 
     <div id="viewPreview" class="view-section">
-        <nav class="top-nav"><span>Laporan Hasil</span><button class="btn btn-sm btn-outline-light" onclick="changeView('viewDashboard')">Tutup</button></nav>
+        <nav class="top-nav"><span>Laporan Akhir</span><button class="btn btn-sm btn-outline-light" onclick="changeView('viewDashboard')">Tutup</button></nav>
         <div class="container py-4">
-            <div id="previewCard" class="card-pro shadow-lg"></div>
-            <button class="btn-blue mb-3" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK PDF</button>
+            <div id="previewCard" class="card-pro shadow-lg" style="background: white;"></div>
+            <button class="btn-blue mb-3" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK / PDF</button>
         </div>
     </div>
 </div>
@@ -153,17 +135,17 @@
 <div id="printArea" style="display:none; padding:40px; background: white;"></div>
 
 <div class="modal fade" id="modalSearch" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:20px;">
-            <div class="modal-header border-0"><h5 class="fw-bold">Pilih Anggota</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <input type="text" id="searchInp" class="form-control mb-3" placeholder="Ketik Nama atau NIK..." onkeyup="filterAnggota()">
-                <div id="listAnggotaRes" class="list-group" style="max-height: 300px; overflow-y: auto;">
-                    <div class="text-center text-muted small">Mulai mengetik untuk mencari...</div>
-                </div>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:20px;">
+      <div class="modal-header border-0"><h5 class="modal-title fw-bold">Pilih Anggota</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="text" id="searchInp" class="form-control mb-3" placeholder="Ketik Nama atau NIK..." onkeyup="filterAnggota()">
+        <div id="listAnggotaRes" class="list-group" style="max-height: 300px; overflow-y: auto;">
+            <div class="text-center text-muted p-3">Silahkan ketik untuk mencari...</div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -175,7 +157,6 @@
 
     window.onload = () => setTimeout(() => { document.getElementById('splash').style.display='none'; }, 2000);
 
-    // FUNGSI FULLSCREEN
     function openFullscreen(elem) {
         if (elem.requestFullscreen) elem.requestFullscreen();
         else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
@@ -211,33 +192,47 @@
                     loadAnggotaDB();
                 }
                 changeView('viewDashboard');
-            } else alert("NIK/PIN Salah!");
-        } catch(e) { alert("Error"); }
+            } else alert("NIK atau PIN Salah!");
+        } catch(e) { alert("Error Koneksi"); }
         showLoading(false);
     }
 
     async function loadAnggotaDB() {
         const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getAnggotaList'})});
         const d = await r.json();
-        if(d.status === 'success') ALL_ANGGOTA = d.data;
+        if(d.status === 'success') {
+            ALL_ANGGOTA = d.data.map(item => ({
+                nama: String(item.nama || ""),
+                nik: String(item.nik || "")
+            }));
+        }
     }
 
-    function openSearchModal() { new bootstrap.Modal(document.getElementById('modalSearch')).show(); }
+    function openSearchModal() { 
+        document.getElementById('searchInp').value = "";
+        document.getElementById('listAnggotaRes').innerHTML = '<div class="text-center text-muted p-3">Silahkan ketik untuk mencari...</div>';
+        new bootstrap.Modal(document.getElementById('modalSearch')).show(); 
+    }
 
     function filterAnggota() {
-        const key = document.getElementById('searchInp').value.toLowerCase();
-        const container = document.getElementById('listAnggotaRes');
-        if (key.length < 1) { container.innerHTML = '<div class="text-center text-muted small">Mulai mengetik untuk mencari...</div>'; return; }
+        const key = document.getElementById('searchInp').value.toLowerCase().trim();
+        const resDiv = document.getElementById('listAnggotaRes');
+        if (key.length === 0) { resDiv.innerHTML = '<div class="text-center text-muted p-3">Silahkan ketik untuk mencari...</div>'; return; }
         
-        const filtered = ALL_ANGGOTA.filter(a => a.nama.toLowerCase().includes(key) || a.nik.toString().includes(key));
+        const filtered = ALL_ANGGOTA.filter(a => 
+            a.nama.toLowerCase().includes(key) || 
+            a.nik.includes(key)
+        );
+
         let html = "";
         if (filtered.length > 0) {
             filtered.forEach(a => {
-                html += `<button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="selectForAudit('${a.nama}', '${a.nik}')">
-                    <div><b>${a.nama}</b><br><small class="text-muted">${a.nik}</small></div><i class="bi bi-chevron-right text-primary"></i></button>`;
+                html += `<button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3" onclick="selectForAudit('${a.nama}', '${a.nik}')">
+                    <div><div class="fw-bold">${a.nama}</div><small class="text-muted">${a.nik}</small></div>
+                    <i class="bi bi-chevron-right text-primary"></i></button>`;
             });
-        } else { html = '<div class="text-center text-danger small p-3">Anggota tidak ditemukan</div>'; }
-        container.innerHTML = html;
+        } else { html = '<div class="text-center text-danger p-3 small">Anggota tidak ditemukan</div>'; }
+        resDiv.innerHTML = html;
     }
 
     function selectForAudit(nama, nik) {
@@ -262,7 +257,7 @@
         if(d.status === 'success' && d.ump > 0) {
             document.getElementById('umpAuto').value = d.ump;
             document.getElementById('btnNext1').disabled = false;
-        } else { alert("UMP tahun tersebut belum ada!"); document.getElementById('btnNext1').disabled = true; }
+        } else { alert("UMP tahun tersebut belum tersedia!"); document.getElementById('btnNext1').disabled = true; }
         showLoading(false);
     }
 
@@ -300,19 +295,19 @@
             const fmt = (v) => "Rp " + Number(v).toLocaleString('id-ID');
             const h = `<div class="text-center mb-4"><img src="Logo_SBSI.png" width="90"><h5 class="fw-bold mt-2" style="color:var(--sbsi-red); margin:0;">FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</h5><h4 class="fw-bold text-primary">DPC KOTA BITUNG</h4><hr style="border:2px solid #000; opacity:1"></div>`;
             const c = `
-                <h6 class="text-center fw-bold mb-4" style="text-decoration:underline">LAPORAN HASIL AUDIT HAK</h6>
+                <h6 class="text-center fw-bold mb-4" style="text-decoration:underline">LAPORAN AUDIT HAK PEKERJA</h6>
                 <div class="small mb-3 p-3 bg-light border rounded">
                 <table class="w-100">
                 <tr><td width="40%">Nama Anggota</td><td>: <b>${TARGET_AUDIT.nama}</b></td></tr>
                 <tr><td>Masa Kerja</td><td>: <b>${d.masaKerja}</b></td></tr>
-                <tr class="text-primary fw-bold"><td>UMP PHK</td><td>: ${fmt(d.umpPhk)}</td></tr></table></div>
+                <tr class="text-primary fw-bold"><td>UMP Acuan</td><td>: ${fmt(d.umpPhk)}</td></tr></table></div>
                 <table class="table table-bordered small">
                 <tr class="table-secondary"><th>Uraian Hak</th><th class="text-end">Kekurangan</th></tr>
                 <tr><td>Selisih Gaji</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
                 <tr><td>Selisih THR</td><td class="text-end">${fmt(d.rincian.thr)}</td></tr>
                 <tr><td>Selisih Kompensasi</td><td class="text-end">${fmt(d.rincian.kompensasi)}</td></tr>
                 <tr class="fw-bold"><td>Pesangon & UPMK</td><td class="text-end text-primary">${fmt(d.rincian.pesangon)}</td></tr>
-                <tr class="table-dark fw-bold text-white"><td>TOTAL</td><td class="text-end text-warning">${fmt(d.rincian.total)}</td></tr>
+                <tr class="table-dark fw-bold text-white"><td>TOTAL AKHIR</td><td class="text-end text-warning">${fmt(d.rincian.total)}</td></tr>
                 </table>`;
             document.getElementById('previewCard').innerHTML = h + c;
             document.getElementById('printArea').innerHTML = h + c;
