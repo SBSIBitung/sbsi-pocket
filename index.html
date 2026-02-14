@@ -9,9 +9,10 @@
     <style>
         :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; --gold: #ffc107; }
         body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; }
         
-        /* LOGIN PAGE */
+        /* LOGIN LAYOUT */
         .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 15px; }
         .login-card-wrapper { display: flex; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 850px; width: 100%; }
         .intro-section { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; padding: 30px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
@@ -29,10 +30,11 @@
         .menu-item { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #eee; transition: 0.3s; }
         .menu-item:active { transform: scale(0.95); }
 
-        /* VIDEO */
+        /* VIDEO STYLES */
         .video-yt { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; margin-bottom: 15px; cursor: pointer; }
         .video-yt iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
         .video-portrait { width: 100%; max-width: 320px; margin: 0 auto 15px; border-radius: 15px; overflow: hidden; background: #000; height: 550px; cursor: pointer; }
+        .video-portrait iframe { width: 100%; height: 100%; border: none; }
 
         .view-section { display: none; padding-bottom: 50px; }
         .view-section.active { display: block; animation: fadeIn 0.4s; }
@@ -60,11 +62,11 @@
                     <button class="btn-blue" onclick="handleLogin()">MASUK</button>
                 </div>
                 <div class="intro-section">
-                    <h4 class="fw-bold mb-2">Pilar Keadilan</h4>
-                    <p class="small mb-3" style="opacity: 0.9;">SBSI hadir untuk memastikan setiap keringat buruh dihargai sesuai hukum dan martabat kemanusiaan.</p>
-                    <div class="d-flex gap-2 text-center">
-                        <div class="flex-fill p-2 border border-light rounded-3"><i class="bi bi-shield-check"></i><br><small style="font-size: 0.6rem;">ADVOKASI</small></div>
-                        <div class="flex-fill p-2 border border-light rounded-3"><i class="bi bi-people"></i><br><small style="font-size: 0.6rem;">SOLIDARITAS</small></div>
+                    <h4 class="fw-bold mb-2">Perkenalan SBSI</h4>
+                    <p class="small mb-3" style="opacity: 0.9;">SBSI berkomitmen memperjuangkan hak-hak buruh demi kesejahteraan dan keadilan sosial yang merata.</p>
+                    <div class="d-flex gap-2">
+                        <div class="flex-fill p-2 border border-light rounded-3 text-center small"><i class="bi bi-shield-check"></i> Advokasi</div>
+                        <div class="flex-fill p-2 border border-light rounded-3 text-center small"><i class="bi bi-people"></i> Solidaritas</div>
                     </div>
                 </div>
             </div>
@@ -102,12 +104,12 @@
 
     <div id="viewVideo" class="view-section">
         <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Edukasi TV</span><div></div></nav>
-        <div class="container py-4">
-            <h6 class="fw-bold mb-3"><i class="bi bi-youtube text-danger me-2"></i>MARS SBSI</h6>
-            <div class="video-yt" onclick="openFullscreen(this)"><iframe id="yt1" src="https://www.youtube.com/embed/08hfTSNWW_k"></iframe></div>
+        <div class="container py-4 text-center">
+            <h6 class="fw-bold mb-3 text-start">MARS SBSI</h6>
+            <div class="video-yt shadow-sm" onclick="openFullscreen(this)"><iframe src="https://www.youtube.com/embed/08hfTSNWW_k"></iframe></div>
             <hr>
-            <h6 class="fw-bold mb-3"><i class="bi bi-tiktok me-2"></i>EDUKASI HAK</h6>
-            <div class="video-portrait" onclick="openFullscreen(this)"><iframe id="tk1" src="https://www.tiktok.com/embed/v2/7571414420832767239"></iframe></div>
+            <h6 class="fw-bold mb-3 text-start">EDUKASI HAK BURUH</h6>
+            <div class="video-portrait shadow-sm" onclick="openFullscreen(this)"><iframe src="https://www.tiktok.com/embed/v2/7571414420832767239"></iframe></div>
         </div>
     </div>
 
@@ -126,24 +128,24 @@
                 <button class="btn-blue" id="btnNext1" onclick="genProrata()" disabled>LANJUT INPUT GAJI</button>
             </div>
             <div id="stepGaji" class="card-pro d-none">
-                <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">Gaji Bulanan</h6>
+                <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">Gaji Per Bulan</h6>
                 <div id="listGaji" style="max-height: 300px; overflow-y: auto;"></div>
-                <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT THR & KOMP</button>
+                <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT</button>
             </div>
             <div id="stepTahunan" class="card-pro d-none">
                 <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">Rincian Tahunan</h6>
                 <div id="listTahunan"></div>
                 <div class="form-check form-switch my-4"><input class="form-check-input" type="checkbox" id="isMeninggal"><label class="form-check-label fw-bold text-danger">Meninggal Dunia</label></div>
-                <button class="btn-blue" onclick="runCalculation()">LIHAT HASIL AKHIR</button>
+                <button class="btn-blue" onclick="runCalculation()">LIHAT HASIL</button>
             </div>
         </div>
     </div>
 
     <div id="viewPreview" class="view-section">
-        <nav class="top-nav"><span>Laporan Akhir</span><button class="btn btn-sm btn-outline-light" onclick="changeView('viewDashboard')">Tutup</button></nav>
+        <nav class="top-nav"><span>Laporan Hasil</span><button class="btn btn-sm btn-outline-light" onclick="changeView('viewDashboard')">Tutup</button></nav>
         <div class="container py-4">
-            <div id="previewCard" class="card-pro shadow-lg" style="background: white;"></div>
-            <button class="btn-blue mb-3" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK / SIMPAN PDF</button>
+            <div id="previewCard" class="card-pro shadow-lg"></div>
+            <button class="btn-blue mb-3" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK PDF</button>
         </div>
     </div>
 </div>
@@ -151,38 +153,36 @@
 <div id="printArea" style="display:none; padding:40px; background: white;"></div>
 
 <div class="modal fade" id="modalSearch" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="border-radius:20px;">
-      <div class="modal-header border-0"><h5 class="fw-bold">Cari Anggota</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body">
-        <input type="text" id="searchInp" class="form-control mb-3" placeholder="Ketik nama..." onkeyup="filterAnggota()">
-        <div id="listAnggotaRes" style="max-height: 300px; overflow-y: auto;"></div>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:20px;">
+            <div class="modal-header border-0"><h5 class="fw-bold">Pilih Anggota</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <input type="text" id="searchInp" class="form-control mb-3" placeholder="Ketik Nama atau NIK..." onkeyup="filterAnggota()">
+                <div id="listAnggotaRes" class="list-group" style="max-height: 300px; overflow-y: auto;">
+                    <div class="text-center text-muted small">Mulai mengetik untuk mencari...</div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbyaSp0HHR_fl1AfYyC2CN29RWFu-gNYhzr2TsM79VkrACTMSdRW-vU2ueBaZmV3TFig/exec";
+    const API = "https://script.google.com/macros/s/AKfycbxnlxFNAHVK6FxItd0iBLLVKqDyh-V_Pt8ZAzPkZlZZOMiNtpDjxgEnC66D6hEjREBH/exec";
     let SESSION = {};
     let ALL_ANGGOTA = [];
     let TARGET_AUDIT = {};
 
     window.onload = () => setTimeout(() => { document.getElementById('splash').style.display='none'; }, 2000);
 
+    // FUNGSI FULLSCREEN
     function openFullscreen(elem) {
         if (elem.requestFullscreen) elem.requestFullscreen();
         else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
         else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
     }
 
-    function stopAllVideos() {
-        document.querySelectorAll('iframe').forEach(f => { const s = f.src; f.src = ""; f.src = s; });
-    }
-
     function changeView(id) {
-        stopAllVideos();
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         window.scrollTo(0,0);
@@ -211,8 +211,8 @@
                     loadAnggotaDB();
                 }
                 changeView('viewDashboard');
-            } else alert("Login Gagal!");
-        } catch(e) { alert("Error Koneksi"); }
+            } else alert("NIK/PIN Salah!");
+        } catch(e) { alert("Error"); }
         showLoading(false);
     }
 
@@ -226,12 +226,18 @@
 
     function filterAnggota() {
         const key = document.getElementById('searchInp').value.toLowerCase();
+        const container = document.getElementById('listAnggotaRes');
+        if (key.length < 1) { container.innerHTML = '<div class="text-center text-muted small">Mulai mengetik untuk mencari...</div>'; return; }
+        
+        const filtered = ALL_ANGGOTA.filter(a => a.nama.toLowerCase().includes(key) || a.nik.toString().includes(key));
         let html = "";
-        ALL_ANGGOTA.filter(a => a.nama.toLowerCase().includes(key)).forEach(a => {
-            html += `<div class="p-3 border-bottom d-flex justify-content-between align-items-center" onclick="selectForAudit('${a.nama}', '${a.nik}')" style="cursor:pointer">
-                        <div><b>${a.nama}</b><br><small>${a.nik}</small></div><i class="bi bi-chevron-right"></i></div>`;
-        });
-        document.getElementById('listAnggotaRes').innerHTML = html;
+        if (filtered.length > 0) {
+            filtered.forEach(a => {
+                html += `<button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="selectForAudit('${a.nama}', '${a.nik}')">
+                    <div><b>${a.nama}</b><br><small class="text-muted">${a.nik}</small></div><i class="bi bi-chevron-right text-primary"></i></button>`;
+            });
+        } else { html = '<div class="text-center text-danger small p-3">Anggota tidak ditemukan</div>'; }
+        container.innerHTML = html;
     }
 
     function selectForAudit(nama, nik) {
@@ -256,7 +262,7 @@
         if(d.status === 'success' && d.ump > 0) {
             document.getElementById('umpAuto').value = d.ump;
             document.getElementById('btnNext1').disabled = false;
-        } else { alert("UMP tidak ada!"); document.getElementById('btnNext1').disabled = true; }
+        } else { alert("UMP tahun tersebut belum ada!"); document.getElementById('btnNext1').disabled = true; }
         showLoading(false);
     }
 
@@ -267,7 +273,7 @@
             let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
             hGaji += `<div class="d-flex mb-2 small"><span>${label}</span><input type="number" class="form-control form-control-sm in-g ms-auto" style="width:140px" value="0"></div>`;
             years[curr.getFullYear()] = (years[curr.getFullYear()] || 0) + 1;
-            curr.setMonth(curr.getMonth()+1);
+            curr.setMonth(curr.setMonth()+1);
         }
         Object.keys(years).forEach(y => {
             hTahunan += `<div class="mb-3 p-2 border rounded small"><b>Tahun ${y}</b><div class="row g-2 mt-1"><div class="col-6">THR:<input type="number" class="form-control form-control-sm in-thr" value="0"></div><div class="col-6">Komp:<input type="number" class="form-control form-control-sm in-komp" data-m="${years[y]}" value="0"></div></div></div>`;
@@ -294,19 +300,19 @@
             const fmt = (v) => "Rp " + Number(v).toLocaleString('id-ID');
             const h = `<div class="text-center mb-4"><img src="Logo_SBSI.png" width="90"><h5 class="fw-bold mt-2" style="color:var(--sbsi-red); margin:0;">FEDERASI SERIKAT BURUH SEJAHTERA INDONESIA</h5><h4 class="fw-bold text-primary">DPC KOTA BITUNG</h4><hr style="border:2px solid #000; opacity:1"></div>`;
             const c = `
-                <h6 class="text-center fw-bold mb-4" style="text-decoration:underline">HASIL AUDIT HAK PEKERJA</h6>
+                <h6 class="text-center fw-bold mb-4" style="text-decoration:underline">LAPORAN HASIL AUDIT HAK</h6>
                 <div class="small mb-3 p-3 bg-light border rounded">
                 <table class="w-100">
                 <tr><td width="40%">Nama Anggota</td><td>: <b>${TARGET_AUDIT.nama}</b></td></tr>
                 <tr><td>Masa Kerja</td><td>: <b>${d.masaKerja}</b></td></tr>
-                <tr class="text-primary fw-bold"><td>UMP Acuan PHK</td><td>: ${fmt(d.umpPhk)}</td></tr></table></div>
+                <tr class="text-primary fw-bold"><td>UMP PHK</td><td>: ${fmt(d.umpPhk)}</td></tr></table></div>
                 <table class="table table-bordered small">
-                <tr class="table-secondary"><th>Deskripsi Hak</th><th class="text-end">Jumlah</th></tr>
-                <tr><td>Selisih Gaji Bulanan</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
+                <tr class="table-secondary"><th>Uraian Hak</th><th class="text-end">Kekurangan</th></tr>
+                <tr><td>Selisih Gaji</td><td class="text-end">${fmt(d.rincian.selisihGaji)}</td></tr>
                 <tr><td>Selisih THR</td><td class="text-end">${fmt(d.rincian.thr)}</td></tr>
                 <tr><td>Selisih Kompensasi</td><td class="text-end">${fmt(d.rincian.kompensasi)}</td></tr>
-                <tr class="fw-bold"><td>Pesangon & UPMK (${d.detailUP})</td><td class="text-end text-primary">${fmt(d.rincian.pesangon)}</td></tr>
-                <tr class="table-dark fw-bold text-white"><td>TOTAL KEKURANGAN</td><td class="text-end text-warning">${fmt(d.rincian.total)}</td></tr>
+                <tr class="fw-bold"><td>Pesangon & UPMK</td><td class="text-end text-primary">${fmt(d.rincian.pesangon)}</td></tr>
+                <tr class="table-dark fw-bold text-white"><td>TOTAL</td><td class="text-end text-warning">${fmt(d.rincian.total)}</td></tr>
                 </table>`;
             document.getElementById('previewCard').innerHTML = h + c;
             document.getElementById('printArea').innerHTML = h + c;
