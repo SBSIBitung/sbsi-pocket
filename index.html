@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mySBSI - Audit PP 35/2021</title>
+  <title>mySBSI - Audit Lengkap</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root { --sbsi: #b71c1c; }
@@ -21,12 +21,16 @@
   <div id="loginSection" class="container mt-5" style="max-width: 400px;">
     <div class="card card-wizard p-4 text-center">
       <h2 class="text-danger fw-bold">mySBSI</h2>
-      <button onclick="showGuest()" class="btn bg-sbsi w-100 fw-bold">MASUK AUDIT (GUEST)</button>
+      <p class="small text-muted mb-4">Login Anggota & Admin</p>
+      <input type="text" id="username" class="form-control mb-2" placeholder="NIK (Username)">
+      <input type="password" id="password" class="form-control mb-3" placeholder="PIN (Password)">
+      <button onclick="doLogin()" id="btnLogin" class="btn bg-sbsi w-100 fw-bold mb-2">LOGIN</button>
+      <div id="loader" class="mt-2" style="display:none;"><div class="spinner-border text-danger spinner-border-sm"></div></div>
     </div>
   </div>
 
   <div id="mainSection" style="display:none;">
-    <nav class="navbar bg-sbsi px-3 mb-3 shadow-sm"><span class="fw-bold">Audit Tuntutan (PP 35/2021)</span></nav>
+    <nav class="navbar bg-sbsi px-3 mb-3"><span class="fw-bold">Audit Tuntutan Hak</span></nav>
     <div class="container" style="max-width: 800px;">
       <div class="card card-wizard p-4">
         
@@ -34,9 +38,9 @@
           <h5 class="fw-bold text-danger mb-3">1. Periode Masa Kerja</h5>
           <div class="row g-3">
             <div class="col-6"><label class="small fw-bold">Mulai Kerja</label><input type="date" id="tglMulai" class="form-control"></div>
-            <div class="col-6"><label class="small fw-bold">PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
+            <div class="col-6"><label class="small fw-bold">Tanggal PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
           </div>
-          <button onclick="initAudit()" class="btn btn-danger w-100 mt-4 fw-bold">GENERATE TABEL AUDIT</button>
+          <button onclick="initAudit()" class="btn btn-danger w-100 mt-4 fw-bold">BUAT TABEL AUDIT</button>
         </div>
 
         <div id="step2" class="step">
@@ -50,7 +54,7 @@
               <tbody id="bodyBulan"></tbody>
             </table>
           </div>
-          <button onclick="nextStep(3)" class="btn btn-danger w-100 mt-3 fw-bold">KE THR & KOMP</button>
+          <button onclick="nextStep(3)" class="btn btn-danger w-100 mt-3 fw-bold">LANJUT</button>
         </div>
 
         <div id="step3" class="step">
@@ -64,17 +68,17 @@
               <tbody id="bodyTahun"></tbody>
             </table>
           </div>
-          <button onclick="kalkulasiFinal()" class="btn btn-success w-100 mt-3 fw-bold">HITUNG HASIL AKHIR</button>
+          <button onclick="kalkulasiFinal()" class="btn btn-success w-100 mt-3 fw-bold">HITUNG SELISIH</button>
         </div>
 
         <div id="step4" class="step">
           <h4 class="text-danger fw-bold text-center mb-4">REKAPITULASI HAK</h4>
           <div id="rincianHasil" class="list-group list-group-flush mb-3"></div>
           <div class="bg-danger text-white p-3 rounded text-center shadow">
-             <small class="fw-bold">TOTAL TUNTUTAN (SELISIH + PESANGON + UPMK)</small>
+             <small class="fw-bold">TOTAL TUNTUTAN AUDIT</small>
              <h2 id="grandTotal" class="fw-bold mt-1">Rp 0</h2>
           </div>
-          <button onclick="location.reload()" class="btn btn-dark w-100 mt-4 fw-bold">ULANGI</button>
+          <button onclick="location.reload()" class="btn btn-dark w-100 mt-4 fw-bold">SELESAI</button>
         </div>
 
       </div>
@@ -83,7 +87,8 @@
 </div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0KNWfb8DyzdNR_GV1NpIipiO2jDYXakqQgkpU7Gvo6m3Lbb2abk_foi6BChjX_Qcn/exec"; 
+// PENTING: GANTI DENGAN URL WEB APP ANDA
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwAgmjU-RojzUvLKIYhIsLDC5poR2tjzaqdZjzMwt6QLsQMSbSQ5OP92cDq8gVpP-DS/exec"; 
 let masterUMP = {};
 
 function formatIDR(el) {
@@ -97,17 +102,29 @@ function autoFill(className, value) {
   document.querySelectorAll('.' + className).forEach(el => { el.value = value; });
 }
 
-function showGuest() {
-  document.getElementById('loginSection').style.display='none';
-  document.getElementById('mainSection').style.display='block';
-  fetchUMP();
+function doLogin() {
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  document.getElementById('loader').style.display = 'block';
+  const script = document.createElement('script');
+  script.src = `${WEB_APP_URL}?action=login&u=${u}&p=${p}&callback=callback`;
+  document.body.appendChild(script);
+
+  setTimeout(() => {
+    document.getElementById('loader').style.display = 'none';
+    if(window.lastRes && window.lastRes.success) {
+      document.getElementById('loginSection').style.display='none';
+      document.getElementById('mainSection').style.display='block';
+      fetchUMP();
+    } else { alert(window.lastRes ? window.lastRes.message : "Gagal Login!"); }
+  }, 2000);
 }
 
 function fetchUMP() {
   const script = document.createElement('script');
   script.src = `${WEB_APP_URL}?action=getUMP&callback=callback`;
   document.body.appendChild(script);
-  setTimeout(() => { masterUMP = window.lastRes || {}; }, 1500);
+  setTimeout(() => { masterUMP = window.lastRes || {}; }, 1000);
 }
 
 function nextStep(n) {
@@ -118,7 +135,7 @@ function nextStep(n) {
 function initAudit() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
-  if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
+  if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal PHK!");
 
   let htmlBln = '';
   let curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
@@ -147,22 +164,17 @@ function initAudit() {
 function kalkulasiFinal() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
-  
-  // Hitung Selisih Bulan
-  const diffTime = Math.abs(d2 - d1);
-  const totalHari = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const totalHari = Math.ceil(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24));
   const thnKerja = Math.floor(totalHari / 365);
 
   let selisihGaji = 0, selisihTHR = 0, selisihKomp = 0;
 
-  // 1. Logika Selisih Gaji
   document.querySelectorAll('.in-gaji').forEach(el => {
     let audit = masterUMP[el.dataset.thn] || 0;
     let riil = parseIDR(el.value);
     if(riil < audit) selisihGaji += (audit - riil);
   });
 
-  // 2. Logika Selisih THR & Komp (Prorata UMP)
   const thrs = document.querySelectorAll('.in-thr'), komps = document.querySelectorAll('.in-komp');
   thrs.forEach((el, i) => {
     let auditProrata = (masterUMP[el.dataset.thn] || 0) / 12 * parseInt(el.dataset.bln);
@@ -171,44 +183,21 @@ function kalkulasiFinal() {
     if(dKomp < auditProrata) selisihKomp += (auditProrata - dKomp);
   });
 
-  // 3. LOGIKA PESANGON & UPMK (Pasal 40 PP 35/2021)
   let umpAudit = masterUMP[d2.getFullYear()] || 0;
+  let koefPes = (thnKerja < 1) ? 1 : (thnKerja >= 8 ? 9 : thnKerja + 1);
+  let koefUPMK = (thnKerja < 3) ? 0 : (thnKerja < 6 ? 2 : (thnKerja < 9 ? 3 : (thnKerja < 12 ? 4 : (thnKerja < 15 ? 5 : (thnKerja < 18 ? 6 : (thnKerja < 21 ? 7 : (thnKerja < 24 ? 8 : 10)))))));
   
-  // Koefisien Pesangon
-  let koefPes = 1;
-  if(thnKerja < 1) koefPes = 1;
-  else if(thnKerja < 2) koefPes = 2;
-  else if(thnKerja < 3) koefPes = 3;
-  else if(thnKerja < 4) koefPes = 4;
-  else if(thnKerja < 5) koefPes = 5;
-  else if(thnKerja < 6) koefPes = 6;
-  else if(thnKerja < 7) koefPes = 7;
-  else if(thnKerja < 8) koefPes = 8;
-  else koefPes = 9;
-
-  // Koefisien UPMK
-  let koefUPMK = 0;
-  if(thnKerja >= 3 && thnKerja < 6) koefUPMK = 2;
-  else if(thnKerja >= 6 && thnKerja < 9) koefUPMK = 3;
-  else if(thnKerja >= 9 && thnKerja < 12) koefUPMK = 4;
-  else if(thnKerja >= 12 && thnKerja < 15) koefUPMK = 5;
-  else if(thnKerja >= 15 && thnKerja < 18) koefUPMK = 6;
-  else if(thnKerja >= 18 && thnKerja < 21) koefUPMK = 7;
-  else if(thnKerja >= 21 && thnKerja < 24) koefUPMK = 8;
-  else if(thnKerja >= 24) koefUPMK = 10;
-
-  let nominalPesangon = koefPes * umpAudit;
-  let nominalUPMK = koefUPMK * umpAudit;
-  let grandTotal = selisihGaji + selisihTHR + selisihKomp + nominalPesangon + nominalUPMK;
+  let p = koefPes * umpAudit, u = koefUPMK * umpAudit;
+  let grandTotal = selisihGaji + selisihTHR + selisihKomp + p + u;
 
   nextStep(4);
   document.getElementById('rincianHasil').innerHTML = `
-    <div class="list-group-item d-flex justify-content-between small"><span>Masa Kerja</span><b>${thnKerja} Tahun</b></div>
+    <div class="list-group-item d-flex justify-content-between"><span>Masa Kerja</span><b>${thnKerja} Tahun</b></div>
     <div class="list-group-item d-flex justify-content-between text-danger"><span>Selisih Gaji</span><b>Rp ${Math.round(selisihGaji).toLocaleString()}</b></div>
     <div class="list-group-item d-flex justify-content-between text-danger"><span>Selisih THR</span><b>Rp ${Math.round(selisihTHR).toLocaleString()}</b></div>
     <div class="list-group-item d-flex justify-content-between text-danger"><span>Selisih Kompensasi</span><b>Rp ${Math.round(selisihKomp).toLocaleString()}</b></div>
-    <div class="list-group-item d-flex justify-content-between text-primary"><span>Pesangon (${koefPes}x UMP)</span><b>Rp ${nominalPesangon.toLocaleString()}</b></div>
-    <div class="list-group-item d-flex justify-content-between text-primary"><span>UPMK (${koefUPMK}x UMP)</span><b>Rp ${nominalUPMK.toLocaleString()}</b></div>
+    <div class="list-group-item d-flex justify-content-between text-primary"><span>Pesangon Audit</span><b>Rp ${p.toLocaleString()}</b></div>
+    <div class="list-group-item d-flex justify-content-between text-primary"><span>UPMK Audit</span><b>Rp ${u.toLocaleString()}</b></div>
   `;
   document.getElementById('grandTotal').innerText = `Rp ${Math.round(grandTotal).toLocaleString()}`;
 }
