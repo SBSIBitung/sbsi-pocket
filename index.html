@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mySBSI - Wizard Bulanan</title>
+  <title>mySBSI - Wizard Prorata</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root { --sbsi: #b71c1c; }
@@ -12,9 +12,8 @@
     .card-wizard { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .step { display: none; }
     .step.active { display: block; }
-    .sticky-header { position: sticky; top: 0; background: white; z-index: 100; border-bottom: 2px solid var(--sbsi); }
-    .table-input input { border: 1px solid #ddd; border-radius: 4px; padding: 2px 5px; width: 100%; text-align: right; }
-    .table-input input:focus { border-color: var(--sbsi); outline: none; background: #fff8f8; }
+    .table-input input { border: 1px solid #ddd; border-radius: 4px; padding: 2px 5px; width: 100%; text-align: right; font-size: 0.8rem; }
+    .sticky-header { position: sticky; top: 0; background: white; z-index: 10; }
   </style>
 </head>
 <body>
@@ -22,55 +21,58 @@
 <div id="app">
   <div id="loginSection" class="container mt-5" style="max-width: 350px;">
     <div class="card card-wizard p-4 text-center">
-      <h3 class="text-danger fw-bold mb-4">mySBSI</h3>
+      <h3 class="text-danger fw-bold">mySBSI</h3>
       <input type="text" id="username" class="form-control mb-2" placeholder="NIK">
-      <input type="password" id="password" class="form-control mb-3" placeholder="Password">
+      <input type="password" id="password" class="form-control mb-3" placeholder="Sandi">
       <button onclick="doLogin()" id="btnLogin" class="btn bg-sbsi w-100 fw-bold">MASUK</button>
       <div id="loader" class="mt-3" style="display:none;"><div class="spinner-border text-danger spinner-border-sm"></div></div>
     </div>
   </div>
 
   <div id="mainSection" style="display:none;">
-    <nav class="navbar bg-sbsi px-3 mb-3 shadow-sm"><span class="fw-bold">Wizard Perhitungan Hak Bulanan</span></nav>
+    <nav class="navbar bg-sbsi px-3 mb-3 shadow-sm"><span class="fw-bold">Wizard Advokasi PP 35/2021</span></nav>
     <div class="container-fluid" style="max-width: 900px;">
       
       <div class="card card-wizard p-3">
         <div id="step1" class="step active">
-          <h6 class="fw-bold text-danger mb-3">Langkah 1: Tentukan Masa Kerja</h6>
+          <h6 class="fw-bold text-danger mb-3">Langkah 1: Masa Kerja</h6>
           <div class="row g-2">
-            <div class="col-6"><label class="small fw-bold">Tanggal Mulai</label><input type="date" id="tglMulai" class="form-control"></div>
-            <div class="col-6"><label class="small fw-bold">Tanggal PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
+            <div class="col-6"><label class="small fw-bold">Tgl Mulai</label><input type="date" id="tglMulai" class="form-control"></div>
+            <div class="col-6"><label class="small fw-bold">Tgl PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
           </div>
-          <button onclick="generateMonthlyTable()" class="btn btn-danger w-100 mt-3 fw-bold">Buat Tabel Input Bulanan</button>
+          <button onclick="generateMonthly()" class="btn btn-danger w-100 mt-3 fw-bold">Lanjut: Input Upah Bulanan</button>
         </div>
 
         <div id="step2" class="step">
-          <h6 class="fw-bold text-danger mb-2">Langkah 2: Masukkan Upah, THR & Komp Per Bulan</h6>
-          <p class="text-muted x-small mb-3">*Gunakan simbol pemisah ribuan otomatis.</p>
-          <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-            <table class="table table-sm table-input table-hover border">
-              <thead class="sticky-header small text-center">
-                <tr>
-                  <th width="150">Bulan & Tahun</th>
-                  <th>Upah (Rp)</th>
-                  <th>THR (Rp)</th>
-                  <th>Kompensasi (Rp)</th>
-                </tr>
-              </thead>
-              <tbody id="tabelBody" class="small"></tbody>
+          <h6 class="fw-bold text-danger mb-2">Langkah 2: Upah Per Bulan</h6>
+          <div class="table-responsive" style="max-height: 350px;">
+            <table class="table table-sm table-input border">
+              <thead class="sticky-header small text-center"><tr><th>Bulan & Tahun</th><th>Upah Dibayar (Rp)</th></tr></thead>
+              <tbody id="bodyBulan"></tbody>
             </table>
           </div>
           <div class="d-flex gap-2 mt-3">
             <button onclick="nextStep(1)" class="btn btn-secondary w-25">Kembali</button>
-            <button onclick="hitungFinal()" class="btn btn-danger w-75 fw-bold">HITUNG HASIL AKHIR</button>
+            <button onclick="generateYearly()" class="btn btn-danger w-75 fw-bold">Lanjut: THR & Kompensasi</button>
           </div>
         </div>
 
         <div id="step3" class="step">
-          <div class="text-center mb-3">
-            <h5 class="fw-bold text-danger">REKAPITULASI HAK PESANGON</h5>
-            <small class="text-muted">Berdasarkan PP 35 Tahun 2021</small>
+          <h6 class="fw-bold text-danger mb-2">Langkah 3: THR & Kompensasi (Prorata Otomatis)</h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-input border">
+              <thead class="small text-center"><tr><th>Tahun</th><th>Bulan Kerja</th><th>THR Prorata (Rp)</th><th>Kompensasi (Rp)</th></tr></thead>
+              <tbody id="bodyTahun"></tbody>
+            </table>
           </div>
+          <div class="d-flex gap-2 mt-3">
+            <button onclick="nextStep(2)" class="btn btn-secondary w-25">Kembali</button>
+            <button onclick="hitungFinal()" class="btn btn-success w-75 fw-bold text-white">LIHAT HASIL AKHIR</button>
+          </div>
+        </div>
+
+        <div id="step4" class="step">
+          <h5 class="fw-bold text-danger text-center mb-3">REKAPITULASI HAK PESANGON</h5>
           <div id="hasilFinal" class="border rounded p-3 bg-white shadow-sm"></div>
           <button onclick="location.reload()" class="btn btn-dark w-100 mt-3 fw-bold">SELESAI & LOGOUT</button>
         </div>
@@ -81,19 +83,16 @@
 </div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzG3IMst4rSjJEn6QzqsIYf42Jv3s-A1sKfA1bAWdNOiDbUJrF246wVq0hrm_B7k3Py/exec"; 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynVHxYTbpxDYxHX4XceW4LaaCdQ6pO2yXiTRhwKoqGPkbIehJapPAAzagLBuJntEBD/exec"; 
 let masterUMP = {};
-
-function callback(res) { window.lastRes = res; }
+const listBulan = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 
 function formatIDR(el) {
   let val = el.value.replace(/\D/g, "");
   el.value = new Intl.NumberFormat('id-ID').format(val);
 }
-
-function parseIDR(val) {
-  return parseFloat(val.replace(/\./g, "")) || 0;
-}
+function parseIDR(val) { return parseFloat(val.replace(/\./g, "")) || 0; }
+function callback(res) { window.lastRes = res; }
 
 function doLogin() {
   const u = document.getElementById('username').value;
@@ -102,7 +101,6 @@ function doLogin() {
   const script = document.createElement('script');
   script.src = `${WEB_APP_URL}?action=login&u=${u}&p=${p}&callback=callback`;
   document.body.appendChild(script);
-
   setTimeout(() => {
     document.getElementById('loader').style.display = 'none';
     if(window.lastRes && window.lastRes.success) {
@@ -120,95 +118,97 @@ function fetchUMP() {
   setTimeout(() => { masterUMP = window.lastRes; }, 1000);
 }
 
-function generateMonthlyTable() {
+function nextStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+}
+
+function generateMonthly() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
   if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
 
   let html = '';
   let curr = new Date(d1.getFullYear(), d1.getMonth(), 1);
-  const end = new Date(d2.getFullYear(), d2.getMonth(), 1);
-
-  const listBulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-
-  while(curr <= end) {
-    let blnThn = `${listBulan[curr.getMonth()]} ${curr.getFullYear()}`;
-    html += `<tr>
-      <td class="fw-bold bg-light">${blnThn}</td>
-      <td><input type="text" class="in-gaji" data-thn="${curr.getFullYear()}" onkeyup="formatIDR(this)" placeholder="0"></td>
-      <td><input type="text" class="in-thr" onkeyup="formatIDR(this)" placeholder="0"></td>
-      <td><input type="text" class="in-komp" onkeyup="formatIDR(this)" placeholder="0"></td>
-    </tr>`;
+  while(curr <= new Date(d2.getFullYear(), d2.getMonth(), 1)) {
+    html += `<tr><td class="bg-light">${listBulan[curr.getMonth()]} ${curr.getFullYear()}</td>
+             <td><input type="text" class="in-gaji" data-thn="${curr.getFullYear()}" onkeyup="formatIDR(this)" placeholder="0"></td></tr>`;
     curr.setMonth(curr.getMonth() + 1);
   }
-  document.getElementById('tabelBody').innerHTML = html;
+  document.getElementById('bodyBulan').innerHTML = html;
   nextStep(2);
 }
 
-function nextStep(n) {
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  document.getElementById('step'+n).classList.add('active');
+function generateYearly() {
+  const d1 = new Date(document.getElementById('tglMulai').value);
+  const d2 = new Date(document.getElementById('tglSelesai').value);
+  let html = '';
+  
+  // Mencari upah terakhir dari input sebelumnya
+  const gajis = document.querySelectorAll('.in-gaji');
+  let upahTerakhir = parseIDR(gajis[gajis.length-1].value) || 0;
+
+  for(let y = d1.getFullYear(); y <= d2.getFullYear(); y++) {
+    // Hitung prorata bulan dalam tahun tersebut
+    let startBln = (y === d1.getFullYear()) ? d1.getMonth() : 0;
+    let endBln = (y === d2.getFullYear()) ? d2.getMonth() : 11;
+    let jmlBulan = (endBln - startBln) + 1;
+    
+    // Nilai THR Prorata otomatis (Upah / 12 * JmlBulan)
+    let thrProrata = Math.round((upahTerakhir / 12) * jmlBulan);
+
+    html += `<tr>
+      <td class="fw-bold text-center">${y}</td>
+      <td class="text-center">${jmlBulan} bln</td>
+      <td><input type="text" class="in-thr" value="${new Intl.NumberFormat('id-ID').format(thrProrata)}" onkeyup="formatIDR(this)"></td>
+      <td><input type="text" class="in-komp" placeholder="0" onkeyup="formatIDR(this)"></td>
+    </tr>`;
+  }
+  document.getElementById('bodyTahun').innerHTML = html;
+  nextStep(3);
 }
 
 function hitungFinal() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
-  const diffBulan = Math.floor((d2 - d1) / (1000*60*60*24*30.44));
-  const thnKerja = Math.floor(diffBulan / 12);
+  const totalBulan = Math.floor((d2 - d1) / (1000*60*60*24*30.44));
+  const thnKerja = Math.floor(totalBulan / 12);
 
-  let gajis = document.querySelectorAll('.in-gaji');
-  let thrs = document.querySelectorAll('.in-thr');
-  let komps = document.querySelectorAll('.in-komp');
-  
-  let totalSelisihUMP = 0;
-  let totalTHR = 0;
-  let totalKomp = 0;
+  let gajis = document.querySelectorAll('.in-gaji'), totalSelisih = 0;
   let upahTerakhir = parseIDR(gajis[gajis.length-1].value);
-
-  gajis.forEach((el, i) => {
-    let thn = el.getAttribute('data-thn');
+  gajis.forEach(el => {
+    let ump = masterUMP[el.getAttribute('data-thn')] || 0;
     let gaji = parseIDR(el.value);
-    let ump = masterUMP[thn] || 0;
-    if(gaji > 0 && gaji < ump) totalSelisihUMP += (ump - gaji);
-    totalTHR += parseIDR(thrs[i].value);
-    totalKomp += parseIDR(komps[i].value);
+    if(gaji > 0 && gaji < ump) totalSelisih += (ump - gaji);
   });
 
-  // PP 35/2021 Pesangon (Pasal 40 ayat 2)
+  let sumTHR = 0, sumKomp = 0;
+  document.querySelectorAll('.in-thr').forEach(el => sumTHR += parseIDR(el.value));
+  document.querySelectorAll('.in-komp').forEach(el => sumKomp += parseIDR(el.value));
+
+  // PP 35/2021
   let kPes = thnKerja < 1 ? 1 : (thnKerja >= 8 ? 9 : thnKerja + 1);
-  let pesangon = kPes * upahTerakhir;
+  let kUPMK = (thnKerja < 3) ? 0 : (thnKerja < 6 ? 2 : (thnKerja < 9 ? 3 : (thnKerja < 12 ? 4 : (thnKerja < 15 ? 5 : (thnKerja < 18 ? 6 : (thnKerja < 21 ? 7 : (thnKerja < 24 ? 8 : 10)))))));
+  
+  let pesangon = kPes * upahTerakhir, upmk = kUPMK * upahTerakhir;
+  let grandTotal = totalSelisih + pesangon + upmk + sumTHR + sumKomp;
 
-  // UPMK (Pasal 40 ayat 3)
-  let kUPMK = 0;
-  if(thnKerja >= 3 && thnKerja < 6) kUPMK = 2;
-  else if(thnKerja >= 6 && thnKerja < 9) kUPMK = 3;
-  else if(thnKerja >= 9 && thnKerja < 12) kUPMK = 4;
-  else if(thnKerja >= 12 && thnKerja < 15) kUPMK = 5;
-  else if(thnKerja >= 15 && thnKerja < 18) kUPMK = 6;
-  else if(thnKerja >= 18 && thnKerja < 21) kUPMK = 7;
-  else if(thnKerja >= 21 && thnKerja < 24) kUPMK = 8;
-  else if(thnKerja >= 24) kUPMK = 10;
-  let upmk = kUPMK * upahTerakhir;
-
-  const grandTotal = totalSelisihUMP + pesangon + upmk + totalTHR + totalKomp;
-
-  nextStep(3);
+  nextStep(4);
   document.getElementById('hasilFinal').innerHTML = `
     <div class="row g-2 small">
-      <div class="col-7">Masa Kerja:</div><div class="col-5 text-end fw-bold">${thnKerja} Tahun</div>
-      <div class="col-7">Upah Terakhir:</div><div class="col-5 text-end fw-bold text-primary">Rp ${upahTerakhir.toLocaleString()}</div>
+      <div class="col-7">Masa Kerja:</div><div class="col-5 text-end fw-bold">${thnKerja} Thn (${totalBulan} bln)</div>
+      <div class="col-7">Upah Terakhir:</div><div class="col-5 text-end fw-bold">Rp ${upahTerakhir.toLocaleString()}</div>
       <hr class="my-1">
-      <div class="col-7">Kekurangan Gaji (vs UMP):</div><div class="col-5 text-end">Rp ${totalSelisihUMP.toLocaleString()}</div>
+      <div class="col-7 text-danger">Kekurangan Gaji (vs UMP):</div><div class="col-5 text-end text-danger">Rp ${totalSelisih.toLocaleString()}</div>
       <div class="col-7">Uang Pesangon (${kPes}x):</div><div class="col-5 text-end">Rp ${pesangon.toLocaleString()}</div>
-      <div class="col-7">Uang Penghargaan (UPMK ${kUPMK}x):</div><div class="col-5 text-end">Rp ${upmk.toLocaleString()}</div>
-      <div class="col-7">Sisa THR:</div><div class="col-5 text-end">Rp ${totalTHR.toLocaleString()}</div>
-      <div class="col-7">Uang Penggantian Hak:</div><div class="col-5 text-end">Rp ${totalKomp.toLocaleString()}</div>
-      <div class="col-12 mt-2 p-2 bg-danger text-white rounded text-center">
-        <div class="small">TOTAL HAK YANG HARUS DIBAYAR</div>
-        <div class="h4 fw-bold mb-0">Rp ${grandTotal.toLocaleString()}</div>
+      <div class="col-7">Uang Penghargaan Masa Kerja (${kUPMK}x):</div><div class="col-5 text-end">Rp ${upmk.toLocaleString()}</div>
+      <div class="col-7">Total Hak THR (Prorata):</div><div class="col-5 text-end">Rp ${sumTHR.toLocaleString()}</div>
+      <div class="col-7">Total Penggantian Hak:</div><div class="col-5 text-end">Rp ${sumKomp.toLocaleString()}</div>
+      <div class="col-12 mt-3 p-3 bg-danger text-white rounded text-center shadow">
+        <div class="small fw-bold">TOTAL TUNTUTAN HAK ANGGOTA</div>
+        <div class="h3 fw-bold mb-0">Rp ${grandTotal.toLocaleString()}</div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 </script>
 </body>
