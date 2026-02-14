@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mySBSI - Advokasi Buruh</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root { --sbsi-red: #b71c1c; }
-    body { background: #f4f4f4; font-family: 'Segoe UI', sans-serif; }
-    .btn-sbsi { background-color: var(--sbsi-red); color: white; border: none; }
+    body { background: #f4f4f4; font-family: sans-serif; }
+    .btn-sbsi { background: var(--sbsi-red); color: white; border: none; }
     .card-login { max-width: 400px; margin: 80px auto; border-radius: 15px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     #loader { display: none; }
     .nav-sbsi { background: var(--sbsi-red); color: white; }
@@ -15,65 +17,43 @@
 <body>
 
 <div id="app">
-  <div id="loginSection">
+  <div id="loginSection" class="container">
     <div class="card card-login p-4">
       <div class="text-center mb-4">
         <h2 class="fw-bold text-danger">mySBSI</h2>
-        <p class="text-muted small">Login Anggota & Admin</p>
+        <p class="text-muted small">Kalkulator Hak Buruh PP 35/2021</p>
       </div>
-      <input type="text" id="username" class="form-control mb-2" placeholder="NIK / Username">
-      <input type="password" id="password" class="form-control mb-3" placeholder="Password">
+      <input type="text" id="username" class="form-control mb-2" placeholder="NIK (Username)">
+      <input type="password" id="password" class="form-control mb-3" placeholder="Kata Sandi">
       <button onclick="prosesLogin()" id="btnLogin" class="btn btn-sbsi w-100 mb-2">LOGIN</button>
-      <button onclick="masukGuest()" class="btn btn-outline-dark w-100 fw-bold small">MASUK SEBAGAI GUEST</button>
-      
-      <div id="loader" class="text-center mt-3">
-        <div class="spinner-border text-danger spinner-border-sm"></div>
-        <p class="small text-muted mt-1">Menghubungkan ke server...</p>
-      </div>
+      <button onclick="masukGuest()" class="btn btn-outline-dark w-100 fw-bold small">GUEST</button>
+      <div id="loader" class="text-center mt-3"><div class="spinner-border text-danger spinner-border-sm"></div></div>
       <div id="msgError" class="text-danger text-center mt-2 small fw-bold"></div>
+      <button onclick="resetUrl()" class="btn btn-link btn-sm mt-3 text-muted" style="text-decoration:none">Ganti URL Web App</button>
     </div>
   </div>
 
   <div id="mainSection" style="display:none;">
     <nav class="navbar nav-sbsi px-3 mb-4 shadow-sm">
-      <span class="navbar-brand fw-bold text-white">mySBSI Dashboard</span>
-      <div class="ms-auto d-flex align-items-center">
-        <span id="userDisplay" class="me-3 small text-white"></span>
-        <button class="btn btn-sm btn-light fw-bold" onclick="location.reload()">Logout</button>
-      </div>
+      <span class="navbar-brand fw-bold">mySBSI Dashboard</span>
+      <button class="btn btn-sm btn-light fw-bold" onclick="location.reload()">Logout</button>
     </nav>
-
     <div class="container">
-      <div id="viewGuest" class="card p-5 text-center shadow-sm border-0" style="display:none;">
+      <div id="viewGuest" class="card p-5 text-center shadow-sm" style="display:none;">
         <h3 class="text-danger fw-bold">Profil mySBSI</h3>
-        <p>Gunakan akun Anggota untuk fitur kalkulator PHK.</p>
+        <p>Gunakan akun Anggota untuk menghitung hak PHK & Pesangon.</p>
       </div>
-
       <div id="viewUser" style="display:none;">
-        <div class="row">
-          <div class="col-md-5">
-            <div class="card p-4 shadow-sm border-0 mb-4">
-              <h5 class="fw-bold text-danger mb-3">Kalkulator PHK</h5>
-              <div class="mb-2"><label class="small fw-bold">Perusahaan</label><input type="text" id="namaPers" class="form-control bg-light" readonly></div>
-              <div class="row mb-2">
-                <div class="col"><label class="small fw-bold">Tgl Mulai</label><input type="date" id="tglMulai" class="form-control"></div>
-                <div class="col"><label class="small fw-bold">Tgl PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
-              </div>
-              <div class="mb-3"><label class="small fw-bold">Upah Terakhir</label><input type="number" id="upahUser" class="form-control"></div>
-              <button onclick="hitungHak()" class="btn btn-danger w-100 fw-bold">HITUNG</button>
-            </div>
+        <div class="card p-4 shadow-sm border-0 mb-4">
+          <h5 class="fw-bold text-danger">Kalkulator PHK</h5>
+          <hr>
+          <div class="row g-3">
+            <div class="col-md-6"><label class="small fw-bold">Tgl Mulai</label><input type="date" id="tglMulai" class="form-control"></div>
+            <div class="col-md-6"><label class="small fw-bold">Tgl PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
+            <div class="col-12"><label class="small fw-bold">Upah Terakhir</label><input type="number" id="upah" class="form-control" placeholder="Rp"></div>
+            <div class="col-12"><button onclick="hitung()" class="btn btn-danger w-100">HITUNG HAK</button></div>
           </div>
-          <div class="col-md-7">
-            <div id="hasilArea" class="card p-4 shadow-sm border-start border-danger border-5" style="display:none;">
-              <h5 class="fw-bold text-danger">Hasil Analisa</h5>
-              <div id="outputKalkulasi" class="mt-3"></div>
-              <button id="btnSimpan" onclick="simpanData()" class="btn btn-success w-100 mt-3 fw-bold">SIMPAN HASIL</button>
-            </div>
-            <div id="adminArea" class="card p-4 shadow-sm mt-3" style="display:none;">
-              <h5 class="fw-bold mb-3 text-secondary">Log Riwayat Anggota</h5>
-              <div class="table-responsive"><table class="table table-sm small"><tbody id="bodyRiwayat"></tbody></table></div>
-            </div>
-          </div>
+          <div id="hasil" class="mt-4 p-3 bg-light rounded shadow-sm" style="display:none;"></div>
         </div>
       </div>
     </div>
@@ -81,32 +61,45 @@
 </div>
 
 <script>
+let appUrl = localStorage.getItem('sbsi_url');
 let currentUser = {};
-let masterUMP = {};
-let memoryHasil = {};
+
+function resetUrl() {
+  let url = prompt("Masukkan URL Web App Google Script Anda:", appUrl || "");
+  if(url) {
+    localStorage.setItem('sbsi_url', url);
+    appUrl = url;
+    location.reload();
+  }
+}
+
+// Jika belum ada URL, minta saat startup
+if(!appUrl) resetUrl();
+
+function callback(res) {
+  window.lastResponse = res;
+}
 
 function prosesLogin() {
   const u = document.getElementById('username').value;
   const p = document.getElementById('password').value;
-  if(!u || !p) { alert("Isi Username dan Password!"); return; }
-
+  if(!u || !p) return alert("Isi Username/Sandi");
+  
   document.getElementById('loader').style.display = 'block';
-  document.getElementById('btnLogin').disabled = true;
-  document.getElementById('msgError').innerText = '';
+  
+  const script = document.createElement('script');
+  script.src = `${appUrl}?action=login&u=${u}&p=${p}&callback=callback`;
+  
+  document.body.appendChild(script);
 
-  google.script.run
-    .withSuccessHandler(res => {
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('btnLogin').disabled = false;
-      if(res.success) showDashboard(res);
-      else document.getElementById('msgError').innerText = res.message;
-    })
-    .withFailureHandler(err => {
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('btnLogin').disabled = false;
-      document.getElementById('msgError').innerText = "Gagal terhubung ke server. Periksa koneksi atau Deployment.";
-    })
-    .loginUser(u, p);
+  setTimeout(() => {
+    document.getElementById('loader').style.display = 'none';
+    if(window.lastResponse && window.lastResponse.success) {
+      showDashboard(window.lastResponse);
+    } else {
+      document.getElementById('msgError').innerText = window.lastResponse ? window.lastResponse.message : "Gagal terhubung ke Script";
+    }
+  }, 2000);
 }
 
 function masukGuest() { showDashboard({role:'Guest', nama:'Tamu'}); }
@@ -115,65 +108,30 @@ function showDashboard(user) {
   currentUser = user;
   document.getElementById('loginSection').style.display='none';
   document.getElementById('mainSection').style.display='block';
-  document.getElementById('userDisplay').innerText = `${user.nama} (${user.role})`;
-
+  
   if(user.role === 'Guest') {
     document.getElementById('viewGuest').style.display='block';
   } else {
     document.getElementById('viewUser').style.display='block';
-    document.getElementById('namaPers').value = user.perusahaan || '';
-    google.script.run.withSuccessHandler(d => masterUMP = d).getUMP();
-    if(user.role === 'Admin' || user.role === 'Super Admin') muatAdmin();
   }
 }
 
-function hitungHak() {
+function hitung() {
   const d1 = new Date(document.getElementById('tglMulai').value);
   const d2 = new Date(document.getElementById('tglSelesai').value);
-  const upah = parseFloat(document.getElementById('upahUser').value);
-
-  if(!d1 || !d2 || isNaN(upah)) return alert("Isi data dengan lengkap!");
-
-  const tgl1 = d1.getTime();
-  const tgl2 = d2.getTime();
-  const diff = tgl2 - tgl1;
-  const totalBulan = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
-  const totalTahun = Math.floor(totalBulan / 12);
+  const upah = parseFloat(document.getElementById('upah').value);
   
-  let kaliPesangon = totalTahun < 1 ? 1 : (totalTahun >= 8 ? 9 : totalTahun + 1);
-  let pesangon = kaliPesangon * upah;
-  
-  const thn = d2.getFullYear().toString();
-  const ump = masterUMP[thn] || 0;
-  let selisihGaji = upah < ump ? (ump - upah) * 12 : 0;
+  const diff = Math.floor((d2 - d1) / (1000*60*60*24*30.44));
+  const thn = Math.floor(diff/12);
+  let faktor = thn < 1 ? 1 : (thn >= 8 ? 9 : thn + 1);
+  let total = faktor * upah;
 
-  memoryHasil = {
-    nama: currentUser.nama, tglMulai: document.getElementById('tglMulai').value,
-    tglSelesai: document.getElementById('tglSelesai').value,
-    selisihGaji: selisihGaji, selisihTHR: 0, selisihKomp: 0, pesangon: pesangon,
-    total: selisihGaji + pesangon,
-    detail: { masaKerja: totalTahun + " Tahun", agama: currentUser.agama }
-  };
-
-  document.getElementById('hasilArea').style.display='block';
-  document.getElementById('outputKalkulasi').innerHTML = `
-    <p>Masa Kerja: <b>${totalTahun} Tahun</b></p>
-    <div class="d-flex justify-content-between"><span>Pesangon:</span><b>Rp ${pesangon.toLocaleString()}</b></div>
-    <div class="d-flex justify-content-between h5 fw-bold text-danger border-top pt-2"><span>TOTAL:</span><span>Rp ${memoryHasil.total.toLocaleString()}</span></div>
+  document.getElementById('hasil').style.display = 'block';
+  document.getElementById('hasil').innerHTML = `
+    <h6 class="fw-bold">Estimasi Hak:</h6>
+    <div class="d-flex justify-content-between"><span>Masa Kerja:</span><span>${thn} Tahun</span></div>
+    <div class="d-flex justify-content-between h5 fw-bold text-danger mt-2"><span>Total Pesangon:</span><span>Rp ${total.toLocaleString()}</span></div>
   `;
-}
-
-function simpanData() {
-  google.script.run.withSuccessHandler(m => alert(m)).saveToDatabase(memoryHasil);
-}
-
-function muatAdmin() {
-  document.getElementById('adminArea').style.display='block';
-  google.script.run.withSuccessHandler(data => {
-    let html = '';
-    data.forEach(r => html += `<tr><td>${r[1]}</td><td>Rp ${r[8].toLocaleString()}</td></tr>`);
-    document.getElementById('bodyRiwayat').innerHTML = html;
-  }).getRiwayat();
 }
 </script>
 </body>
