@@ -1,125 +1,115 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>mySBSI - Audit Tuntutan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root { --sbsi: #b71c1c; }
-    body { background: #f4f4f4; font-size: 0.85rem; }
     .bg-sbsi { background: var(--sbsi); color: white; }
-    .card-wizard { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background: white; }
-    .step { display: none; }
-    .step.active { display: block; }
-    .table-input input { border: 1px solid #ddd; border-radius: 4px; padding: 4px; width: 100%; text-align: right; }
-    .res-box { background: var(--sbsi); color: white; padding: 15px; border-radius: 8px; }
+    .btn-sample { font-size: 0.75rem; padding: 2px 10px; border-radius: 20px; }
+    .card-wizard { border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .step { display: none; } .active { display: block; }
   </style>
 </head>
-<body>
+<body class="bg-light">
 
-<div id="app">
-  <div id="loginSection" class="container mt-5" style="max-width: 350px;">
-    <div class="card card-wizard p-4">
-      <h2 class="text-danger fw-bold text-center">mySBSI</h2>
-      <input type="text" id="username" class="form-control mb-2" placeholder="NIK">
-      <input type="password" id="password" class="form-control mb-3" placeholder="PIN">
-      <button onclick="doLogin()" class="btn bg-sbsi w-100 fw-bold">LOGIN</button>
-    </div>
+<div id="app" class="container mt-4" style="max-width: 600px;">
+  <div id="loginSection" class="card card-wizard p-4 text-center">
+    <h3 class="text-danger fw-bold">mySBSI</h3>
+    <input type="text" id="username" class="form-control mb-2" placeholder="NIK">
+    <input type="password" id="password" class="form-control mb-3" placeholder="PIN">
+    <button onclick="doLogin()" class="btn bg-sbsi w-100">LOGIN</button>
   </div>
 
   <div id="mainSection" style="display:none;">
-    <nav class="navbar bg-sbsi px-3 mb-3 shadow-sm"><span class="fw-bold">Audit Hak Normatif</span></nav>
-    <div class="container" style="max-width: 800px;">
-      <div class="card card-wizard p-4">
-        
-        <div id="step1" class="step active">
-          <h6>1. Masukkan Periode Kerja</h6>
-          <div class="row g-2">
-            <div class="col-6"><label class="small">Mulai</label><input type="date" id="tglMulai" class="form-control"></div>
-            <div class="col-6"><label class="small">PHK</label><input type="date" id="tglSelesai" class="form-control"></div>
-          </div>
-          <button onclick="initAudit()" class="btn btn-danger w-100 mt-3">BUAT TABEL AUDIT</button>
+    <div class="card card-wizard p-4">
+      
+      <div id="step1" class="step active">
+        <h6 class="fw-bold">1. Tentukan Masa Kerja</h6>
+        <div class="row g-2 mb-3">
+          <div class="col-6"><input type="date" id="tglMulai" class="form-control"></div>
+          <div class="col-6"><input type="date" id="tglSelesai" class="form-control"></div>
         </div>
-
-        <div id="step2" class="step">
-          <div class="d-flex justify-content-between mb-2">
-            <h6 class="fw-bold text-danger">2. Audit Upah</h6>
-            <button class="btn btn-sm btn-outline-primary" onclick="autoFill('in-gaji', '2000000')">Sampling 2jt</button>
-          </div>
-          <div class="table-responsive" style="max-height: 300px;">
-            <table class="table table-sm border small">
-              <thead class="bg-light sticky-top"><tr><th>Bulan</th><th>Diterima (Input)</th><th>UMP</th></tr></thead>
-              <tbody id="bodyBulan"></tbody>
-            </table>
-          </div>
-          <button onclick="nextStep(3)" class="btn btn-danger w-100 mt-3">LANJUT</button>
-        </div>
-
-        <div id="step3" class="step">
-          <div class="d-flex justify-content-between mb-2">
-            <h6 class="fw-bold text-danger">3. Audit THR & Komp</h6>
-            <button class="btn btn-sm btn-outline-primary" onclick="autoFill('in-thr', '1500000')">Sampling 1,5jt</button>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-sm border small">
-              <thead class="bg-light text-center"><tr><th>Tahun</th><th>Bulan</th><th>THR Diterima</th><th>Komp. Diterima</th></tr></thead>
-              <tbody id="bodyTahun"></tbody>
-            </table>
-          </div>
-          <button onclick="kalkulasiFinal()" class="btn btn-success w-100 mt-3 fw-bold">HITUNG TOTAL</button>
-        </div>
-
-        <div id="step4" class="step text-center">
-          <h5 class="fw-bold text-danger mb-3">HASIL AUDIT SELISIH</h5>
-          <div id="rincianHasil" class="list-group list-group-flush mb-3 text-start"></div>
-          <div class="res-box shadow">
-             <small>TOTAL TUNTUTAN</small>
-             <h2 id="grandTotal" class="fw-bold mb-0">Rp 0</h2>
-          </div>
-          <button onclick="location.reload()" class="btn btn-dark w-100 mt-3">ULANGI</button>
-        </div>
-
+        <button onclick="initAudit()" class="btn btn-danger w-100">BUAT TABEL AUDIT</button>
       </div>
+
+      <div id="step2" class="step">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0">2. Audit Gaji</h6>
+          <button class="btn btn-outline-primary btn-sample" onclick="isiSampling('in-gaji', 2000000)">Isi 2jt (Sampling)</button>
+        </div>
+        <div class="table-responsive" style="max-height: 300px;">
+          <table class="table table-sm small"><tbody id="bodyBulan"></tbody></table>
+        </div>
+        <button onclick="nextStep(3)" class="btn btn-danger w-100 mt-2">LANJUT</button>
+      </div>
+
+      <div id="step3" class="step">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0">3. Audit THR & Komp</h6>
+          <button class="btn btn-outline-primary btn-sample" onclick="isiSampling('in-thr', 1500000)">Isi 1,5jt (Sampling)</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm small"><tbody id="bodyTahun"></tbody></table>
+        </div>
+        <button onclick="kalkulasiAkhir()" class="btn btn-success w-100 mt-2">HITUNG SELISIH</button>
+      </div>
+
+      <div id="step4" class="step">
+        <h5 class="text-center fw-bold text-danger mb-4">REKAPITULASI SELISIH</h5>
+        <div id="listHasil" class="list-group list-group-flush mb-3"></div>
+        <div class="bg-danger text-white p-3 rounded text-center">
+          <small>TOTAL TUNTUTAN</small>
+          <h2 id="totalAkhir" class="fw-bold">Rp 0</h2>
+        </div>
+        <button onclick="location.reload()" class="btn btn-dark w-100 mt-3">ULANGI</button>
+      </div>
+
     </div>
   </div>
 </div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx3qx_iZV3WrYyRGNdiFPwzCjdQ-pRhJpKlBmWNIY67tXKzsEmuGD47ZDMFZEldznD_/exec"; // GANTI INI
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxufsN33Q2YHgdc5iwu08peKQHfhYLjv5KlKGrqooDvIoIMnmWQ0fPJucrFxMKg0y_w/exec; // Masukkan URL Deploy Anda
 let masterUMP = {};
 
 function callback(res) { window.lastRes = res; }
-function formatIDR(el) { 
-  let v = el.value.replace(/\D/g, ""); 
-  el.value = v ? new Intl.NumberFormat('id-ID').format(v) : ""; 
-}
-function parseIDR(v) { return parseFloat(v.toString().replace(/\./g, "")) || 0; }
 
-function autoFill(cls, val) {
-  document.querySelectorAll('.'+cls).forEach(el => {
-    el.value = new Intl.NumberFormat('id-ID').format(val);
+// FUNGSI BERSIHKAN ANGKA AGAR BISA DIHITUNG
+function angka(val) {
+  return parseFloat(val.toString().replace(/\./g, "").replace(/,/g, "")) || 0;
+}
+
+function isiSampling(klas, nominal) {
+  document.querySelectorAll('.' + klas).forEach(el => {
+    el.value = new Intl.NumberFormat('id-ID').format(nominal);
   });
+}
+
+function formatRupiah(el) {
+  let v = el.value.replace(/\D/g, "");
+  el.value = v ? new Intl.NumberFormat('id-ID').format(v) : "";
 }
 
 function doLogin() {
   const u = document.getElementById('username').value, p = document.getElementById('password').value;
-  const script = document.createElement('script');
-  script.src = `${WEB_APP_URL}?action=login&u=${u}&p=${p}&callback=callback`;
-  document.body.appendChild(script);
+  const s = document.createElement('script');
+  s.src = `${WEB_APP_URL}?action=login&u=${u}&p=${p}&callback=callback`;
+  document.body.appendChild(s);
   setTimeout(() => {
     if(window.lastRes && window.lastRes.success) {
       document.getElementById('loginSection').style.display='none';
       document.getElementById('mainSection').style.display='block';
-      fetchUMP();
-    } else { alert("Login Gagal!"); }
+      getUMPData();
+    } else alert("Gagal Login!");
   }, 1500);
 }
 
-function fetchUMP() {
-  const script = document.createElement('script');
-  script.src = `${WEB_APP_URL}?action=getUMP&callback=callback`;
-  document.body.appendChild(script);
+function getUMPData() {
+  const s = document.createElement('script');
+  s.src = `${WEB_APP_URL}?action=getUMP&callback=callback`;
+  document.body.appendChild(s);
   setTimeout(() => { masterUMP = window.lastRes || {}; }, 1000);
 }
 
@@ -130,64 +120,63 @@ function nextStep(n) {
 
 function initAudit() {
   const d1 = new Date(document.getElementById('tglMulai').value), d2 = new Date(document.getElementById('tglSelesai').value);
-  if(isNaN(d1) || isNaN(d2)) return alert("Set Tanggal!");
+  if(isNaN(d1)) return alert("Isi tanggal!");
 
-  let htmlB = ''; let c = new Date(d1.getFullYear(), d1.getMonth(), 1);
+  let hB = ''; let c = new Date(d1.getFullYear(), d1.getMonth(), 1);
   while(c <= new Date(d2.getFullYear(), d2.getMonth(), 1)) {
     let t = c.getFullYear();
-    htmlB += `<tr><td>${c.getMonth()+1}/${t}</td><td><input type="text" class="in-gaji" data-thn="${t}" onkeyup="formatIDR(this)" value="0"></td><td class="text-danger fw-bold">Rp ${(masterUMP[t] || 0).toLocaleString()}</td></tr>`;
+    hB += `<tr><td>${c.getMonth()+1}/${t}</td><td><input type="text" class="in-gaji form-control form-control-sm" data-thn="${t}" onkeyup="formatRupiah(this)" value="0"></td><td class="text-danger small">UMP: ${masterUMP[t] ? masterUMP[t].toLocaleString() : 0}</td></tr>`;
     c.setMonth(c.getMonth() + 1);
   }
-  document.getElementById('bodyBulan').innerHTML = htmlB;
+  document.getElementById('bodyBulan').innerHTML = hB;
 
-  let htmlT = '';
+  let hT = '';
   for(let y = d1.getFullYear(); y <= d2.getFullYear(); y++) {
-    let s = (y === d1.getFullYear()) ? d1.getMonth() : 0, e = (y === d2.getFullYear()) ? d2.getMonth() : 11, jml = (e - s) + 1;
-    htmlT += `<tr><td><b>${y}</b></td><td>${jml} bln</td><td><input type="text" class="in-thr" data-thn="${y}" data-bln="${jml}" onkeyup="formatIDR(this)" value="0"></td><td><input type="text" class="in-komp" data-thn="${y}" data-bln="${jml}" onkeyup="formatIDR(this)" value="0"></td></tr>`;
+    let s = (y === d1.getFullYear()) ? d1.getMonth() : 0, e = (y === d2.getFullYear()) ? d2.getMonth() : 11, jml = (e-s)+1;
+    hT += `<tr><td><b>${y}</b></td><td><input type="text" class="in-thr form-control form-control-sm" data-thn="${y}" data-bln="${jml}" onkeyup="formatRupiah(this)" value="0"></td><td class="small text-muted">${jml} bln</td></tr>`;
   }
-  document.getElementById('bodyTahun').innerHTML = htmlT;
+  document.getElementById('bodyTahun').innerHTML = hT;
   nextStep(2);
 }
 
-function kalkulasiFinal() {
+function kalkulasiAkhir() {
   const d1 = new Date(document.getElementById('tglMulai').value), d2 = new Date(document.getElementById('tglSelesai').value);
-  const mKerja = Math.floor((d2 - d1) / (1000*60*60*24*365));
+  const thnKerja = Math.floor((d2 - d1) / (1000*60*60*24*365));
   
-  let sG = 0, sT = 0, sK = 0;
-  
-  // Baca Selisih Gaji
+  let sG = 0, sT = 0;
+
+  // HITUNG SELISIH GAJI
   document.querySelectorAll('.in-gaji').forEach(el => {
-    let ump = masterUMP[el.dataset.thn] || 0;
-    let riil = parseIDR(el.value);
-    if(riil < ump) sG += (ump - riil);
+    let u = masterUMP[el.dataset.thn] || 0;
+    let r = angka(el.value);
+    if(r < u) sG += (u - r);
   });
 
-  // Baca Selisih THR & Kompensasi
-  const tHs = document.querySelectorAll('.in-thr'), kHs = document.querySelectorAll('.in-komp');
-  tHs.forEach((el, i) => {
-    let ump = masterUMP[el.dataset.thn] || 0;
-    let bln = parseInt(el.dataset.bln);
-    let prorata = (ump / 12) * bln;
-    let dTHR = parseIDR(el.value), dKomp = parseIDR(kHs[i].value);
-    if(dTHR < prorata) sT += (prorata - dTHR);
-    if(dKomp < prorata) sK += (prorata - dKomp);
+  // HITUNG SELISIH THR
+  document.querySelectorAll('.in-thr').forEach(el => {
+    let u = masterUMP[el.dataset.thn] || 0;
+    let prorata = (u / 12) * parseInt(el.dataset.bln);
+    let r = angka(el.value);
+    if(r < prorata) sT += (prorata - r);
   });
 
-  // Pesangon & UPMK (Pasal 40 PP 35/2021)
+  // HITUNG PESANGON & UPMK
   let umpPHK = masterUMP[d2.getFullYear()] || 0;
-  let nP = (mKerja < 1 ? 1 : (mKerja >= 8 ? 9 : mKerja + 1)) * umpPHK;
-  let nU = (mKerja < 3 ? 0 : (mKerja < 6 ? 2 : (mKerja < 9 ? 3 : (mKerja < 12 ? 4 : (mKerja < 15 ? 5 : (mKerja < 18 ? 6 : (mKerja < 21 ? 7 : (mKerja < 24 ? 8 : 10)))))))) * umpPHK;
-
-  let total = sG + sT + sK + nP + nU;
+  let koefP = (thnKerja < 1) ? 1 : (thnKerja >= 8 ? 9 : thnKerja + 1);
+  let koefU = (thnKerja < 3) ? 0 : (thnKerja < 6 ? 2 : (thnKerja < 9 ? 3 : (thnKerja < 12 ? 4 : (thnKerja < 15 ? 5 : (thnKerja < 18 ? 6 : (thnKerja < 21 ? 7 : (thnKerja < 24 ? 8 : 10)))))));
+  
+  let nomP = koefP * umpPHK;
+  let nomU = koefU * umpPHK;
+  let total = sG + sT + nomP + nomU;
 
   nextStep(4);
-  document.getElementById('rincianHasil').innerHTML = `
+  document.getElementById('listHasil').innerHTML = `
     <div class="list-group-item d-flex justify-content-between"><span>Selisih Gaji</span><b>Rp ${Math.round(sG).toLocaleString()}</b></div>
-    <div class="list-group-item d-flex justify-content-between"><span>Selisih THR/Komp</span><b>Rp ${Math.round(sT+sK).toLocaleString()}</b></div>
-    <div class="list-group-item d-flex justify-content-between"><span>Pesangon</span><b>Rp ${nP.toLocaleString()}</b></div>
-    <div class="list-group-item d-flex justify-content-between"><span>UPMK</span><b>Rp ${nU.toLocaleString()}</b></div>
+    <div class="list-group-item d-flex justify-content-between"><span>Selisih THR</span><b>Rp ${Math.round(sT).toLocaleString()}</b></div>
+    <div class="list-group-item d-flex justify-content-between"><span>Pesangon</span><b>Rp ${nomP.toLocaleString()}</b></div>
+    <div class="list-group-item d-flex justify-content-between"><span>UPMK</span><b>Rp ${nomU.toLocaleString()}</b></div>
   `;
-  document.getElementById('grandTotal').innerText = `Rp ${Math.round(total).toLocaleString()}`;
+  document.getElementById('totalAkhir').innerText = `Rp ${Math.round(total).toLocaleString()}`;
 }
 </script>
 </body>
