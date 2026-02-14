@@ -1,169 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        :root { --primary: #0d47a1; --dark: #002171; }
-        body { background: #f4f7f6; font-family: sans-serif; }
-        .top-nav { background: var(--dark); padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .card-pro { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-        .btn-blue { background: var(--primary); color: white; border-radius: 10px; padding: 10px; width: 100%; border: none; font-weight: bold; }
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: none; justify-content: center; align-items: center; }
-        @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root { --primary: #0d47a1; }
+    body { background: #f4f7f6; font-size: 14px; }
+    .card-pro { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+    .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; }
+  </style>
 </head>
 <body>
 
-<div id="loading"><div class="spinner-border text-primary"></div></div>
-
-<div id="viewLogin" class="view-section active no-print">
-    <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
-        <div class="card-pro w-100" style="max-width: 350px;">
-            <h5 class="text-center fw-bold text-primary mb-4">mySBSI LOGIN</h5>
-            <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
-            <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
-            <button class="btn-blue" onclick="handleLogin()">MASUK</button>
-        </div>
+<div id="viewLogin" class="view-section active">
+  <div class="container py-5 text-center">
+    <img src="https://raw.githubusercontent.com/sbsibitung/sbsi-pocket/main/Logo_SBSI.png" width="70" class="mb-3">
+    <div class="card-pro mx-auto" style="max-width: 350px;">
+      <input type="text" id="nik" class="form-control mb-2" placeholder="NIK">
+      <input type="password" id="pin" class="form-control mb-3" placeholder="PIN">
+      <button class="btn-blue" onclick="doLogin()">MASUK</button>
     </div>
+  </div>
 </div>
 
-<div id="viewDashboard" class="view-section no-print">
-    <nav class="top-nav"><span>mySBSI</span><button class="btn btn-sm btn-danger" onclick="location.reload()">LOGOUT</button></nav>
-    <div class="container py-4 text-center">
-        <div class="card-pro bg-primary text-white">
-            <small>Selamat Datang,</small><h4 id="dashNama" class="fw-bold"></h4>
-        </div>
-        <div id="notifRiwayat" class="alert alert-warning d-none" style="border-radius:15px">
-            <i class="bi bi-info-circle me-2"></i> Anda sudah memiliki data audit.
-            <div class="mt-2">
-                <button class="btn btn-sm btn-dark" onclick="showSavedResult()">Lihat Hasil</button>
-                <button class="btn btn-sm btn-outline-dark" onclick="editSavedData()">Edit Data</button>
-            </div>
-        </div>
-        <button class="btn-blue mt-3" onclick="changeView('viewAudit')"><i class="bi bi-calculator me-2"></i>MULAI AUDIT BARU</button>
+<div id="viewAudit" class="view-section">
+  <nav class="navbar navbar-dark bg-primary mb-3"><div class="container"><span class="navbar-brand small">Audit Selisih Hak</span></div></nav>
+  <div class="container">
+    
+    <div class="card-pro">
+      <label class="fw-bold small">Tgl Masuk</label><input type="date" id="d1" class="form-control mb-2">
+      <label class="fw-bold small">Tgl PHK</label><input type="date" id="d2" class="form-control mb-2" onchange="getUmp()">
+      <label class="fw-bold small">Upah Seharusnya (Berdasarkan UMP)</label>
+      <input type="text" id="uAturan" class="form-control mb-2 bg-light" readonly>
     </div>
-</div>
 
-<div id="viewAudit" class="view-section no-print">
-    <nav class="top-nav">
-        <button class="btn text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button>
-        <span>Input Audit</span>
-        <button class="btn text-white" onclick="location.reload()"><i class="bi bi-power"></i></button>
-    </nav>
-    <div class="container py-4">
-        <div class="card-pro">
-            <label class="small fw-bold">TMT Kerja</label><input type="date" id="d1" class="form-control mb-3">
-            <label class="small fw-bold">Tanggal PHK</label><input type="date" id="d2" class="form-control mb-3" onchange="fetchUmpAuto()">
-            <label class="small fw-bold">UMP Acuan</label><input type="number" id="umpAuto" class="form-control mb-4" readonly>
-            <div id="areaGaji"></div>
-            <div class="form-check form-switch my-3"><input class="form-check-input" type="checkbox" id="isMeninggal"><label class="form-check-label text-danger fw-bold">Kondisi Meninggal</label></div>
-            <button class="btn-blue" onclick="runCalculation()">SIMPAN & HITUNG</button>
-        </div>
+    <div class="card-pro">
+      <h6 class="text-danger fw-bold">Data Aktual (Yang Diterima)</h6>
+      <label class="small">Upah yg dibayar Perusahaan</label><input type="number" id="uAktual" class="form-control mb-2">
+      <label class="small">Pesangon + UPMK yg sudah cair</label><input type="number" id="hAktual" class="form-control mb-3">
+      <button class="btn-blue" onclick="prosesAudit()">HITUNG SELISIH</button>
     </div>
-</div>
 
-<div id="viewPreview" class="view-section">
-    <nav class="top-nav no-print">
-        <button class="btn text-white" onclick="changeView('viewDashboard')"><i class="bi bi-house"></i> Dashboard</button>
-        <span>Hasil Audit</span>
-        <button class="btn text-white" onclick="window.print()"><i class="bi bi-printer"></i></button>
-    </nav>
-    <div class="container py-4 text-center no-print">
-        <div id="previewCard" class="card-pro text-start shadow"></div>
-        <button class="btn btn-outline-primary w-100 mb-3" onclick="editSavedData()">EDIT DATA</button>
-        <button class="btn-blue" onclick="window.print()">PRINT SEKARANG</button>
+    <div id="hasilBox" class="card-pro d-none border-primary border">
+      <h6 class="fw-bold border-bottom pb-2">Hasil Analisis Audit</h6>
+      <div id="rincian" class="small"></div>
     </div>
-</div>
 
-<div id="printArea" style="display:none; padding:30px;"></div>
+  </div>
+</div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbwDKFunjRlabgdiAUzPuUcbXClscGHcBGMGNj4S3oi1KGw4ed0IS6ga2_aS1SK_b4dp/exec";
-    let USER = {};
+  const API = "https://script.google.com/macros/s/AKfycbwbgTTY3Vv2LD9cYEQ_vc5H0bjYnAN11HuHtCjMZ75ZHNEvEipZSHefu7KTe1eUdUL0/exec"; 
 
-    function showLoading(s) { document.getElementById('loading').style.display = s ? 'flex' : 'none'; }
-    function changeView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+  async function doLogin() {
+    const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('nik').value, pin:document.getElementById('pin').value})});
+    const d = await r.json();
+    if(d.status==='success') showView('viewAudit'); else alert(d.msg);
+  }
 
-    async function handleLogin() {
-        showLoading(true);
-        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('lNik').value, pin:document.getElementById('lPin').value})});
-        const d = await r.json();
-        if(d.status === 'success') {
-            USER = d.user;
-            if(d.riwayat) USER.riwayat = d.riwayat;
-            document.getElementById('dashNama').innerText = USER.nama;
-            if(USER.riwayat) document.getElementById('notifRiwayat').classList.remove('d-none');
-            changeView('viewDashboard');
-        } else alert(d.message);
-        showLoading(false);
+  async function getUmp() {
+    const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year:new Date(document.getElementById('d2').value).getFullYear()})});
+    const d = await r.json();
+    if(d.status==='success') {
+      document.getElementById('uAturan').value = d.ump;
+      document.getElementById('uAturan').dataset.val = d.ump;
     }
+  }
 
-    async function fetchUmpAuto() {
-        const yr = new Date(document.getElementById('d2').value).getFullYear();
-        const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year:yr})});
-        const d = await r.json();
-        document.getElementById('umpAuto').value = d.ump || 0;
-        genGajiList();
-    }
+  function prosesAudit() {
+    const d1 = new Date(document.getElementById('d1').value);
+    const d2 = new Date(document.getElementById('d2').value);
+    const uAturan = parseFloat(document.getElementById('uAturan').dataset.val);
+    const uAktual = parseFloat(document.getElementById('uAktual').value) || 0;
+    const hAktual = parseFloat(document.getElementById('hAktual').value) || 0;
 
-    function genGajiList() {
-        const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
-        let h = "", c = new Date(d1.getFullYear(), d1.getMonth(), 1);
-        while(c <= d2) {
-            h += `<div class="d-flex mb-2 small"><span>${c.getMonth()+1}/${c.getFullYear()}</span><input type="number" class="form-control form-control-sm in-g ms-auto" style="width:120px" value="2000000"></div>`;
-            c.setMonth(c.setMonth()+1);
-        }
-        document.getElementById('areaGaji').innerHTML = h;
-    }
+    const mk = (d2 - d1) / (1000 * 60 * 60 * 24 * 365.25);
+    
+    // Logika Perkalian (p + pmk)
+    let p = (mk<1)?1:(mk<2)?2:(mk<3)?3:(mk<4)?4:(mk<5)?5:(mk<6)?6:(mk<7)?7:(mk<8)?8:9;
+    let pmk = (mk<3)?0:(mk<6)?2:(mk<9)?3:(mk<12)?4:(mk<15)?5:(mk<18)?6:(mk<21)?7:(mk<24)?8:10;
 
-    async function runCalculation() {
-        showLoading(true);
-        const payload = {
-            action:'audit', nik:USER.nik, tglMulai:document.getElementById('d1').value, tglSelesai:document.getElementById('d2').value,
-            umpInput:document.getElementById('umpAuto').value, isMeninggal:document.getElementById('isMeninggal').checked,
-            rincianGaji: Array.from(document.querySelectorAll('.in-g')).map(i => ({gaji:i.value}))
-        };
-        const r = await fetch(API, {method:'POST', body:JSON.stringify(payload)});
-        const d = await r.json();
-        USER.riwayat = {input: payload, result: d};
-        showSavedResult();
-        showLoading(false);
-    }
+    const totalAturan = uAturan * (p + pmk);
+    const selisihUpah = uAturan - uAktual;
+    const selisihHak = totalAturan - hAktual;
 
-    function showSavedResult() {
-        const res = USER.riwayat.result;
-        const fmt = (v) => "Rp. " + Number(v).toLocaleString('id-ID');
-        const content = `
-            <h5 class="fw-bold text-center">HASIL AUDIT mySBSI</h5>
-            <hr>
-            <p class="small">Masa Kerja: <b>${res.masaKerja}</b></p>
-            <table class="table table-sm small">
-                <tr><td>Selisih Gaji</td><td class="text-end">${fmt(res.rincian.selisihGaji)}</td></tr>
-                <tr><td>Pesangon</td><td class="text-end">${fmt(res.rincian.pesangon)}</td></tr>
-                <tr><td>UPMK</td><td class="text-end">${fmt(res.rincian.upmk)}</td></tr>
-                <tr class="table-dark fw-bold"><td>TOTAL</td><td class="text-end">${fmt(res.rincian.total)}</td></tr>
-            </table>`;
-        document.getElementById('previewCard').innerHTML = content;
-        document.getElementById('printArea').innerHTML = content;
-        changeView('viewPreview');
-    }
+    document.getElementById('hasilBox').classList.remove('d-none');
+    document.getElementById('rincian').innerHTML = `
+      <p>Masa Kerja: <b>${mk.toFixed(1)} Tahun</b></p>
+      <p>Hak Seharusnya (${p}+${pmk} bln): <b>Rp ${totalAturan.toLocaleString()}</b></p>
+      <p>Selisih Upah Bulanan: <b class="text-danger">Rp ${selisihUpah.toLocaleString()}</b></p>
+      <p>Kekurangan Pesangon/UPMK: <b class="text-danger">Rp ${selisihHak.toLocaleString()}</b></p>
+    `;
+  }
 
-    function editSavedData() {
-        const inp = USER.riwayat.input;
-        document.getElementById('d1').value = inp.tglMulai;
-        document.getElementById('d2').value = inp.tglSelesai;
-        document.getElementById('umpAuto').value = inp.umpInput;
-        document.getElementById('isMeninggal').checked = inp.isMeninggal;
-        genGajiList();
-        const inputs = document.querySelectorAll('.in-g');
-        inp.rincianGaji.forEach((g, i) => { if(inputs[i]) inputs[i].value = g.gaji; });
-        changeView('viewAudit');
-    }
+  function showView(id) {
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
 </script>
 </body>
 </html>
