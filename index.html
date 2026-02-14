@@ -3,29 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>mySBSI - Audit Hak PHK</title>
+    <title>mySBSI - Pocket Pro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
-        :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; }
-        body { background: #f8f9fa; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        :root { --primary: #0d47a1; --dark: #002171; --sbsi-red: #d32f2f; --gold: #ffc107; }
+        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         
-        /* ANIMASI SPLASH */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.6s; }
         .fb-logo-anim { width: 100px; animation: fbFadeScale 1.2s forwards; }
         @keyframes fbFadeScale { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
 
-        .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); background: white; margin-bottom: 20px; padding: 25px; }
-        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
-        .btn-blue:disabled { background: #ccc; }
+        .top-nav { background: var(--dark); padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .card-pro { border: none; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; margin-bottom: 20px; padding: 25px; }
         
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-        
-        .kop-brand { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: none; justify-content: center; align-items: center; }
+        /* MENU GRID */
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .menu-item { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #eee; }
+        .menu-item i { font-size: 2rem; margin-bottom: 10px; display: block; }
 
+        /* VIDEO CONTAINERS */
+        .video-wrapper { margin-bottom: 25px; }
+        .video-yt { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; }
+        .video-yt iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        
+        /* TIKTOK & FB REEL (PORTRAIT) */
+        .video-portrait { width: 100%; max-width: 340px; margin: 0 auto; border-radius: 15px; overflow: hidden; background: #000; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .video-portrait iframe { width: 100%; height: 580px; border: none; }
+
+        .view-section { display: none; padding-bottom: 50px; }
+        .view-section.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-blue { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; border-radius: 12px; padding: 12px; font-weight: bold; border: none; width: 100%; }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: none; justify-content: center; align-items: center; }
         @media print { .no-print { display: none !important; } #printArea { display: block !important; } }
     </style>
 </head>
@@ -43,7 +54,6 @@
         <div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
             <img src="Logo My SBSI.png" width="180" class="mb-4">
             <div class="card-pro w-100" style="max-width: 350px;">
-                <h5 class="text-center fw-bold mb-4">MASUK AKUN</h5>
                 <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK">
                 <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN">
                 <button class="btn-blue" onclick="handleLogin()">MASUK</button>
@@ -54,84 +64,130 @@
     <div id="viewDashboard" class="view-section">
         <nav class="top-nav"><span>mySBSI</span><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
         <div class="container py-4">
-            <div class="card-pro bg-primary text-white">
-                <h4 id="dashNama" class="fw-bold m-0">--</h4>
-                <div id="dashRole" class="badge bg-info mt-2 text-uppercase">--</div>
+            <div class="card-pro bg-primary text-white mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <small>Selamat Datang,</small>
+                        <h4 id="dashNama" class="fw-bold m-0">--</h4>
+                        <div id="dashRole" class="badge bg-warning text-dark mt-2">--</div>
+                    </div>
+                    <i class="bi bi-person-circle fs-1"></i>
+                </div>
             </div>
-            
-            <div id="adminPanel" class="d-none mt-3">
-                <div class="card-pro border-start border-primary border-5 py-3">
-                    <label class="small fw-bold mb-2 text-primary">CARI DATA ANGGOTA</label>
+
+            <div class="menu-grid">
+                <div class="menu-item" onclick="changeView('viewAudit')"><i class="bi bi-calculator text-primary"></i><span class="small fw-bold">Audit Hak</span></div>
+                <div class="menu-item" onclick="changeView('viewVisiMisi')"><i class="bi bi-flag-fill text-danger"></i><span class="small fw-bold">Visi & Misi</span></div>
+                <div class="menu-item" onclick="changeView('viewVideo')"><i class="bi bi-play-circle-fill text-success"></i><span class="small fw-bold">Edukasi TV</span></div>
+                <div class="menu-item" onclick="alert('Fitur segera hadir!')"><i class="bi bi-journal-text text-info"></i><span class="small fw-bold">Regulasi</span></div>
+            </div>
+
+            <div id="adminPanel" class="d-none mt-4">
+                <div class="card-pro border-start border-primary border-5 py-3 bg-light">
                     <div class="input-group">
-                        <input type="text" id="targetNik" class="form-control" placeholder="Input NIK...">
+                        <input type="text" id="targetNik" class="form-control" placeholder="Cari NIK Anggota...">
                         <button class="btn btn-primary" onclick="searchWorker()">CARI</button>
                     </div>
                     <div id="workerFound" class="mt-2 small fw-bold text-success"></div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="card-pro mt-3 text-center shadow-sm" onclick="changeView('viewAudit')" style="cursor: pointer; border: 1px dashed var(--primary);">
-                <i class="bi bi-calculator fs-1 text-primary"></i>
-                <h6 class="fw-bold mt-2">MULAI AUDIT HAK PHK</h6>
+    <div id="viewVisiMisi" class="view-section">
+        <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Profil SBSI</span><div></div></nav>
+        <div class="container py-4">
+            <div class="card-pro">
+                <h5 class="fw-bold text-danger border-bottom pb-2">VISI</h5>
+                <p class="text-muted">Mewujudkan kaum buruh dan keluarganya yang sejahtera, mandiri, dan bermartabat melalui penguatan organisasi dan penegakan hukum.</p>
+                <h5 class="fw-bold text-primary border-bottom pb-2 mt-4">MISI</h5>
+                <ul class="text-muted ps-3 small">
+                    <li>Membangun organisasi yang kuat, solid, dan mandiri.</li>
+                    <li>Meningkatkan kualitas sumber daya buruh melalui pendidikan.</li>
+                    <li>Melakukan advokasi dan perlindungan hukum yang maksimal bagi anggota.</li>
+                </ul>
             </div>
+        </div>
+    </div>
+
+    <div id="viewVideo" class="view-section">
+        <nav class="top-nav">
+            <button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button>
+            <span>Edukasi & Kegiatan</span>
+            <div></div>
+        </nav>
+        <div class="container py-4">
+            
+            <div class="video-wrapper">
+                <h6 class="fw-bold text-primary mb-2"><i class="bi bi-youtube me-2"></i>MARS SBSI</h6>
+                <div class="video-yt shadow-sm">
+                    <iframe src="https://www.youtube.com/embed/08hfTSNWW_k" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="video-wrapper">
+                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-tiktok me-2"></i>EDUKASI 1</h6>
+                <div class="video-portrait">
+                    <iframe src="https://www.tiktok.com/embed/v2/7571414420832767239" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video-wrapper">
+                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-tiktok me-2"></i>EDUKASI 2</h6>
+                <div class="video-portrait">
+                    <iframe src="https://www.tiktok.com/embed/v2/7571422305708936456" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="video-wrapper">
+                <h6 class="fw-bold text-primary mb-2"><i class="bi bi-facebook me-2"></i>KEGIATAN (REEL)</h6>
+                <div class="video-portrait" style="height: 580px;">
+                    <iframe src="https://www.facebook.com/plugins/video.php?height=580&href=https://web.facebook.com/reel/2070409190553240/&show_text=false" 
+                        scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+                    </iframe>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <div id="viewAudit" class="view-section">
         <nav class="top-nav"><button class="btn btn-sm text-white" onclick="changeView('viewDashboard')"><i class="bi bi-arrow-left"></i></button><span>Input Data Audit</span><div></div></nav>
         <div class="container py-4">
-            
             <div id="stepTanggal" class="card-pro">
-                <label class="fw-bold small mb-2 text-muted">MASA KERJA</label>
+                <label class="fw-bold small mb-2 text-muted text-uppercase">Masa Kerja & UMP</label>
                 <div class="row g-2 mb-3">
                     <div class="col-6"><label class="small">TMT Kerja</label><input type="date" id="d1" class="form-control"></div>
                     <div class="col-6"><label class="small">Tanggal PHK</label><input type="date" id="d2" class="form-control" onchange="fetchUmpAuto()"></div>
                 </div>
-                
-                <div class="bg-light p-3 rounded-3 mb-4 border">
-                    <label class="small fw-bold text-primary">UMP ACUAN PHK (DATABASE)</label>
-                    <div class="input-group mt-1">
-                        <span class="input-group-text bg-white">Rp</span>
-                        <input type="number" id="umpAuto" class="form-control fw-bold" readonly placeholder="Pilih Tgl PHK...">
-                    </div>
+                <div class="bg-light p-3 rounded-3 mb-4 border text-center">
+                    <label class="small fw-bold text-primary d-block">UMP ACUAN PHK</label>
+                    <input type="number" id="umpAuto" class="form-control text-center fw-bold bg-transparent border-0" style="font-size: 1.2rem;" readonly placeholder="Pilih Tgl PHK">
                 </div>
-
                 <button class="btn-blue" id="btnNext1" onclick="genProrata()" disabled>LANJUT INPUT RINCIAN</button>
             </div>
-
             <div id="stepGaji" class="card-pro d-none">
                 <h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">Upah Diterima (Bulanan)</h6>
                 <div id="listGaji" style="max-height: 350px; overflow-y: auto;"></div>
                 <button class="btn-blue mt-3" onclick="showStep('stepTahunan')">LANJUT THR & KOMP</button>
             </div>
-
             <div id="stepTahunan" class="card-pro d-none">
                 <h6 class="fw-bold mb-3 border-bottom pb-2 text-primary">THR & Kompensasi</h6>
                 <div id="listTahunan"></div>
-                <div class="form-check form-switch my-4">
-                    <input class="form-check-input" type="checkbox" id="isMeninggal">
-                    <label class="form-check-label fw-bold text-danger">Meninggal Dunia</label>
-                </div>
+                <div class="form-check form-switch my-4"><input class="form-check-input" type="checkbox" id="isMeninggal"><label class="form-check-label fw-bold text-danger">Meninggal Dunia</label></div>
                 <button class="btn-blue" onclick="runCalculation()">PROSES HASIL AKHIR</button>
             </div>
         </div>
     </div>
 
     <div id="viewPreview" class="view-section">
-        <nav class="top-nav">
-            <span>Hasil Audit</span>
-            <button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button>
-        </nav>
+        <nav class="top-nav"><span>Hasil Audit</span><button class="btn btn-sm btn-outline-light" onclick="location.reload()">Logout</button></nav>
         <div class="container py-4">
             <div id="previewCard" class="card-pro shadow-lg"></div>
-            
-            <button class="btn-blue mb-3" onclick="window.print()">
-                <i class="bi bi-printer me-2"></i>CETAK LAPORAN
-            </button>
-            
-            <button class="btn btn-primary w-100 py-2 fw-bold" onclick="changeView('viewDashboard')" style="border-radius: 12px;">
-                <i class="bi bi-house-door me-2"></i>KEMBALI KE DASHBOARD
-            </button>
+            <button class="btn-blue mb-3" onclick="window.print()"><i class="bi bi-printer me-2"></i>CETAK LAPORAN</button>
+            <button class="btn btn-primary w-100 py-2 fw-bold" onclick="changeView('viewDashboard')" style="border-radius: 12px;">KEMBALI KE BERANDA</button>
         </div>
     </div>
 </div>
@@ -139,7 +195,7 @@
 <div id="printArea" style="display:none; padding:40px;"></div>
 
 <script>
-    const API = "https://script.google.com/macros/s/AKfycbzcIADhgsEcQc4tz5_zExBJxggHVyplB9MfWZY-OSxWFUY1uQY1G8u2sSaHgtsuHHo/exec"; 
+    const API = "https://script.google.com/macros/s/AKfycbxnlxFNAHVK6FxItd0iBLLVKqDyh-V_Pt8ZAzPkZlZZOMiNtpDjxgEnC66D6hEjREBH/exec"; 
     let SESSION = {};
 
     window.onload = () => setTimeout(() => { document.getElementById('splash').style.display='none'; }, 2000);
@@ -148,6 +204,9 @@
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); 
         document.getElementById(id).classList.add('active'); 
         window.scrollTo(0,0);
+        if(id !== 'viewVideo') {
+            document.querySelectorAll('iframe').forEach(f => { const s = f.src; f.src = s; });
+        }
     }
     
     function showStep(id) { 
@@ -167,28 +226,27 @@
                 document.getElementById('dashRole').innerText = SESSION.role;
                 if(SESSION.role.toUpperCase()==='ADMIN') document.getElementById('adminPanel').classList.remove('d-none');
                 changeView('viewDashboard');
-            } else alert(d.message);
-        } catch(e) { alert("Gagal koneksi server"); }
+            } else alert("Akses Ditolak!");
+        } catch(e) { alert("Error Login"); }
         showLoading(false);
     }
 
     async function fetchUmpAuto() {
         const d2Val = document.getElementById('d2').value;
         if(!d2Val) return;
-        const year = new Date(d2Val).getFullYear();
         showLoading(true);
         try {
-            const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year: year})});
+            const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef', year: new Date(d2Val).getFullYear()})});
             const d = await r.json();
             if(d.status === 'success' && d.ump > 0) {
                 document.getElementById('umpAuto').value = d.ump;
                 document.getElementById('btnNext1').disabled = false;
             } else {
-                alert("Data UMP " + year + " tidak ditemukan di database.");
+                alert("Data UMP tidak ditemukan di database.");
                 document.getElementById('btnNext1').disabled = true;
                 document.getElementById('umpAuto').value = "";
             }
-        } catch(e) { alert("Error saat cek database"); }
+        } catch(e) { console.error(e); }
         showLoading(false);
     }
 
@@ -196,13 +254,12 @@
         showLoading(true);
         const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'searchWorker', targetNik:document.getElementById('targetNik').value})});
         const d = await r.json();
-        if(d.status === 'success') { SESSION.targetName = d.worker.nama; document.getElementById('workerFound').innerText = "Data Ditemukan: "+d.worker.nama; } else alert("NIK Tidak Ada");
+        if(d.status === 'success') { SESSION.targetName = d.worker.nama; document.getElementById('workerFound').innerText = "Target: "+d.worker.nama; } else alert("NIK Tidak Ada");
         showLoading(false);
     }
 
     function genProrata() {
         const d1 = new Date(document.getElementById('d1').value), d2 = new Date(document.getElementById('d2').value);
-        if(isNaN(d1) || isNaN(d2)) return alert("Isi tanggal!");
         let hGaji = "", hTahunan = "", curr = new Date(d1.getFullYear(), d1.getMonth(), 1), years = {};
         while(curr <= d2) {
             let label = (curr.getMonth()+1) + "/" + curr.getFullYear();
