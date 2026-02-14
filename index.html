@@ -3,100 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audit Selisih Hak SBSI</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    :root { --primary: #0d47a1; --danger: #d32f2f; --accent: #ff6f00; }
-    body { background: #f0f2f5; font-size: 13px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
-    .card-pro { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 20px; border: none; }
+    :root { --blue: #0d47a1; }
+    body { background: #f4f7f6; font-size: 13px; font-family: sans-serif; }
+    .card-pro { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
     .step-view { display: none; }
-    .step-view.active { display: block; }
-    .btn-blue { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; transition: 0.3s; }
-    .btn-blue:hover { background: #0a3d8d; transform: translateY(-2px); }
-    .header-app { background: var(--primary); color: white; padding: 20px; border-radius: 0 0 25px 25px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .audit-label { background: #fff3e0; padding: 8px; border-radius: 8px; font-weight: bold; color: var(--accent); display: block; text-align: center; margin-bottom: 10px; }
-    input.form-control { border-radius: 8px; padding: 10px; }
-    .table-audit input { width: 100%; border: 1px solid #ced4da; border-radius: 5px; padding: 5px; text-align: right; background: #fffde7; }
-    .res-box { border-left: 5px solid var(--primary); background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+    .active { display: block; }
+    .btn-blue { background: var(--blue); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; }
+    .header-box { background: var(--blue); color: white; padding: 15px; border-radius: 0 0 15px 15px; text-align: center; margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
 <div id="viewLogin" class="step-view active container py-5 text-center">
-  <img src="https://raw.githubusercontent.com/sbsibitung/sbsi-pocket/main/Logo_SBSI.png" width="90" class="mb-4">
-  <div class="card-pro mx-auto" style="max-width: 380px;">
-    <h4 class="fw-bold mb-1">Audit Selisih Hak</h4>
-    <p class="text-muted mb-4">Silakan masuk untuk memulai audit</p>
-    <input type="text" id="lNik" class="form-control mb-3" placeholder="NIK / Username">
-    <input type="password" id="lPin" class="form-control mb-4" placeholder="PIN / Password">
-    <button class="btn-blue" onclick="handleLogin()">MASUK SISTEM</button>
+  <img src="https://raw.githubusercontent.com/sbsibitung/sbsi-pocket/main/Logo_SBSI.png" width="80" class="mb-4">
+  <div class="card-pro mx-auto" style="max-width: 350px;">
+    <h5 class="fw-bold mb-3">Login Auditor</h5>
+    <input type="text" id="lNik" class="form-control mb-2" placeholder="NIK">
+    <input type="password" id="lPin" class="form-control mb-3" placeholder="PIN">
+    <button class="btn-blue" onclick="handleLogin()">MASUK</button>
   </div>
 </div>
 
-<div id="appBody" class="step-view">
-  <div class="header-app">
-    <h5 class="fw-bold mb-0">KALKULATOR AUDIT HAK</h5>
-    <small id="userLabel" class="opacity-75"></small>
-  </div>
-
+<div id="mainApp" class="step-view">
+  <div class="header-box"><h5>KALKULATOR AUDIT HAK</h5><small id="userLabel"></small></div>
   <div class="container pb-5">
     
     <div id="step1" class="step-view active">
-      <div id="adminPanel" class="d-none card-pro border-warning border-2">
-        <label class="fw-bold small text-accent">Panel Admin (Oktavianus David)</label>
-        <input type="text" id="searchInp" class="form-control mb-2" placeholder="Cari Nama/NIK Anggota..." onkeyup="searchMember()">
-        <div id="searchRes" class="list-group shadow-sm"></div>
-      </div>
-      
       <div class="card-pro">
-        <h6 class="fw-bold text-primary mb-3">Langkah 1: Tentukan Masa Kerja</h6>
-        <div class="mb-3">
-          <label class="small fw-bold">Tanggal Masuk (TMT)</label>
-          <input type="date" id="tmt" class="form-control">
-        </div>
-        <div class="mb-4">
-          <label class="small fw-bold">Tanggal PHK / Keluar</label>
-          <input type="date" id="phk" class="form-control">
-        </div>
-        <button class="btn-blue" onclick="toStep2()">LANJUT AUDIT UPAH BULANAN</button>
+        <h6 class="fw-bold text-primary mb-3">Tahap 1: Periode Kerja & Masa Kerja</h6>
+        <label class="small fw-bold">Tanggal Masuk (TMT)</label><input type="date" id="tmt" class="form-control mb-2">
+        <label class="small fw-bold">Tanggal PHK</label><input type="date" id="phk" class="form-control mb-3">
+        <button id="btnStep1" class="btn-blue" onclick="toStep2()">LANJUT AUDIT UPAH BULANAN</button>
       </div>
     </div>
 
     <div id="step2" class="step-view">
       <div class="card-pro">
-        <h6 class="fw-bold text-primary mb-2">Langkah 2: Audit Upah Bulanan</h6>
-        <span class="audit-label">Bandingkan Gaji Anda vs UMP</span>
-        <div class="table-responsive">
-          <table class="table table-sm table-bordered mt-2">
-            <thead class="table-dark">
-              <tr><th>Tahun</th><th>UMP (Seharusnya)</th><th>Gaji Diterima (Aktual)</th></tr>
-            </thead>
-            <tbody id="upahTable" class="table-audit"></tbody>
-          </table>
-        </div>
-        <button class="btn-blue mt-3" onclick="toStep3()">LANJUT KE THR & KOMPENSASI</button>
+        <h6 class="fw-bold text-primary mb-2">Tahap 2: Audit Selisih Upah</h6>
+        <div class="table-responsive"><table class="table table-sm table-bordered">
+          <thead class="table-dark"><tr><th>Tahun</th><th>UMP</th><th>Upah Aktual</th></tr></thead>
+          <tbody id="upahTable"></tbody>
+        </table></div>
+        <button class="btn-blue mt-3" onclick="toStep3()">LANJUT KE THR</button>
       </div>
     </div>
 
     <div id="step3" class="step-view">
       <div class="card-pro">
-        <h6 class="fw-bold text-primary mb-3">Langkah 3: Dana Yang Sudah Dibayar</h6>
+        <h6 class="fw-bold text-primary">Tahap 3: Dana Sudah Cair</h6>
         <div id="thrList"></div>
-        
-        <div id="boxMeninggal" class="d-none mt-4 p-3 border border-danger rounded bg-light text-center">
-          <label class="text-danger fw-bold cursor-pointer">
-            <input type="checkbox" id="isMeninggal" style="transform: scale(1.3);"> PEKERJA MENINGGAL DUNIA (2x Pesangon)
-          </label>
+        <div id="boxMeninggal" class="d-none mt-3 p-2 border border-danger rounded text-center">
+          <label class="text-danger fw-bold"><input type="checkbox" id="isMeninggal"> PEKERJA MENINGGAL (2x Pesangon)</label>
         </div>
-        <button class="btn-blue mt-4" onclick="hitungFinal()">HITUNG REKAPITULASI AKHIR</button>
+        <button class="btn-blue mt-4" onclick="hitungFinal()">HITUNG SELISIH AKHIR</button>
       </div>
     </div>
 
     <div id="step4" class="step-view">
-      <div class="card-pro border-primary border-2">
-        <h5 class="fw-bold text-center mb-4 text-primary">REKAPITULASI AUDIT SELISIH</h5>
-        <div id="hasilDetail"></div>
-        <button class="btn btn-warning w-100 mt-3 fw-bold" onclick="location.reload()">RE-AUDIT ULANG</button>
+      <div class="card-pro border-primary text-center">
+        <h5 class="fw-bold">HASIL AUDIT SELISIH</h5>
+        <hr><div id="hasilDetail"></div>
+        <button class="btn btn-warning w-100 mt-3" onclick="location.reload()">ULANGI</button>
       </div>
     </div>
 
@@ -106,76 +75,44 @@
 <script>
   // GANTI URL INI DENGAN URL WEB APP ANDA
   const API = "https://script.google.com/macros/s/AKfycbwy9ojeqHYxpOGZcf7P5T_GrBQUWTxtvBAwhDw-54m9lYvs1C48GFfrWHbVMcjqAyru/exec";
-  let USER = {}, UMP = {};
+  let UMP = {};
 
   async function handleLogin() {
-    const lNik = document.getElementById('lNik').value;
-    const lPin = document.getElementById('lPin').value;
-    if(!lNik || !lPin) return alert("Isi NIK dan PIN!");
-
-    const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:lNik, pin:lPin})});
-    const d = await res.json();
-    
+    const r = await fetch(API, {method:'POST', body:JSON.stringify({action:'login', nik:document.getElementById('lNik').value, pin:document.getElementById('lPin').value})});
+    const d = await r.json();
     if(d.status==='success') {
-      USER = d.user;
       document.getElementById('viewLogin').classList.remove('active');
-      document.getElementById('appBody').classList.add('active');
-      document.getElementById('userLabel').innerText = "Auditor: " + USER.nama;
+      document.getElementById('mainApp').classList.add('active');
+      document.getElementById('userLabel').innerText = "Auditor: " + d.user.nama;
+      if(d.user.role === "Admin") document.getElementById('boxMeninggal').classList.remove('d-none');
       
-      if(USER.role === "Admin" || USER.nama === "Oktavianus David") {
-        document.getElementById('adminPanel').classList.remove('d-none');
-        document.getElementById('boxMeninggal').classList.remove('d-none');
-      }
-
-      // Load UMP Data
       const r2 = await fetch(API, {method:'POST', body:JSON.stringify({action:'getUmpRef'})});
-      const d2 = await r2.json(); 
-      UMP = d2.data;
+      const d2 = await r2.json(); UMP = d2.data;
     } else alert(d.message);
-  }
-
-  async function searchMember() {
-    const q = document.getElementById('searchInp').value;
-    if(q.length < 3) return;
-    const res = await fetch(API, {method:'POST', body:JSON.stringify({action:'searchMember', query:q})});
-    const d = await res.json();
-    document.getElementById('searchRes').innerHTML = d.data.map(a => 
-      `<button class='list-group-item list-group-item-action small' onclick='selectMember("${a.tmt}")'>${a.nama} (${a.nik})</button>`
-    ).join('');
-  }
-
-  function selectMember(tmt) {
-    if(tmt && tmt !== "undefined") {
-      document.getElementById('tmt').value = new Date(tmt).toISOString().split('T')[0];
-    }
-    document.getElementById('searchRes').innerHTML = "";
   }
 
   function toStep2() {
     const tmtVal = document.getElementById('tmt').value;
     const phkVal = document.getElementById('phk').value;
-    if(!tmtVal || !phkVal) return alert("Harap isi Tanggal Masuk & PHK!");
+    if(!tmtVal || !phkVal) return alert("Isi tanggal dulu!");
 
     const y1 = new Date(tmtVal).getFullYear();
     const y2 = new Date(phkVal).getFullYear();
-    
-    let html = '';
+    let h = '';
     for(let y = y1; y <= y2; y++) {
-      let valUmp = UMP[y] || 0;
-      html += `<tr><td>${y}</td><td>Rp ${Number(valUmp).toLocaleString()}</td><td><input type="number" class="u-in" data-y="${y}" value="${valUmp}"></td></tr>`;
+      let vUmp = UMP[y] || 0;
+      h += `<tr><td>${y}</td><td>Rp ${Number(vUmp).toLocaleString()}</td><td><input type="number" class="u-in form-control-sm" data-y="${y}" value="${vUmp}"></td></tr>`;
     }
-    document.getElementById('upahTable').innerHTML = html;
+    document.getElementById('upahTable').innerHTML = h;
     toStep(2);
   }
 
   function toStep3() {
     const y1 = new Date(document.getElementById('tmt').value).getFullYear();
     const y2 = new Date(document.getElementById('phk').value).getFullYear();
-    let html = '';
-    for(let y = y1; y <= y2; y++) {
-      html += `<div class="mb-3"><label class="small fw-bold">THR & Kompensasi Diterima Tahun ${y}</label><input type="number" class="t-in form-control" value="0"></div>`;
-    }
-    document.getElementById('thrList').innerHTML = html;
+    let h = '';
+    for(let y = y1; y <= y2; y++) h += `<div class="mb-2 small">THR Diterima Thn ${y}<input type="number" class="t-in form-control form-control-sm" value="0"></div>`;
+    document.getElementById('thrList').innerHTML = h;
     toStep(3);
   }
 
@@ -184,63 +121,35 @@
     const phk = new Date(document.getElementById('phk').value);
     const mk = (phk - tmt) / (1000 * 60 * 60 * 24 * 365.25);
     
-    // Logika PP 35/2021
     let pF = (mk<1)?1:(mk<2)?2:(mk<3)?3:(mk<4)?4:(mk<5)?5:(mk<6)?6:(mk<7)?7:(mk<8)?8:9;
     let pmkF = (mk<3)?0:(mk<6)?2:(mk<9)?3:(mk<12)?4:(mk<15)?5:(mk<18)?6:(mk<21)?7:(mk<24)?8:10;
     
     const mult = document.getElementById('isMeninggal').checked ? 2 : 1;
-    const lastYear = phk.getFullYear();
-    const lastUmp = parseFloat(UMP[lastYear]) || 0;
-    
-    const pesangonAturan = (lastUmp * pF) * mult;
-    const upmkAturan = lastUmp * pmkF;
-    const totalHakSeharusnya = pesangonAturan + upmkAturan;
+    const lastUmp = parseFloat(UMP[phk.getFullYear()]) || 0;
+    const totalHakAturan = ((lastUmp * pF) * mult) + (lastUmp * pmkF);
 
-    // Audit Selisih Upah
-    let selisihUpahTotal = 0;
-    let rincianUpahHtml = "";
-    document.querySelectorAll('.u-in').forEach(el => {
-      let thn = el.dataset.y;
-      let seharusnya = parseFloat(UMP[thn] || 0);
-      let aktual = parseFloat(el.value) || 0;
-      let selisihTahun = (seharusnya - aktual) * 12;
-      selisihUpahTotal += selisihTahun;
-      if(selisihTahun > 0) {
-        rincianUpahHtml += `<li>Tahun ${thn}: Selisih Rp ${(seharusnya-aktual).toLocaleString()} x 12 bln = <b>Rp ${selisihTahun.toLocaleString()}</b></li>`;
-      }
-    });
+    let sUpah = 0;
+    document.querySelectorAll('.u-in').forEach(el => sUpah += (parseFloat(UMP[el.dataset.y] || 0) - parseFloat(el.value)) * 12);
+    let sAktual = 0;
+    document.querySelectorAll('.t-in').forEach(el => sAktual += parseFloat(el.value) || 0);
 
-    let totalAktualCair = 0;
-    document.querySelectorAll('.t-in').forEach(el => totalAktualCair += parseFloat(el.value) || 0);
-
-    const grandTotal = (selisihUpahTotal + totalHakSeharusnya) - totalAktualCair;
-
+    const totalKurang = sUpah + totalHakAturan - sAktual;
     document.getElementById('hasilDetail').innerHTML = `
-      <div class="res-box small">
-        <h6 class="fw-bold mb-2">Transparansi Pesangon (PP 35/2021)</h6>
-        Pesangon: Rp ${lastUmp.toLocaleString()} x ${pF} bln ${mult>1?'x 2 (Meninggal)':''} = <b>Rp ${pesangonAturan.toLocaleString()}</b><br>
-        UPMK: Rp ${lastUmp.toLocaleString()} x ${pmkF} bln = <b>Rp ${upmkAturan.toLocaleString()}</b>
+      <div class="alert alert-info small text-start">
+        Pesangon: Rp ${lastUmp.toLocaleString()} x ${pF} bln ${mult>1?'x 2':''}<br>
+        UPMK: Rp ${lastUmp.toLocaleString()} x ${pmkF} bln
       </div>
-      <div class="small mb-3">
-        <h6 class="fw-bold mb-1">Rincian Audit Selisih Upah Bulanan:</h6>
-        <ul class="ps-3 mb-0">${rincianUpahHtml || '<li>Tidak ditemukan selisih upah terhadap UMP.</li>'}</ul>
-      </div>
-      <table class="table table-sm border">
-        <tr><td>Total Pesangon + UPMK Seharusnya</td><td class="text-end">Rp ${totalHakSeharusnya.toLocaleString()}</td></tr>
-        <tr><td>Total Akumulasi Selisih Upah</td><td class="text-end">Rp ${selisihUpahTotal.toLocaleString()}</td></tr>
-        <tr class="text-danger"><td>Sudah Dibayar (Aktual)</td><td class="text-end">- Rp ${totalAktualCair.toLocaleString()}</td></tr>
-        <tr class="table-primary fw-bold" style="font-size:15px">
-          <td>TOTAL KEKURANGAN HAK</td>
-          <td class="text-end text-primary">Rp ${grandTotal.toLocaleString()}</td>
-        </tr>
-      </table>
-    `;
+      <table class="table table-sm">
+        <tr><td>Total Seharusnya</td><td class="text-end">Rp ${totalHakAturan.toLocaleString()}</td></tr>
+        <tr><td>Selisih Gaji</td><td class="text-end">Rp ${sUpah.toLocaleString()}</td></tr>
+        <tr><td>Sudah Dibayar</td><td class="text-end text-danger">- Rp ${sAktual.toLocaleString()}</td></tr>
+        <tr class="table-primary fw-bold"><td>TOTAL KURANG</td><td class="text-end">Rp ${totalKurang.toLocaleString()}</td></tr>
+      </table>`;
     toStep(4);
   }
 
   function toStep(n) {
     document.querySelectorAll('.step-view').forEach(v => v.classList.remove('active'));
-    document.getElementById('appBody').classList.add('active');
     document.getElementById('step'+n).classList.add('active');
   }
 </script>
